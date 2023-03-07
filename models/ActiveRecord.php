@@ -8,6 +8,8 @@ class ActiveRecord {
     protected static $tabla = '';
     protected static $columnasDB = [];
 
+    protected static $idTabla = '';
+
     // Alertas y Mensajes
     protected static $alertas = [];
     
@@ -189,7 +191,7 @@ class ActiveRecord {
         $atributos = [];
         foreach(static::$columnasDB as $columna) {
             $columna = strtolower($columna);
-            if($columna === static::$idTabla ?? 'id') continue;
+            if($columna === 'id' || $columna === static::$idTabla) continue;
             $atributos[$columna] = $this->$columna;
         }
         return $atributos;
