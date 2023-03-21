@@ -76,7 +76,7 @@ class ActiveRecord {
     // SQL para Consultas Avanzadas.
     public static function SQL($consulta) {
         $query = $consulta;
-        $resultado = self::consultarSQL($query);
+        $resultado = self::$db->query($query);
         return $resultado;
     }
 
