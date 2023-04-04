@@ -34,7 +34,8 @@ class ActiveRecord {
     // Registros - CRUD
     public function guardar() {
         $resultado = '';
-        if(!is_null($this->id)) {
+        $id = static::$idTabla ?? 'id';
+        if(!is_null($this->$id)) {
             // actualizar
             $resultado = $this->actualizar();
         } else {
@@ -54,7 +55,8 @@ class ActiveRecord {
 
     // Busca un registro por su id
     public static function find($id) {
-        $query = "SELECT * FROM " . static::$tabla  ." WHERE id = ${id}";
+        $idQuery = static::$idTabla ?? 'id';
+        $query = "SELECT * FROM " . static::$tabla  ." WHERE $idQuery = ${id}";
         $resultado = self::consultarSQL($query);
         return array_shift( $resultado ) ;
     }
@@ -113,10 +115,11 @@ class ActiveRecord {
         foreach($atributos as $key => $value) {
             $valores[] = "{$key}={$value}";
         }
+        $id = static::$idTabla ?? 'id';
 
         $query = "UPDATE " . static::$tabla ." SET ";
         $query .=  join(', ', $valores );
-        $query .= " WHERE id = " . self::$db->quote($this->id) . " ";
+        $query .= " WHERE " . $id . " = " . self::$db->quote($this->$id) . " ";
 
         // debuguear($query);
 
@@ -191,7 +194,7 @@ class ActiveRecord {
         $atributos = [];
         foreach(static::$columnasDB as $columna) {
             $columna = strtolower($columna);
-            if($columna === 'id' || $columna === static::$idTabla) continue;
+            if($columna === 'id') continue;
             $atributos[$columna] = $this->$columna;
         }
         return $atributos;
