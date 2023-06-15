@@ -1,7 +1,7 @@
 {
-  "name": "demo-app",
+  "name": "vcard",
   "version": "1.0.0",
-  "description": "Aplicacion MVC demo",
+  "description": "vcard",
   "main": "index.js",
   "scripts": {
     "build": "webpack",

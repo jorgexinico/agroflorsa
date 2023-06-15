@@ -1,6 +1,6 @@
 {
-    "name": "mindef/demo",
-    "description": "Proyecto MVC demo",
+    "name": "mindef/vcard",
+    "description": "Proyecto vcard",
     "type": "project",
     "config": {
         "platform-check": false
