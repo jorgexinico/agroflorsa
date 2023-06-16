@@ -32,7 +32,7 @@ class VcardController {
             $vcard .= "END:VCARD";
             $qrCode = new QrCode($vcard);
             $output = new Png;
-            $data = $output->output($qrCode,100, [255,255,255], [0,0,0]);
+            $data = $output->output($qrCode,100, [255,255,255], [2,156,223]);
             $nombre = '../storage/' . $id .  ".png";
             $guardado = file_put_contents($nombre, $data);
 
@@ -62,7 +62,8 @@ class VcardController {
         ]);
         $nombre = '../storage/' . $idImagen .  ".png";
         $html = "<div style='width: 500px;
-        border: 3px solid black;
+        border: 3px solid rgb(2,156,223);
+        border-radius: 5%;
         padding: 1px;
         text-align: center;'> 
         <img src='$nombre' width='100%' /></div>
