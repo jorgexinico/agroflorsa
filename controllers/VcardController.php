@@ -50,25 +50,22 @@ class VcardController {
         }
     }
 
-    public static function imprimir(){
+    public static function imprimir(Router $router){
         $idImagen = $_GET['idImagen'];
 
         $mpdf = new Mpdf([
             'default_font_size' => '12',
             'default_font' => 'arial',
             'orientation' => 'P',
-            'margin_top' => '30',
-            'format' => 'letter'
+            'margin_top' => '5',
+            'margin_left' => '5',
+            'margin_right' => '5',
+            'margin_bottom' => '5',
+            'format' => 'A5'
         ]);
         $nombre = '../storage/' . $idImagen .  ".png";
-        $html = "<div style='width: 500px;
-        border: 3px solid rgb(2,156,223);
-        border-radius: 5%;
-        padding: 1px;
-        text-align: center;'> 
-        <img src='$nombre' width='100%' /></div>
-        <div style='margin-top:-50px; z-index:2' >";
-
+        $html = $router->load('vcard/impresion', [
+            'nombre' => $nombre]);
         $mpdf->WriteHTML($html);
         // $mpdf->WriteHTML("");
         // $mpdf->WriteHTML("<");
