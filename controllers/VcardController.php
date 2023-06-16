@@ -15,18 +15,19 @@ class VcardController {
     public static function generarAPI(){
         getHeadersApi();
         try {
+            extract($_POST);
             $id = uniqid();
             $vcard = "BEGIN:VCARD\r\n";
             
             
-            $vcard .= "N:Fuetnes;Daniel;\r\n";
-            $vcard .= "TITLE:Programador\r\n";
-            $vcard .= "ORG:MINDEF\r\n";
-            $vcard .= "TEL;TYPE=work,VOICE:+50256568923\r\n";
-            $vcard .= "TEL;TYPE=home,VOICE:+50256892322\r\n";
-            $vcard .= "TEL;TYPE=mobile:+50255441122\r\n";
-            $vcard .= "EMAIL:correo@corre.com\r\n";
-            $vcard .= "ADR;TYPE=WORK,PREF:;;Ciudad de Guatemala\r\n";
+            $vcard .= "N:$apellido;$nombre;\r\n";
+            $vcard .= "TITLE:$puesto\r\n";
+            $vcard .= "ORG:$organizacion\r\n";
+            $vcard .= "TEL;TYPE=work,VOICE:+502$telefono_trabajo\r\n";
+            $vcard .= "TEL;TYPE=mobile:+502$telefono_personal\r\n";
+            $vcard .= "EMAIL:$correo\r\n";
+            $vcard .= "EMAIL;TYPE=WORK:$correo_empresa\r\n";
+            $vcard .= "ADR;Home:;;$direccion\r\n";
             $vcard .= "VERSION:3.0\r\n";
             $vcard .= "END:VCARD";
             $qrCode = new QrCode($vcard);
@@ -60,13 +61,11 @@ class VcardController {
             'format' => 'letter'
         ]);
         $nombre = '../storage/' . $idImagen .  ".png";
-        $html = "<div style='width: 300px;
+        $html = "<div style='width: 500px;
         border: 3px solid black;
         padding: 1px;
-        text-align: center;'> <div style='margin-top: -5px; z-index:4' > <p> Generado por:   </p> 
-
-        <div style='margin-top:-50px; z-index:1' >
-        <img src='$nombre' width='300px' /></div>
+        text-align: center;'> 
+        <img src='$nombre' width='100%' /></div>
         <div style='margin-top:-50px; z-index:2' >";
 
         $mpdf->WriteHTML($html);
