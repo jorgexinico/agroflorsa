@@ -1,2 +1,2 @@
 # DEMO MINDEF MVC
-Generación de VCARD para el concierto de maderas y metales
+Base para programación MVC con php del Ministerio de la Defensa
