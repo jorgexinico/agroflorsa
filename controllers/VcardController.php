@@ -67,6 +67,8 @@ class VcardController {
         $html = $router->load('vcard/impresion', [
             'nombre' => $nombre]);
         $mpdf->WriteHTML($html);
+        $mpdf->AddPage();
+        $mpdf->WriteHTML($html);
         // $mpdf->WriteHTML("");
         // $mpdf->WriteHTML("<");
         // $mpdf->WriteHTML("");
