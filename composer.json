@@ -1,6 +1,6 @@
 {
-    "name": "mindef/vcard",
-    "description": "Proyecto vcard",
+    "name": "mindef/demo",
+    "description": "Proyecto MVC demo",
     "type": "project",
     "config": {
         "platform-check": false
@@ -17,7 +17,6 @@
         "mpdf/mpdf": "^8.1",
         "phpmailer/phpmailer": "^6.6",
         "dompdf/dompdf": "^2.0",
-        "vlucas/phpdotenv": "^5.5",
-        "mpdf/qrcode": "^1.2"
+        "vlucas/phpdotenv": "^5.5"
     }
 }
