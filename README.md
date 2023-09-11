@@ -92,7 +92,7 @@ composer  install
 ###  8. Construir archivos en la carpeta pública
 Ejecutar en consola el comando siguiente y esperar a que termine su ejecución 
 ```
-–npm run build
+npm run build
 ```
 Este comando permanecerá en ejecución  mientras se este trabajando en el proyecto
 
