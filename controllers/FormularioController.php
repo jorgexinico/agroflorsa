@@ -51,7 +51,6 @@ class FormularioController
 
        $fechainicial = $horain->format('d-m-Y H:i:s');
 
-
         echo json_encode($fechainicial);
         exit;
         
