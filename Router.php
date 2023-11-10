@@ -79,4 +79,12 @@ class Router
         $contenido = ob_get_clean(); // Limpia el Buffer
         return $contenido;
     }
+
+    public function printPDF($ruta){
+
+        header("Content-type: application/pdf");
+        header("Content-Disposition: inline; filename=filename.pdf");
+        @readfile(__DIR__ . '/storage/' . $ruta );
+    
+    }
 }
