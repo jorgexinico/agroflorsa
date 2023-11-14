@@ -73,6 +73,7 @@
                         <th>INICIA</th>
                         <th>FINALIZA</th>
                         <th>ESTADO</th>
+                        <th>ESTADO</th>
                         <th>ELIMINAR</th>
                     </tr>
                 </thead>
@@ -101,7 +102,7 @@
                     <b>Mostrar contenido civil?</b>
                     <input type="checkbox" name="checkcivil" id="checkcivil" value="1" />
 
-                    <input type="text" name="id" id="id" class="form-control bg-white" ?>
+                    <input type="hidden" name="id" id="id" class="form-control bg-white" ?>
 
                     <?php
                     date_default_timezone_set('America/Guatemala');
@@ -109,7 +110,7 @@
                     ?>
 
                     <h1></h1>
-                    <input type="text" name="fecha" id="fecha" class="form-control bg-white"
+                    <input type="hidden" name="fecha" id="fecha" class="form-control bg-white"
                         value="<?php echo $fechadeldia ?>" placeholder="Y-M-D">
 
                     <?php
@@ -119,7 +120,7 @@
 
 
 
-                    <input type="text" name="horavalidar" id="horavalidar" class="form-control bg-white"
+                    <input type="hidden" name="horavalidar" id="horavalidar" class="form-control bg-white"
                         value="<?php echo $horaforma ?>" placeholder="H:i">
                     <div class="row mb-3">
                         <div class="col-lg-6">
@@ -141,7 +142,7 @@
                                     <option value="">Seleccione...</option>
                                     <?php foreach ($comando as $comando): ?>
                                         <option value="<?= $comando['dep_llave'] ?>">
-                                            <?= $comando['dep_llave'] ?>
+                                            <?= $comando['dep_desc_md'] ?>
                                         </option>
                                     <?php endforeach ?>
                                 </select>
@@ -179,13 +180,11 @@
 
                         <div class="col-lg-6">
                             <label for="cantidad">HORA DE INICIO</label>
-                            <input type="datetime-local" name="horain" id="horain" value="" maxlength="9"
-                                class="form-control">
+                            <input type="time" name="horain" id="horain" value="" maxlength="9" class="form-control">
                         </div>
                         <div class="col-lg-6">
                             <label for="cantidad">HORA FINALIZA</label>
-                            <input type="datetime-local" name="horafin" id="horafin" value="" maxlength="9"
-                                class="form-control">
+                            <input type="time" name="horafin" id="horafin" value="" maxlength="9" class="form-control">
                         </div>
 
                         <div class="col-lg-6">

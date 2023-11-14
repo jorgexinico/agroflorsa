@@ -44,30 +44,27 @@ class FormularioController
         $comisionMilitar = $_POST['comisionMilitar'];
         $fecha = $_POST['fecha'];
 
-        $horain = new DateTime($_POST['horain']);
-        $horafin =$_POST['horafin'];
+        $horain = $_POST['horain'];
+        $horafin = $_POST['horafin'];
         $horavalidar = $_POST['horavalidar'];
 
 
-       $fechainicial = $horain->format('d-m-Y H:i:s');
 
-        echo json_encode($fechainicial);
-        exit;
-        
         if ($checkcivil == null) {
             try {
-                
+//   echo json_encode('ENTRO AQUI');
+//         exit;
 
-                $sql="INSERT INTO smm_reporte VALUES (0, $banda, $comisionMilitar, '$comision1Civil', $actividad, $cantidad, '$fecha', '$horain', '$horafin', 1)";
+                $sql = "INSERT INTO smm_reporte VALUES (0, $banda, $comisionMilitar, '$comision1Civil', $actividad, $cantidad, '$fecha', '$horain', '$horafin', 1)";
+
+                $resultado = Formulario::sql($sql);
+                // echo json_encode($resultado);
 
                 
-                // $resultado = Formulario::sql($insertHistorial);
                 
-                echo json_encode($sql);
-                exit;
-                
-
-                if ($resultado['resultado'] == 1) {
+                if ($resultado == 1) {
+                    // echo json_encode('aquiesoty');
+                    // exit;
                     echo json_encode([
                         "resultado" => 1
                     ]);
@@ -86,18 +83,21 @@ class FormularioController
                 ]);
             }
 
-        } else {
+        } 
+        if ($checkcivil == 1){
             try {
 
-                echo json_encode($checkcivil);
-                exit;
-
-                $insertHistorial = Formulario::sql("INSERT INTO smm_reporte VALUES (0, $banda, $comisionMiliar, $comision1Civil, $actividad, $fecha, $horain, $horafin)");
+        //         echo json_encode('AQUI NO ENTRO AQUI');
+        // exit;
+                $insertHistorial = "INSERT INTO smm_reporte VALUES (0, $banda, 999, '$comision1Civil', $actividad, $cantidad, '$fecha', '$horain', '$horafin', 1)";
 
                 $resultado = Formulario::sql($insertHistorial);
+                
+                // echo json_encode($resultado);
+                // exit;
 
 
-                if ($resultado['resultado'] == 1) {
+                if ($resultado == 1) {
                     echo json_encode([
                         "resultado" => 1
                     ]);
@@ -150,7 +150,7 @@ class FormularioController
               and smm_reporte.fecha = date(current)";
 
 
-            $resultado = Formulario::sql($reporte);
+            $resultado = Formulario::fetchArray($reporte);
             echo json_encode($resultado);
             // exit;
 

@@ -35,9 +35,11 @@ const guardarFormulario = async (evento) => {
 
     const respuesta = await fetch(url, config);
     const data = await respuesta.json();
-    console.log(data);
-    return;
+    // console.log(data);
+    // return;
     const { resultado } = data;
+    // console.log(resultado);
+    // return;
 
     if (resultado == 1) {
       Toast.fire({
@@ -74,7 +76,7 @@ const buscarFormulario = async (evento) => {
     const data = await respuesta.json();
 
     // console.log(data);
-    //   return;
+      // return;
 
     tablaFormulario.destroy();
     let contador = 1;
@@ -91,6 +93,7 @@ const buscarFormulario = async (evento) => {
         { data: "nombrebanda" },
         { data: "comisionnombre" },
         { data: "civil" },
+        { data: "motivo" },
         { data: "cantidad" },
         { data: "fecha" },
         { data: "horain" },
@@ -115,6 +118,7 @@ const buscarFormulario = async (evento) => {
   }
 };
 
+buscarFormulario();
 const modificarFormulario = async (evento) => {
   evento.preventDefault();
 
@@ -171,7 +175,6 @@ const modificarFormulario = async (evento) => {
   }
 };
 
-buscarFormulario();
 
 // window.asignarValores = (id, banda) => {
 //   formIngresoComision.id.value = id;
