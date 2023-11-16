@@ -49,7 +49,7 @@
                         </ul>
                     </div> 
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="/servicio-musicas/"><i class="bi bi-file-earmark-pdf"></i>REPORTE</a>
+                        <a class="nav-link" aria-current="page" href="/servicio-musicas/reporteMensual"><i class="bi bi-file-earmark-pdf"></i>REPORTE</a>
                     </li>
 
                 </ul> 

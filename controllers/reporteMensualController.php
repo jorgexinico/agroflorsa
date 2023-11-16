@@ -3,21 +3,21 @@
 namespace Controllers;
 
 use DateTime;
-use Model\Formulario;
+use Model\reporteMensual;
 use MVC\Router;
 use Model\ActiveRecord;
 use Classes\ReportePDF;
 use Exception;
 
-class FormularioController
+class reporteMensualController
 {
     public static function index(Router $router)
     {
-        $actividad = Formulario::fetchArray("SELECT * from smm_actividad where situacion = 1 ");
-        $banda = Formulario::fetchArray("SELECT * from smm_banda where situacion = 1 ");
-        $comando = Formulario::fetchArray("SELECT * FROM mdep where dep_llave between 2010 and 4030 order by dep_desc_md asc;");
+        $actividad = reporteMensual::fetchArray("SELECT * from smm_actividad where situacion = 1 ");
+        $banda = reporteMensual::fetchArray("SELECT * from smm_banda where situacion = 1 ");
+        $comando = reporteMensual::fetchArray("SELECT * FROM mdep where dep_llave between 2010 and 4030 order by dep_desc_md asc;");
 
-        $dependencias = Formulario::fetchArray("SELECT * FROM MPER FULL OUTER JOIN morg ON per_plaza = org_plaza FULL OUTER JOIN mdep ON dep_llave = org_dependencia WHERE per_catalogo = user");
+        $dependencias = reporteMensual::fetchArray("SELECT * FROM MPER FULL OUTER JOIN morg ON per_plaza = org_plaza FULL OUTER JOIN mdep ON dep_llave = org_dependencia WHERE per_catalogo = user");
         foreach ($dependencias as $key => $value) {
 
             $dependencia = $value['dep_desc_ct'];
@@ -25,7 +25,7 @@ class FormularioController
             // var_dump($org_dep);
         }
 
-        $router->render('Formulario/index', [
+        $router->render('reporteMensual/index', [
 
 
             'org_dep' => $org_dep,
@@ -59,7 +59,7 @@ class FormularioController
 
                 $sql = "INSERT INTO smm_reporte VALUES (0, $banda, $comisionMilitar, '$comision1Civil', $actividad, $cantidad, '$fecha', '$horain', '$horafin', 1)";
 
-                $resultado = Formulario::sql($sql);
+                $resultado = reporteMensual::sql($sql);
                 // echo json_encode($resultado);
 
 
@@ -93,7 +93,7 @@ class FormularioController
                 // exit;
                 $insertHistorial = "INSERT INTO smm_reporte VALUES (0, $banda, 999, '$comision1Civil', $actividad, $cantidad, '$fecha', '$horain', '$horafin', 1)";
 
-                $resultado = Formulario::sql($insertHistorial);
+                $resultado = reporteMensual::sql($insertHistorial);
 
                 // echo json_encode($resultado);
                 // exit;
@@ -126,7 +126,16 @@ class FormularioController
     public static function buscarAPI()
     {
         getHeadersApi();
+        date_default_timezone_set("America/Caracas");
+        setlocale(LC_TIME, 'es_VE.UTF-8','esp');
+        $mes = date("m");
+        $ano = date("Y");
 
+
+        $inicia = $ano.'-'.$mes.'-'. 01;
+        $termina= $ano.'-'.$mes.'-'. 31;
+        //     echo json_encode($termina);
+        // exit;
 
 
         try {
@@ -148,13 +157,12 @@ class FormularioController
             where smm_reporte.nombre = smm_banda.id 
             and smm_reporte.comision=mdep.dep_llave 
             and smm_reporte.motivo=smm_actividad.id
-            
             and smm_reporte.situacion=1
-              and smm_reporte.fecha = date(current)";
+            and smm_reporte.fecha BETWEEN $inicia AND $termina";
 
 
-            $resultado = Formulario::fetchArray($reporte);
-            echo json_encode($resultado);
+            $resultado = reporteMensual::fetchArray($reporte);
+            echo json_encode($reporte);
             // exit;
 
 
@@ -174,9 +182,9 @@ class FormularioController
     public static function modificarAPI()
     {
         getHeadersApi();
-        $Formulario = new Formulario($_POST);
+        $reporteMensual = new reporteMensual($_POST);
 
-        $resultado = $Formulario->guardar();
+        $resultado = $reporteMensual->guardar();
 
         if ($resultado['resultado'] == 1) {
             echo json_encode([
@@ -196,11 +204,11 @@ class FormularioController
 
         getHeadersApi();
 
-        $Formulario = Formulario::find($_POST['id']);
+        $reporteMensual = reporteMensual::find($_POST['id']);
 
-        $Formulario->situacion = 0;
+        $reporteMensual->situacion = 0;
 
-        $resultado = $Formulario->actualizar();
+        $resultado = $reporteMensual->actualizar();
 
 
 
@@ -248,7 +256,7 @@ class FormularioController
             and smm_reporte.situacion=1
             and smm_reporte.fecha = date(current)";
 
-            $dataOperaciones = Formulario::fetchArray($sql);
+            $dataOperaciones = reporteMensual::fetchArray($sql);
             //echo json_encode ($dataOperaciones);
             //exit;
 
@@ -338,7 +346,7 @@ class FormularioController
             and smm_reporte.situacion=1
             and smm_reporte.fecha = '$fechaReporte'";
 
-            $dataOperaciones = Formulario::fetchArray($sql);
+            $dataOperaciones = reporteMensual::fetchArray($sql);
             //echo json_encode ($dataOperaciones);
             //exit;
 

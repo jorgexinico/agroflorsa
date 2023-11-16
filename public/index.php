@@ -7,6 +7,7 @@ use Controllers\AppController;
 use Controllers\BandasController;
 use Controllers\ActividadController;
 use Controllers\FormularioController;
+use Controllers\reporteMensualController;
 
 $router = new Router();
 $router->setBaseURL('/' . $_ENV['APP_NAME']);
@@ -31,6 +32,21 @@ $router->post('/API/Formulario/guardar', [FormularioController::class, 'guardarA
 $router->get('/API/Formulario/buscar', [FormularioController::class, 'buscarAPI']);
 $router->post('/API/Formulario/modificar', [FormularioController::class, 'modificarAPI']);
 $router->post('/API/Formulario/eliminar', [FormularioController::class, 'eliminarAPI']);
+
+// aca estaran las rutas para el pdf del pdf
+$router->get('/impresion/pdfbusqueda', [FormularioController::class, 'pdf_busqueda']);
+$router->get('/impresion/pdfbusquedaReporte', [FormularioController::class, 'pdf_busquedaReporte']);
+//reporteMensual
+$router->get('/reporteMensual', [reporteMensualController::class, 'index']);
+$router->post('/API/reporteMensual/guardar', [reporteMensualController::class, 'guardarAPI']);
+$router->get('/API/reporteMensual/buscar', [reporteMensualController::class, 'buscarAPI']);
+$router->post('/API/reporteMensual/modificar', [reporteMensualController::class, 'modificarAPI']);
+$router->post('/API/reporteMensual/eliminar', [reporteMensualController::class, 'eliminarAPI']);
+
+// aca estaran las rutas para el pdf del pdf
+$router->get('/impresion/pdfbusqueda', [reporteMensualController::class, 'pdf_busqueda']);
+$router->get('/impresion/pdfbusquedaReporte', [reporteMensualController::class, 'pdf_busquedaReporte']);
+
 
 // Comprueba y valida las rutas, que existan y les asigna las funciones del Controlador
 $router->comprobarRutas();

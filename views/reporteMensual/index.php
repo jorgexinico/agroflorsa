@@ -1,6 +1,54 @@
+<?php
+
+
+date_default_timezone_set("America/Caracas");
+setlocale(LC_TIME, 'es_VE.UTF-8','esp');
+
+ $dia = date("m");
+ $Nombre_año = date("Y");
+ 
+
+ if($dia == 1){
+    $meshoy='Enero';
+  }
+  if($dia == 2){
+    $meshoy='Febrero';
+  }
+  if($dia == 3){
+    $meshoy='Marzo';
+  }
+  if($dia == 4){
+    $meshoy='Abril';
+  }
+  if($dia == 5){
+    $meshoy='Mayo';
+  }
+  if($dia == 6){
+    $meshoy='Junio';
+  }
+  if($dia == 7){
+    $meshoy='Julio';
+  }
+  if($dia == 8){
+    $meshoy='Agosto';
+  }
+  if($dia == 9){
+    $meshoy='Septiembre';
+  }
+  if($dia == 10){
+      $meshoy='Octubre';
+    }
+  if($dia ==11){
+      $meshoy='Noviembre';
+    }
+  if($dia ==12){
+      $meshoy='Diciembre';
+    }
+?>
+
 <div class="row text-center">
     <div class="col">
-        <h3>Comisiones del Servicio de Musica Militar </h3>
+        <h3>Reporte de las Comisiones realizadas el mes de <?php echo $meshoy ."&nbsp;de&nbsp;".$Nombre_año?> </h3>
     </div>
 </div>
 
@@ -260,4 +308,4 @@
             </div>
         </div>
     </div>
-    <script src="build/js/Formulario/index.js"></script>
+    <script src="build/js/reporteMensual/index.js"></script>

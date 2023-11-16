@@ -14,6 +14,7 @@ const cambiarCheck = document.querySelector("#checkcivil");
 const imprimir = document.getElementById("imprimir");
 const ReporteDia = document.getElementById("ReporteDia");
 
+
 // btnModificar.parentElement.style.display = "none";
 btnGuardar.disabled = false;
 // btnModificar.disabled = true;
@@ -23,7 +24,7 @@ const guardarFormulario = async (evento) => {
 
   try {
     //Crear el cuerpo de la consulta
-    const url = "/servicio-musicas/API/Formulario/guardar";
+    const url = "/servicio-musicas/API/reporteMensual/guardar";
     const body = new FormData(formIngresoComision);
     body.delete("id");
     const headers = new Headers();
@@ -66,7 +67,7 @@ const buscarFormulario = async (evento) => {
   evento && evento.preventDefault();
 
   try {
-    const url = "/servicio-musicas/API/Formulario/buscar";
+    const url = "/servicio-musicas/API/reporteMensual/buscar";
     const headers = new Headers();
     headers.append("X-requested-With", "fetch");
 
@@ -77,8 +78,8 @@ const buscarFormulario = async (evento) => {
     const respuesta = await fetch(url, config);
     const data = await respuesta.json();
 
-    // console.log(data);
-    // return;
+    console.log(data);
+    return;
 
     tablaFormulario.destroy();
     let contador = 1;
@@ -159,7 +160,7 @@ const modificarFormulario = async (evento) => {
 
   try {
     //Crear el cuerpo de la consulta
-    const url = "/servicio-musicas/API/Formulario/modificar";
+    const url = "/servicio-musicas/API/reporteMensual/modificar";
     const body = new FormData(formIngresoComision);
     const headers = new Headers();
     headers.append("X-requested-With", "fetch");
@@ -223,7 +224,7 @@ window.eliminarRegistro = (id) => {
     confirmButtonText: "Si, eliminar",
   }).then(async (result) => {
     if (result.isConfirmed) {
-      const url = "/servicio-musicas/API/Formulario/eliminar";
+      const url = "/servicio-musicas/API/reporteMensual/eliminar";
       const body = new FormData();
       body.append("id", id);
       const headers = new Headers();
