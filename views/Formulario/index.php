@@ -7,7 +7,7 @@
 <div class="container-fluid">
     <div class="row justify-content-center">
         <form id="formFormulario" class="col-10 border p-2 mt-2 bg-light" enctype="multipart/form-data">
-            <div class="col-10">
+            <div class="col-12">
                 <div class="row mb-3">
                     <div class="col-lg-4">
                         <div class="d-flex justify-content-start">

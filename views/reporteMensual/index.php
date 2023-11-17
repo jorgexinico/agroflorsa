@@ -2,79 +2,69 @@
 
 
 date_default_timezone_set("America/Caracas");
-setlocale(LC_TIME, 'es_VE.UTF-8','esp');
+setlocale(LC_TIME, 'es_VE.UTF-8', 'esp');
 
- $dia = date("m");
- $Nombre_año = date("Y");
- 
+$dia = date("m");
+$Nombre_año = date("Y");
 
- if($dia == 1){
-    $meshoy='Enero';
-  }
-  if($dia == 2){
-    $meshoy='Febrero';
-  }
-  if($dia == 3){
-    $meshoy='Marzo';
-  }
-  if($dia == 4){
-    $meshoy='Abril';
-  }
-  if($dia == 5){
-    $meshoy='Mayo';
-  }
-  if($dia == 6){
-    $meshoy='Junio';
-  }
-  if($dia == 7){
-    $meshoy='Julio';
-  }
-  if($dia == 8){
-    $meshoy='Agosto';
-  }
-  if($dia == 9){
-    $meshoy='Septiembre';
-  }
-  if($dia == 10){
-      $meshoy='Octubre';
-    }
-  if($dia ==11){
-      $meshoy='Noviembre';
-    }
-  if($dia ==12){
-      $meshoy='Diciembre';
-    }
+
+if ($dia == 1) {
+    $meshoy = 'Enero';
+}
+if ($dia == 2) {
+    $meshoy = 'Febrero';
+}
+if ($dia == 3) {
+    $meshoy = 'Marzo';
+}
+if ($dia == 4) {
+    $meshoy = 'Abril';
+}
+if ($dia == 5) {
+    $meshoy = 'Mayo';
+}
+if ($dia == 6) {
+    $meshoy = 'Junio';
+}
+if ($dia == 7) {
+    $meshoy = 'Julio';
+}
+if ($dia == 8) {
+    $meshoy = 'Agosto';
+}
+if ($dia == 9) {
+    $meshoy = 'Septiembre';
+}
+if ($dia == 10) {
+    $meshoy = 'Octubre';
+}
+if ($dia == 11) {
+    $meshoy = 'Noviembre';
+}
+if ($dia == 12) {
+    $meshoy = 'Diciembre';
+}
 ?>
 
 <div class="row text-center">
     <div class="col">
-        <h3>Reporte de las Comisiones realizadas el mes de <?php echo $meshoy ."&nbsp;de&nbsp;".$Nombre_año?> </h3>
+        <h3>Reporte de las Comisiones realizadas el mes de
+            <?php echo $meshoy . "&nbsp;de&nbsp;" . $Nombre_año ?>
+        </h3>
     </div>
 </div>
 
 <div class="container-fluid">
     <div class="row justify-content-center">
         <form id="formFormulario" class="col-10 border p-2 mt-2 bg-light" enctype="multipart/form-data">
-            <div class="col-10">
+            <div class="col-12">
                 <div class="row mb-3">
                     <div class="col-lg-4">
-                        <div class="d-flex justify-content-start">
-                            <a type=" button" class="btn btn-success m-1" data-bs-toggle="modal"
-                                data-bs-target="#entradafab">Ingrese Registro
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-bookmark-plus" viewBox="0 0 16 16">
-                                    <path
-                                        d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z" />
-                                    <path
-                                        d="M8 4a.5.5 0 0 1 .5.5V6H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V7H6a.5.5 0 0 1 0-1h1.5V4.5A.5.5 0 0 1 8 4z" />
-                                </svg>
 
-                            </a>
-                        </div>
                     </div>
                     <div class="col-lg-4">
                         <div class="d-flex justify-content-center">
-                            <a type=" button" class="btn btn-danger m-1" id="imprimir">Imprimir Reporte
+                            <a type=" button" class="btn btn-success m-1" id="imprimir">Imprimir Reporte
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-printer" viewBox="0 0 16 16">
                                     <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
@@ -93,7 +83,7 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
                                     <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5V5.6z" />
                                     <path
                                         d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64a.715.715 0 0 1 .012-.013l.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354a.512.512 0 0 1-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5zM8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3z" />
-                                </svg> Reporte Dia
+                                </svg> Reporte Mes
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                     class="bi bi-printer" viewBox="0 0 16 16">
                                     <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
@@ -109,22 +99,20 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
     </div>
     <div class="row justify-content-center" id="divTabla">
         <div class="col-lg-10">
-            <table id="FormularioTabla" class="table table-bordered table-hover w-100">
+            <table id="FormularioTabla" class="table table-bordered table-hover w-100 small">
                 <thead>
-                    <tr>
+                    <tr class="align-middle text-center small">
                         <th>NO.</th>
                         <th>BANDA</th>
                         <th>DESTINO</th>
                         <th>MOTIVO</th>
-                        <th>PERSONAL</th>
-                        <th>INICIA</th>
-                        <th>FINALIZA</th>
-                        <th>ESTADO</th>
-                        <th>ESTADO</th>
-                        <th>ELIMINAR</th>
+                        <th>CANT. PER.</th>
+                        <th>FECHA</th>
+                        <th>INICIO</th>
+                        <th>FINALIZO</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="align-middle text-center small">
 
                 </tbody>
             </table>
@@ -135,9 +123,6 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
 <div class="modal fade" id="entradafab" name="modalPersonal" tabindex="-1" role="dialog"
     aria-labelledby="infoModalLabel" aria-text="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-
-
-
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">REGISTRE COMISION</h4>
@@ -164,9 +149,6 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
                     date_default_timezone_set('America/Guatemala');
                     $horaforma = date("H:i");
                     ?>
-
-
-
                     <input type="hidden" name="horavalidar" id="horavalidar" class="form-control bg-white"
                         value="<?php echo $horaforma ?>" placeholder="H:i">
                     <div class="row mb-3">
@@ -180,7 +162,6 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
                                     </option>
                                 <?php endforeach ?>
                             </select>
-
                         </div>
                         <div class="col-lg-6">
                             <label for="comision">COMISION </label>
@@ -213,18 +194,14 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
                                 <?php endforeach ?>
                             </select>
                         </div>
-
                         <div class="col-lg-6">
                             <label for="cantidad">CANT. PERSONAL</label>
                             <input type="text" name="cantidad" id="cantidad" value="" maxlength="9"
                                 onKeypress="if (event.keyCode < 45 || event.keyCode > 57) event.returnValue = false;"
                                 class="form-control">
                         </div>
-
                     </div>
                     <div class="row mb-3">
-
-
                         <div class="col-lg-6">
                             <label for="cantidad">HORA DE INICIO</label>
                             <input type="time" name="horain" id="horain" value="" maxlength="9" class="form-control">
@@ -233,7 +210,6 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
                             <label for="cantidad">HORA FINALIZA</label>
                             <input type="time" name="horafin" id="horafin" value="" maxlength="9" class="form-control">
                         </div>
-
                         <div class="col-lg-6">
                             <br>
                             <input type="submit" name="submit" class="btn btn-warning form-control bg-success"
@@ -244,19 +220,13 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
                             <button type="button" class="btn btn-secondary form-control bg-danger"
                                 data-bs-dismiss="modal" id="cerrar">CERRAR</button>
                         </div>
-
-
                     </div>
-
                 </form>
             </div>
 
         </div>
         </form>
-
-
     </div>
-
 </div>
 
 
@@ -267,9 +237,9 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
 
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
 
-                <h4 class="modal-title">Ingrese Fecha a Buscar</h4>
+                <h4 class="modal-title">Ingrese Mes a Buscar</h4>
 
                 <div class="modal-body">
 
@@ -278,28 +248,32 @@ setlocale(LC_TIME, 'es_VE.UTF-8','esp');
 
 
                             <div class="col-lg-6">
-                                <!--  -->
 
-                                <input type="date" name="fechareporte" id="fechareporte" maxlength="50" minlength="1"
-                                    class="form-control bg-white" value="<?= date('Y-m-d') ?>" require>
-
+                                
+                                <select id="mesSelector"  aria-label="Default select example" class="form-select form-select-lg mb-3 text-center">
+                                    <option value="01">Enero</option>
+                                    <option value="02">Febrero</option>
+                                    <option value="03">Marzo</option>
+                                    <option value="04">Abril</option>
+                                    <option value="05">Mayo</option>
+                                    <option value="06">Junio</option>
+                                    <option value="07">Julio</option>
+                                    <option value="08">Agosto</option>
+                                    <option value="09">Septiembre</option>
+                                    <option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option>
+                                    <option value="12">Diciembre</option>
+                                </select>
                             </div>
-                            <!--  -->
-
-
                             <div class="col-lg-6">
 
-                                <a class="btn bg-success form-control "id="ReporteDia" >IMPRIMIR</a>
+                                <a class="btn bg-info form-control " id="ReporteDia">IMPRIMIR</a>
 
                             </div>
                         </div>
-
-
                     </form>
 
                     <div class="col-lg-12">
-
-
                         <button type="button" class="btn btn-secondary form-control bg-danger" data-bs-dismiss="modal"
                             id="cerrar">CERRAR</button>
                     </div>

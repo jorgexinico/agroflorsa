@@ -50,7 +50,8 @@ class reporteMensualController
         $horafin = $_POST['horafin'];
         $horavalidar = $_POST['horavalidar'];
 
-
+        //           echo json_encode($_POST);
+        // exit;
 
         if ($checkcivil == null) {
             try {
@@ -133,7 +134,7 @@ class reporteMensualController
 
 
         $inicia = $ano.'-'.$mes.'-'. 01;
-        $termina= $ano.'-'.$mes.'-'. 31;
+        $termina= $ano.'-'.$mes.'-'. 30;
         //     echo json_encode($termina);
         // exit;
 
@@ -158,11 +159,11 @@ class reporteMensualController
             and smm_reporte.comision=mdep.dep_llave 
             and smm_reporte.motivo=smm_actividad.id
             and smm_reporte.situacion=1
-            and smm_reporte.fecha BETWEEN $inicia AND $termina";
+            and smm_reporte.fecha BETWEEN '$inicia' AND '$termina'";
 
 
             $resultado = reporteMensual::fetchArray($reporte);
-            echo json_encode($reporte);
+            echo json_encode($resultado);
             // exit;
 
 
@@ -227,6 +228,15 @@ class reporteMensualController
 
     public static function pdf_busqueda(Router $router)
     {
+
+        date_default_timezone_set("America/Caracas");
+        setlocale(LC_TIME, 'es_VE.UTF-8','esp');
+        $mes = date("m");
+        $ano = date("Y");
+
+
+        $inicia = $ano.'-'.$mes.'-'. 01;
+        $termina= $ano.'-'.$mes.'-'. 30;
         try {
             getHeadersApi();
 
@@ -235,7 +245,7 @@ class reporteMensualController
             $userInfo = ActiveRecord::fetchFirst("SELECT * from mper inner join morg on per_plaza = org_plaza inner join mdep on org_dependencia = dep_llave where per_catalogo = $user ");
 
 
-            $sql = " SELECT smm_reporte.id as id,
+            $sql = "SELECT smm_reporte.id as id,
             smm_reporte.nombre as idnombre,
             smm_banda.banda as nombrebanda,
             smm_reporte.comision as idcomision,
@@ -254,7 +264,7 @@ class reporteMensualController
             and smm_reporte.comision=mdep.dep_llave 
             and smm_reporte.motivo=smm_actividad.id
             and smm_reporte.situacion=1
-            and smm_reporte.fecha = date(current)";
+            and smm_reporte.fecha BETWEEN '$inicia' AND '$termina'";
 
             $dataOperaciones = reporteMensual::fetchArray($sql);
             //echo json_encode ($dataOperaciones);
@@ -288,7 +298,7 @@ class reporteMensualController
             $reporte = new ReportePDF($router, $userInfo);
             $pdf = $reporte->generatePDF();
 
-            $contenido = $router->load('impresion/pdfbusqueda', [
+            $contenido = $router->load('impresion/pdfbusquedaMensual', [
                 /* 'g3' => $g3,
                  'totales' => $totales,*/
                 'operaciones' => $operaciones,
@@ -318,8 +328,17 @@ class reporteMensualController
         try {
             getHeadersApi();
 
-
+            date_default_timezone_set("America/Caracas");
+            setlocale(LC_TIME, 'es_VE.UTF-8','esp');
+            $mes = date("m");
+            $ano = date("Y");
+    
             $fechaReporte = $_GET['fechaReporte'];
+
+
+            $inicia = $ano.'-'.$fechaReporte.'-'. 01;
+            $termina= $ano.'-'.$fechaReporte.'-'. 30;
+            
             $user = $_SESSION['auth_user'];
 
             $userInfo = ActiveRecord::fetchFirst("SELECT * from mper inner join morg on per_plaza = org_plaza inner join mdep on org_dependencia = dep_llave where per_catalogo = $user ");
@@ -344,7 +363,7 @@ class reporteMensualController
             and smm_reporte.comision=mdep.dep_llave 
             and smm_reporte.motivo=smm_actividad.id
             and smm_reporte.situacion=1
-            and smm_reporte.fecha = '$fechaReporte'";
+            and smm_reporte.fecha BETWEEN '$inicia' AND '$termina'";
 
             $dataOperaciones = reporteMensual::fetchArray($sql);
             //echo json_encode ($dataOperaciones);
@@ -378,11 +397,11 @@ class reporteMensualController
             $reporte = new ReportePDF($router, $userInfo);
             $pdf = $reporte->generatePDF();
 
-            $contenido = $router->load('impresion/pdfbusqueda', [
+            $contenido = $router->load('impresion/pdfbusquedaReporteMensualElegido', [
                 /* 'g3' => $g3,
                  'totales' => $totales,*/
                 'operaciones' => $operaciones,
-                // 'catalogo' => $catalogo,
+                'fechaReporte' => $fechaReporte,
 
 
             ]);

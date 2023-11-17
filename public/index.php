@@ -44,8 +44,8 @@ $router->post('/API/reporteMensual/modificar', [reporteMensualController::class,
 $router->post('/API/reporteMensual/eliminar', [reporteMensualController::class, 'eliminarAPI']);
 
 // aca estaran las rutas para el pdf del pdf
-$router->get('/impresion/pdfbusqueda', [reporteMensualController::class, 'pdf_busqueda']);
-$router->get('/impresion/pdfbusquedaReporte', [reporteMensualController::class, 'pdf_busquedaReporte']);
+$router->get('/impresion/pdfbusquedaMensual', [reporteMensualController::class, 'pdf_busqueda']);
+$router->get('/impresion/pdfbusquedaReporteMensual', [reporteMensualController::class, 'pdf_busquedaReporte']);
 
 
 // Comprueba y valida las rutas, que existan y les asigna las funciones del Controlador

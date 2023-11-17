@@ -14,7 +14,6 @@ const cambiarCheck = document.querySelector("#checkcivil");
 const imprimir = document.getElementById("imprimir");
 const ReporteDia = document.getElementById("ReporteDia");
 
-
 // btnModificar.parentElement.style.display = "none";
 btnGuardar.disabled = false;
 // btnModificar.disabled = true;
@@ -78,8 +77,8 @@ const buscarFormulario = async (evento) => {
     const respuesta = await fetch(url, config);
     const data = await respuesta.json();
 
-    console.log(data);
-    return;
+    // console.log(data);
+    // return;
 
     tablaFormulario.destroy();
     let contador = 1;
@@ -113,30 +112,30 @@ const buscarFormulario = async (evento) => {
         { data: "fecha" },
         { data: "horain" },
         { data: "horafin" },
-        {
-          data: "id",
-          render: (data, type, row, meta) => {
-            if (row.horaactualizada < row.horain) {
-              return "PENDIENTE";
-            }
-            if (row.horaactualizada > row.horafin) {
-              return "FINALIZADO";
-            }
-            if (
-              row.horaactualizada > row.horain &&
-              row.horaactualizada < row.horafin
-            ) {
-              return "EN CURSO";
-            }
-          },
-        },
+        // {
+        //   data: "id",
+        //   render: (data, type, row, meta) => {
+        //     if (row.horaactualizada < row.horain) {
+        //       return "PENDIENTE";
+        //     }
+        //     if (row.horaactualizada > row.horafin) {
+        //       return "FINALIZADO";
+        //     }
+        //     if (
+        //       row.horaactualizada > row.horain &&
+        //       row.horaactualizada < row.horafin
+        //     ) {
+        //       return "EN CURSO";
+        //     }
+        //   },
+        // },
 
-        {
-          data: "id",
-          render: (data, type, row, meta) => {
-            return `<button class="btn btn-danger" onclick="eliminarRegistro('${row.id}')">Eliminar</button>`;
-          },
-        },
+        // {
+        //   data: "id",
+        //   render: (data, type, row, meta) => {
+        //     return `<button class="btn btn-danger" onclick="eliminarRegistro('${row.id}')">Eliminar</button>`;
+        //   },
+        // },
       ],
     });
   } catch (error) {
@@ -279,15 +278,14 @@ const showContent = async (evento) => {
 
 const abrirpdf = async (e) => {
   //alert("no");
-  var url = `/servicio-musicas/impresion/pdfbusqueda`;
+  var url = `/servicio-musicas/impresion/pdfbusquedaMensual`;
   window.location.href = url;
 };
-const abrirpdfReporte = async (e) => {
-  
-  let fechaReporte = ReporteBusqueda.fechareporte.value
-  alert(fechaReporte);
-  
-  var url = `/servicio-musicas/impresion/pdfbusquedaReporte?fechaReporte=${fechaReporte}`;
+const abrirpdfReporteMensual = async (e) => {
+  let fechaReporte = ReporteBusqueda.mesSelector.value;
+  // alert(fechaReporte);
+
+  var url = `/servicio-musicas/impresion/pdfbusquedaReporteMensual?fechaReporte=${fechaReporte}`;
 
   window.location.href = url;
 };
@@ -296,4 +294,4 @@ formIngresoComision.addEventListener("submit", guardarFormulario);
 // btnModificar.addEventListener("click", modificarFormulario);
 cambiarCheck.addEventListener("change", showContent);
 imprimir.addEventListener("click", abrirpdf);
-ReporteDia.addEventListener("click", abrirpdfReporte);
+ReporteDia.addEventListener("click", abrirpdfReporteMensual);

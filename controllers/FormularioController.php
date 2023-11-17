@@ -338,6 +338,9 @@ class FormularioController
             and smm_reporte.situacion=1
             and smm_reporte.fecha = '$fechaReporte'";
 
+
+
+
             $dataOperaciones = Formulario::fetchArray($sql);
             //echo json_encode ($dataOperaciones);
             //exit;
