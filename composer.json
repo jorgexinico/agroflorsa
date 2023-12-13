@@ -3,10 +3,7 @@
     "description": "Proyecto MVC demo",
     "type": "project",
     "config": {
-        "platform-check": false,
-        "platform": {
-            "php": "7.4.21"
-        }
+        "platform-check": false
     },
     "autoload": {
         "psr-4": {
