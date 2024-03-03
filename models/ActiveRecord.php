@@ -197,6 +197,7 @@ class ActiveRecord {
     public static function fetchFirst($query){
         $resultado = self::$db->query($query);
         $respuesta = $resultado->fetchAll(PDO::FETCH_ASSOC);
+        $data = [];
         foreach ($respuesta as $value) {
             $data[] = array_change_key_case( array_map( 'utf8_encode', $value) ); 
         }
