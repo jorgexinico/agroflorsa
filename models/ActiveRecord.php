@@ -224,7 +224,7 @@ class ActiveRecord {
         $atributos = [];
         foreach(static::$columnasDB as $columna) {
             $columna = strtolower($columna);
-            if($columna === 'id') continue;
+            if($columna === 'id' || $columna === static::$idTabla) continue;
             $atributos[$columna] = $this->$columna;
         }
         return $atributos;
