@@ -54,9 +54,24 @@ class ActiveRecord {
     }
 
     // Busca un registro por su id
-    public static function find($id) {
+    public static function find($id = []) {
         $idQuery = static::$idTabla ?? 'id';
-        $query = "SELECT * FROM " . static::$tabla  ." WHERE $idQuery = ${id}";
+        $query = "SELECT * FROM " . static::$tabla ;
+
+        if(is_array(static::$idTabla)){
+            foreach (static::$idTabla as $key => $value) {
+                if($value == reset(static::$idTabla)){
+                    $query.= " WHERE $value = " . self::$db->quote( $id[$value] );
+                }else{
+                    $query.= " AND $value = " . self::$db->quote($id[$value] );
+
+                }
+            }
+        }else{
+
+           $query.= " WHERE $idQuery = $id";
+        }
+                
         $resultado = self::consultarSQL($query);
         return array_shift( $resultado ) ;
     }
@@ -119,7 +134,21 @@ class ActiveRecord {
 
         $query = "UPDATE " . static::$tabla ." SET ";
         $query .=  join(', ', $valores );
-        $query .= " WHERE " . $id . " = " . self::$db->quote($this->$id) . " ";
+
+        if(is_array(static::$idTabla)){
+
+            foreach (static::$idTabla as $key => $value) {
+                if($value == reset(static::$idTabla)){
+                    $query.= " WHERE $value = " . self::$db->quote( $this->$value );
+                }else{
+                    $query.= " AND $value = " . self::$db->quote($this->$value );
+
+                }
+            }
+        }else{
+            $query .= " WHERE " . $id . " = " . self::$db->quote($this->$id) . " ";
+            
+        }
 
         // debuguear($query);
 
@@ -131,7 +160,8 @@ class ActiveRecord {
 
     // Eliminar un registro - Toma el ID de Active Record
     public function eliminar() {
-        $query = "UPDATE "  . static::$tabla . " SET situacion = 0 WHERE id = " . self::$db->quote($this->id);
+        $idQuery = static::$idTabla ?? 'id';
+        $query = "DELETE FROM "  . static::$tabla . " WHERE $idQuery = " . self::$db->quote($this->id);
         $resultado = self::$db->exec($query);
         return $resultado;
     }
