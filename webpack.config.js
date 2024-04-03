@@ -28,11 +28,8 @@ module.exports = {
         ]
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
-        loader: 'file-loader',
-        options: {
-           name: 'img/[name].[hash:7].[ext]'
-        }
+        test: /\.(png|svg|jpe?g|gif)$/,
+        type: 'asset/resource',
       },
     ]
   }
