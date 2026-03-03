@@ -1,250 +1,311 @@
 <?php
 namespace Model;
+
 use PDO;
+use PDOStatement;
+
+/**
+ * ActiveRecord — ORM base para Agroflorsa
+ * Provee métodos CRUD genéricos sobre PDO.
+ */
 class ActiveRecord {
 
-    // Base DE DATOS
+    // Base de datos
     protected static $db;
-    protected static $tabla = '';
+    protected static $tabla    = '';
     protected static $columnasDB = [];
+    protected static $idTabla  = 'id';
 
-    protected static $idTabla = '';
-
-    // Alertas y Mensajes
+    // Alertas y mensajes
     protected static $alertas = [];
-    
-    // Definir la conexión a la BD - includes/database.php
-    public static function setDB($database) {
+
+    /* ──────────────────────────────────────────────
+     *  CONFIGURACIÓN
+     * ────────────────────────────────────────────── */
+
+    public static function setDB(PDO $database): void {
         self::$db = $database;
     }
 
-    public static function setAlerta($tipo, $mensaje) {
+    /* ──────────────────────────────────────────────
+     *  ALERTAS
+     * ────────────────────────────────────────────── */
+
+    public static function setAlerta(string $tipo, string $mensaje): void {
         static::$alertas[$tipo][] = $mensaje;
     }
-    // Validación
-    public static function getAlertas() {
+
+    public static function getAlertas(): array {
         return static::$alertas;
     }
 
-    public function validar() {
+    public function validar(): array {
         static::$alertas = [];
         return static::$alertas;
     }
 
-    // Registros - CRUD
-    public function guardar() {
-        $resultado = '';
+    /* ──────────────────────────────────────────────
+     *  CRUD PRINCIPAL
+     * ────────────────────────────────────────────── */
+
+    /**
+     * Guarda o actualiza el registro según si tiene ID.
+     */
+    public function guardar(): array {
         $id = static::$idTabla ?? 'id';
-        if(!is_null($this->$id)) {
-            // actualizar
-            $resultado = $this->actualizar();
-        } else {
-            // Creando un nuevo registro
-            $resultado = $this->crear();
+        if (!is_null($this->$id)) {
+            return $this->actualizar();
         }
-        return $resultado;
+        return $this->crear();
     }
 
-    public static function all() {
+    /* ──────────────────────────────────────────────
+     *  LECTURAS
+     * ────────────────────────────────────────────── */
+
+    public static function all(string $orden = ''): array {
         $query = "SELECT * FROM " . static::$tabla;
-        $resultado = self::consultarSQL($query);
-
-        // debuguear($resultado);
-        return $resultado;
+        if ($orden) $query .= " ORDER BY $orden";
+        return self::consultarSQL($query);
     }
 
-    // Busca un registro por su id
-    public static function find($id = []) {
-        $idQuery = static::$idTabla ?? 'id';
-        $query = "SELECT * FROM " . static::$tabla ;
+    /**
+     * Busca por PK simple o compuesta.
+     * @param int|array $id
+     */
+    public static function find(int|array $id): ?object {
+        $idCol = static::$idTabla ?? 'id';
+        $query = "SELECT * FROM " . static::$tabla;
 
-        if(is_array(static::$idTabla)){
-            foreach (static::$idTabla as $key => $value) {
-                if($value == reset(static::$idTabla)){
-                    $query.= " WHERE $value = " . self::$db->quote( $id[$value] );
-                }else{
-                    $query.= " AND $value = " . self::$db->quote($id[$value] );
-
-                }
+        if (is_array($idCol)) {
+            $condiciones = [];
+            $params      = [];
+            foreach ($idCol as $col) {
+                $condiciones[] = "$col = :$col";
+                $params[":$col"] = $id[$col];
             }
-        }else{
-
-           $query.= " WHERE $idQuery = $id";
+            $query .= " WHERE " . implode(' AND ', $condiciones);
+        } else {
+            $query  .= " WHERE $idCol = :id LIMIT 1";
+            $params  = [':id' => $id];
         }
-                
-        $resultado = self::consultarSQL($query);
-        return array_shift( $resultado ) ;
+
+        $resultado = self::queryPrep($query, $params);
+        return array_shift($resultado);
     }
 
-    // Obtener Registro
-    public static function get($limite) {
-        $query = "SELECT * FROM " . static::$tabla . " LIMIT ${limite}";
-        $resultado = self::consultarSQL($query);
-        return array_shift( $resultado ) ;
+    /**
+     * WHERE columna = valor con prepared statement.
+     */
+    public static function where(string $columna, mixed $valor, string $condicion = '='): array {
+        $query  = "SELECT * FROM " . static::$tabla . " WHERE $columna $condicion :valor";
+        return self::queryPrep($query, [':valor' => $valor]);
     }
 
-    // Busqueda Where con Columna 
-    public static function where($columna, $valor, $condicion = '=') {
-        $query = "SELECT * FROM " . static::$tabla . " WHERE ${columna} ${condicion} '${valor}'";
-        $resultado = self::consultarSQL($query);
-        return  $resultado ;
+    /**
+     * WHERE con múltiples condiciones: ['columna' => valor, ...]
+     */
+    public static function whereArray(array $condiciones): array {
+        $partes  = [];
+        $params  = [];
+        foreach ($condiciones as $col => $val) {
+            $partes[]        = "$col = :$col";
+            $params[":$col"] = $val;
+        }
+        $query = "SELECT * FROM " . static::$tabla . " WHERE " . implode(' AND ', $partes);
+        return self::queryPrep($query, $params);
     }
 
-    // SQL para Consultas Avanzadas.
+    public static function get(int $limite): ?object {
+        $query = "SELECT * FROM " . static::$tabla . " LIMIT $limite";
+        $resultado = self::consultarSQL($query);
+        return array_shift($resultado);
+    }
+
+    /* ──────────────────────────────────────────────
+     *  ESCRITURA — PREPARED STATEMENTS
+     * ────────────────────────────────────────────── */
+
+    public function crear(): array {
+        $atributos = $this->atributos();
+        $columnas  = implode(', ', array_keys($atributos));
+        $marcas    = implode(', ', array_map(fn($k) => ":$k", array_keys($atributos)));
+
+        $query = "INSERT INTO " . static::$tabla . " ($columnas) VALUES ($marcas)";
+        $stmt  = self::$db->prepare($query);
+
+        foreach ($atributos as $col => $val) {
+            $stmt->bindValue(":$col", $val);
+        }
+
+        $resultado = $stmt->execute();
+
+        return [
+            'resultado' => $resultado,
+            'id'        => self::$db->lastInsertId(),
+        ];
+    }
+
+    public function actualizar(): array {
+        $atributos = $this->atributos();
+        $idCol     = static::$idTabla ?? 'id';
+
+        $sets = implode(', ', array_map(fn($k) => "$k = :$k", array_keys($atributos)));
+
+        if (is_array($idCol)) {
+            $conds = implode(' AND ', array_map(fn($c) => "$c = :__$c", $idCol));
+            $query = "UPDATE " . static::$tabla . " SET $sets WHERE $conds";
+            $stmt  = self::$db->prepare($query);
+            foreach ($atributos as $col => $val) {
+                $stmt->bindValue(":$col", $val);
+            }
+            foreach ($idCol as $c) {
+                $stmt->bindValue(":__$c", $this->$c);
+            }
+        } else {
+            $query = "UPDATE " . static::$tabla . " SET $sets WHERE $idCol = :__id";
+            $stmt  = self::$db->prepare($query);
+            foreach ($atributos as $col => $val) {
+                $stmt->bindValue(":$col", $val);
+            }
+            $stmt->bindValue(':__id', $this->$idCol);
+        }
+
+        $resultado = $stmt->execute();
+        return ['resultado' => $resultado];
+    }
+
+    public function eliminar(): bool {
+        $idCol = static::$idTabla ?? 'id';
+        $query = "DELETE FROM " . static::$tabla . " WHERE $idCol = :id";
+        $stmt  = self::$db->prepare($query);
+        $stmt->bindValue(':id', $this->$idCol);
+        return $stmt->execute();
+    }
+
+    /* ──────────────────────────────────────────────
+     *  CONSULTAS AVANZADAS
+     * ────────────────────────────────────────────── */
+
+    /**
+     * Ejecuta SQL con prepared statements y retorna objetos del modelo actual.
+     */
+    public static function queryPrep(string $sql, array $params = []): array {
+        $stmt = self::$db->prepare($sql);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return array_map(fn($r) => static::crearObjeto($r), $rows);
+    }
+
+    /**
+     * Ejecuta SQL libre y retorna array asociativo plano (sin mapear a objeto).
+     * Útil para JOINs y reportes.
+     */
+    public static function fetchRaw(string $sql, array $params = []): array {
+        $stmt = self::$db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Ejecuta SQL y retorna el primer resultado como array asociativo.
+     */
+    public static function fetchFirstRaw(string $sql, array $params = []): ?array {
+        $stmt = self::$db->prepare($sql);
+        $stmt->execute($params);
+        $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return !empty($resultado) ? $resultado[0] : null;
+    }
+
+    /**
+     * Ejecuta DML (INSERT/UPDATE/DELETE) con prepared statement.
+     * @return bool
+     */
+    public static function ejecutar(string $sql, array $params = []): bool {
+        $stmt = self::$db->prepare($sql);
+        return $stmt->execute($params);
+    }
+
+    /**
+     * @deprecated Usar fetchRaw(). Mantenido por compatibilidad.
+     */
     public static function SQL($consulta) {
-        $query = $consulta;
-        $resultado = self::$db->query($query);
-        return $resultado;
+        return self::$db->query($consulta);
     }
 
-    // crea un nuevo registro
-    public function crear() {
-        // Sanitizar los datos
-        $atributos = $this->sanitizarAtributos();
-
-        // Insertar en la base de datos
-        $query = " INSERT INTO " . static::$tabla . " ( ";
-        $query .= join(', ', array_keys($atributos));
-        $query .= " ) VALUES ("; 
-        $query .= join(", ", array_values($atributos));
-        $query .= " ) ";
-        
-
-        // debuguear($query);
-
-        // Resultado de la consulta
-        $resultado = self::$db->exec($query);
-
-        return [
-           'resultado' =>  $resultado,
-           'id' => self::$db->lastInsertId(static::$tabla)
-        ];
+    public static function consultarSQL(string $query): array {
+        $stmt = self::$db->query($query);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
+        return array_map(fn($r) => static::crearObjeto($r), $rows);
     }
 
-    public function actualizar() {
-        // Sanitizar los datos
-        $atributos = $this->sanitizarAtributos();
-
-        // Iterar para ir agregando cada campo de la BD
-        $valores = [];
-        foreach($atributos as $key => $value) {
-            $valores[] = "{$key}={$value}";
+    /**
+     * @deprecated Usar fetchRaw(). mb_convert_encoding reemplaza utf8_encode deprecado.
+     */
+    public static function fetchArray(string $query): array {
+        $stmt   = self::$db->query($query);
+        $rows   = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $data   = [];
+        foreach ($rows as $row) {
+            $data[] = array_change_key_case(
+                array_map(fn($v) => is_string($v) ? mb_convert_encoding($v, 'UTF-8', 'UTF-8') : $v, $row)
+            );
         }
-        $id = static::$idTabla ?? 'id';
-
-        $query = "UPDATE " . static::$tabla ." SET ";
-        $query .=  join(', ', $valores );
-
-        if(is_array(static::$idTabla)){
-
-            foreach (static::$idTabla as $key => $value) {
-                if($value == reset(static::$idTabla)){
-                    $query.= " WHERE $value = " . self::$db->quote( $this->$value );
-                }else{
-                    $query.= " AND $value = " . self::$db->quote($this->$value );
-
-                }
-            }
-        }else{
-            $query .= " WHERE " . $id . " = " . self::$db->quote($this->$id) . " ";
-            
-        }
-
-        // debuguear($query);
-
-        $resultado = self::$db->exec($query);
-        return [
-            'resultado' =>  $resultado,
-        ];
-    }
-
-    // Eliminar un registro - Toma el ID de Active Record
-    public function eliminar() {
-        $idQuery = static::$idTabla ?? 'id';
-        $query = "DELETE FROM "  . static::$tabla . " WHERE $idQuery = " . self::$db->quote($this->id);
-        $resultado = self::$db->exec($query);
-        return $resultado;
-    }
-
-    public static function consultarSQL($query) {
-        // Consultar la base de datos
-        $resultado = self::$db->query($query);
-
-        // Iterar los resultados
-        $array = [];
-        while($registro = $resultado->fetch(PDO::FETCH_ASSOC)) {
-            $array[] = static::crearObjeto($registro);
-        }
-
-        // liberar la memoria
-        $resultado->closeCursor();
-
-        // retornar los resultados
-        return $array;
-    }
-
-    public static function fetchArray($query){
-        $resultado = self::$db->query($query);
-        $respuesta = $resultado->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($respuesta as $value) {
-            $data[] = array_change_key_case( array_map( 'utf8_encode', $value) ); 
-        }
-        $resultado->closeCursor();
+        $stmt->closeCursor();
         return $data;
     }
 
-        
-    public static function fetchFirst($query){
-        $resultado = self::$db->query($query);
-        $respuesta = $resultado->fetchAll(PDO::FETCH_ASSOC);
-        $data = [];
-        foreach ($respuesta as $value) {
-            $data[] = array_change_key_case( array_map( 'utf8_encode', $value) ); 
-        }
-        $resultado->closeCursor();
-        return array_shift($data);
-    }
+    /* ──────────────────────────────────────────────
+     *  HELPERS INTERNOS
+     * ────────────────────────────────────────────── */
 
-    protected static function crearObjeto($registro) {
-        $objeto = new static;
-
-        foreach($registro as $key => $value ) {
+    protected static function crearObjeto(array $registro): static {
+        $objeto = new static();
+        foreach ($registro as $key => $value) {
             $key = strtolower($key);
-            if(property_exists( $objeto, $key  )) {
-                $objeto->$key = utf8_encode($value);
+            if (property_exists($objeto, $key)) {
+                $objeto->$key = $value;
             }
         }
-
         return $objeto;
     }
 
-
-
-    // Identificar y unir los atributos de la BD
-    public function atributos() {
+    public function atributos(): array {
         $atributos = [];
-        foreach(static::$columnasDB as $columna) {
+        $idCol     = is_array(static::$idTabla) ? static::$idTabla : [static::$idTabla ?? 'id'];
+        foreach (static::$columnasDB as $columna) {
             $columna = strtolower($columna);
-            if($columna === 'id' || $columna === static::$idTabla) continue;
-            $atributos[$columna] = $this->$columna;
+            if (in_array($columna, $idCol)) continue;
+            $atributos[$columna] = $this->$columna ?? null;
         }
         return $atributos;
     }
 
-    public function sanitizarAtributos() {
+    /**
+     * @deprecated Usar prepared statements directamente.
+     */
+    public function sanitizarAtributos(): array {
         $atributos = $this->atributos();
         $sanitizado = [];
-        foreach($atributos as $key => $value ) {
+        foreach ($atributos as $key => $value) {
             $sanitizado[$key] = self::$db->quote($value);
         }
         return $sanitizado;
     }
 
-    public function sincronizar($args=[]) { 
-        foreach($args as $key => $value) {
-            if(property_exists($this, $key) && !is_null($value)) {
+    public function sincronizar(array $args = []): void {
+        foreach ($args as $key => $value) {
+            if (property_exists($this, $key)) {
                 $this->$key = $value;
             }
         }
+    }
+
+    /**
+     * Retorna el PDO para transacciones manuales.
+     */
+    public static function getDB(): PDO {
+        return self::$db;
     }
 }

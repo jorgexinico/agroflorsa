@@ -1,0 +1,31 @@
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Entorno
+.env
+includes/.env
+
+# Dependencias
+node_modules/
+vendor/
+
+# Build
+public/build/
+temp/
+storage/*
+!storage/.gitkeep
+
+# Logs
+*.log
+
+# Backups
+*.sql
+
+# IDE
+.vscode/
+.idea/
+
+# Docker local
+docker-compose.override.yml
+

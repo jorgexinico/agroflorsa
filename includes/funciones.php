@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * funciones.php — Helpers globales de Agroflorsa
+ */
+
+// ── DEBUG ─────────────────────────────────────────────
 function debuguear($variable) {
     echo "<pre>";
     var_dump($variable);
@@ -7,77 +12,82 @@ function debuguear($variable) {
     exit;
 }
 
-// Escapa / Sanitizar el HTML
-function s($html) {
-    $s = htmlspecialchars($html);
-    return $s;
+// ── SALIDA SEGURA HTML ────────────────────────────────
+function s($html): string {
+    return htmlspecialchars((string)$html, ENT_QUOTES, 'UTF-8');
 }
 
-// Función que revisa que el usuario este autenticado
-function isAuth() {
-    session_start();
-    if(!isset($_SESSION['login'])) {
-        header('Location: /');
-    }
+// ── FORMATO MONEDA ────────────────────────────────────
+function formatMoney(float $valor, string $simbolo = 'Q'): string {
+    return $simbolo . ' ' . number_format($valor, 2);
 }
-function isAuthApi() {
-    getHeadersApi();
-    session_start();
-    if(!isset($_SESSION['auth_user'])) {
-        echo json_encode([    
-            "mensaje" => "No esta autenticado",
 
-            "codigo" => 4,
-        ]);
+// ── ASSETS ───────────────────────────────────────────
+/**
+ * Devuelve la URL pública de un asset compilado.
+ * El document root de Docker es /var/www/html/public/,
+ * así que los assets en public/build/ se sirven en /build/.
+ * En local con XAMPP donde el proyecto está en htdocs/agroflorsa/,
+ * cambia esta función a: '/' . $_ENV['APP_NAME'] . '/public/' . ltrim($ruta, '/')
+ */
+function asset(string $ruta): string {
+    return '/' . ltrim($ruta, '/');
+}
+
+// ── REDIRECCIÓN ──────────────────────────────────────
+function redirectTo(string $ruta): void {
+    header('Location: /' . $_ENV['APP_NAME'] . $ruta);
+    exit;
+}
+
+// ── AUTENTICACIÓN ─────────────────────────────────────
+/**
+ * Verifica que el usuario esté autenticado.
+ * No llama session_start() porque ya se hizo en app.php.
+ */
+function isAuth(): void {
+    if (!isset($_SESSION['usuario_id'])) {
+        header('Location: /' . $_ENV['APP_NAME'] . '/login');
         exit;
     }
 }
 
-function isNotAuth(){
-    session_start();
-    if(isset($_SESSION['auth'])) {
-        header('Location: /auth/');
-    }
-}
-
-
-function hasPermission(array $permisos){
-
-    $comprobaciones = [];
-    foreach ($permisos as $permiso) {
-
-        $comprobaciones[] = !isset($_SESSION[$permiso]) ? false : true;
-      
-    }
-
-    if(array_search(true, $comprobaciones) !== false){}else{
-        header('Location: /');
-    }
-}
-
-function hasPermissionApi(array $permisos){
-    getHeadersApi();
-    $comprobaciones = [];
-    foreach ($permisos as $permiso) {
-
-        $comprobaciones[] = !isset($_SESSION[$permiso]) ? false : true;
-      
-    }
-
-    if(array_search(true, $comprobaciones) !== false){}else{
-        echo json_encode([     
-            "mensaje" => "No tiene permisos",
-
-            "codigo" => 4,
-        ]);
+/**
+ * Verifica que el usuario tenga alguno de los roles indicados.
+ * @param string[] $roles  Ej: ['admin','supervisor']
+ */
+function isRole(array $roles): void {
+    if (!isset($_SESSION['usuario_rol']) || !in_array($_SESSION['usuario_rol'], $roles)) {
+        header('Location: /' . $_ENV['APP_NAME'] . '/dashboard?err=403');
         exit;
     }
 }
 
-function getHeadersApi(){
-    return header("Content-type:application/json; charset=utf-8");
+function isNotAuth(): void {
+    if (isset($_SESSION['usuario_id'])) {
+        redirectTo('/dashboard');
+    }
 }
 
-function asset($ruta){
-    return "/". $_ENV['APP_NAME']."/public/" . $ruta;
+// ── API HELPERS ──────────────────────────────────────
+function isAuthApi(): void {
+    getHeadersApi();
+    if (!isset($_SESSION['usuario_id'])) {
+        echo json_encode(["mensaje" => "No está autenticado", "codigo" => 4]);
+        exit;
+    }
+}
+
+function getHeadersApi(): void {
+    header("Content-type: application/json; charset=utf-8");
+}
+
+// ── MENSAJES FLASH EN URL ─────────────────────────────
+function mensajeOk(int $code): string {
+    $mensajes = [
+        1 => 'Registro creado exitosamente.',
+        2 => 'Registro actualizado exitosamente.',
+        3 => 'Registro eliminado.',
+    ];
+    return $mensajes[$code] ?? 'Operación exitosa.';
 }

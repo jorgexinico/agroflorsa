@@ -1,22 +1,24 @@
 {
-    "name": "mindef/demo",
-    "description": "Proyecto MVC demo",
+    "name": "agroflorsa/erp",
+    "description": "Sistema ERP administrativo de Agroflorsa",
     "type": "project",
     "config": {
         "platform-check": false
     },
     "autoload": {
         "psr-4": {
-            "MVC\\" : "./",
-            "Controllers\\" : "./controllers",
-            "Model\\" : "./models",
-            "Classes\\" : "./classes"
+            "MVC\\": "./",
+            "Controllers\\": "./controllers",
+            "Model\\": "./models",
+            "Models\\": "./models",
+            "Classes\\": "./classes"
         }
     },
     "require": {
         "mpdf/mpdf": "^8.1",
         "phpmailer/phpmailer": "^6.6",
         "dompdf/dompdf": "^2.0",
-        "vlucas/phpdotenv": "^5.5"
+        "vlucas/phpdotenv": "^5.5",
+        "phpoffice/phpspreadsheet": "^5.5"
     }
 }
