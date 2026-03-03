@@ -39,8 +39,7 @@ $monto_esperado = (float)$turno->monto_inicial + $totales['total_efectivo'];
             <label class="form-label fw-semibold">Nota / Observación</label>
             <input type="text" name="nota" class="form-control" placeholder="Opcional">
           </div>
-          <button type="submit" class="btn btn-danger w-100 py-2 fw-semibold"
-                  onclick="return confirm('¿Confirmas el cierre del turno?')">
+          <button type="button" class="btn btn-danger w-100 py-2 fw-semibold" id="ag-cerrar-turno-btn">
             <i class="bi bi-stop-circle me-2"></i>Confirmar cierre de turno
           </button>
         </form>
@@ -48,3 +47,5 @@ $monto_esperado = (float)$turno->monto_inicial + $totales['total_efectivo'];
     </div>
   </div>
 </div>
+
+<script src="<?= asset('build/js/turnos.js') ?>"></script>

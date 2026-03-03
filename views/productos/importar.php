@@ -141,7 +141,12 @@ function procesarArchivo(file) {
     const rows     = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
     if (!rows.length) {
-      alert('El archivo está vacío o no tiene el formato correcto.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Archivo inválido',
+        text: 'El archivo está vacío o no tiene el formato correcto.',
+        confirmButtonColor: '#198754',
+      });
       return;
     }
 

@@ -91,10 +91,4 @@
   </div>
 </div>
 
-<script>
-// Ocultar/mostrar método de pago según tipo
-document.getElementById('tipo-pago')?.addEventListener('change', function() {
-  document.getElementById('metodo-pago-wrap').style.display =
-    this.value === 'contado' ? '' : 'none';
-});
-</script>
+<script src="<?= asset('build/js/ventas.js') ?>"></script>

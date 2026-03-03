@@ -28,3 +28,28 @@ export const Toast = Swal.mixin({
         toast.addEventListener('mouseleave', Swal.resumeTimer)
     }
 })
+
+/**
+ * confirmar({ titulo, texto, icono, txtConfirmar, txtCancelar })
+ * Helper para mostrar un diálogo de confirmación SweetAlert2.
+ * Retorna una Promise<boolean>.
+ */
+export const confirmar = ({
+    titulo = '¿Estás seguro?',
+    texto = '',
+    icono = 'warning',
+    txtConfirmar = 'Sí, continuar',
+    txtCancelar = 'Cancelar',
+} = {}) => {
+    return Swal.fire({
+        icon: icono,
+        title: titulo,
+        text: texto,
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: txtConfirmar,
+        cancelButtonText: txtCancelar,
+        focusCancel: true,
+    }).then(r => r.isConfirmed);
+}

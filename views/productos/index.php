@@ -24,10 +24,12 @@
           <td><?= $p->maneja_vencimiento ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-dash text-muted"></i>' ?></td>
           <td class="text-end">
             <a href="/<?= $_ENV['APP_NAME'] ?>/productos/editar?id=<?= $p->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/productos/eliminar" class="d-inline"
-                  onsubmit="return confirm('¿Desactivar este producto?')">
+            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/productos/eliminar" class="d-inline ag-confirm-form">
               <input type="hidden" name="id" value="<?= $p->id ?>">
-              <button class="btn btn-sm btn-outline-danger"><i class="bi bi-power"></i></button>
+              <button type="button" class="btn btn-sm btn-outline-danger ag-confirm-btn"
+                      data-titulo="¿Desactivar producto?" data-nombre="<?= s($p->nombre) ?>">
+                <i class="bi bi-power"></i>
+              </button>
             </form>
           </td>
         </tr>
@@ -36,3 +38,5 @@
     </table>
   </div>
 </div>
+
+<script src="<?= asset('build/js/productos.js') ?>"></script>

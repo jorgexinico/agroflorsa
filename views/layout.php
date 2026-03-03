@@ -187,19 +187,9 @@ if (($layout ?? '') === 'auth') : ?>
     </div>
   </header>
 
-  <!-- Flash messages desde URL -->
+  <!-- Flash messages: leídos por app.js via URLSearchParams -->
   <?php if (!empty($_GET['ok'])): ?>
-  <div class="alert alert-success alert-dismissible fade show mx-4 mt-3 mb-0" role="alert">
-    <i class="bi bi-check-circle-fill me-2"></i><?= s(mensajeOk((int)$_GET['ok'])) ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-  <?php endif; ?>
-
-  <?php if (!empty($_GET['err']) && $_GET['err'] === '403'): ?>
-  <div class="alert alert-danger alert-dismissible fade show mx-4 mt-3 mb-0" role="alert">
-    <i class="bi bi-x-octagon-fill me-2"></i>No tienes permisos para esa acción.
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
+  <span id="flash-ok-msg" class="d-none" data-msg="<?= s(mensajeOk((int)$_GET['ok'])) ?>"></span>
   <?php endif; ?>
 
   <!-- Contenido de la vista -->

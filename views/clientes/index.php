@@ -18,10 +18,12 @@
           <td><?= $c->activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>' ?></td>
           <td class="text-end">
             <a href="/<?= $_ENV['APP_NAME'] ?>/clientes/editar?id=<?= $c->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/clientes/eliminar" class="d-inline"
-                  onsubmit="return confirm('¿Desactivar cliente?')">
+            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/clientes/eliminar" class="d-inline ag-confirm-form">
               <input type="hidden" name="id" value="<?= $c->id ?>">
-              <button class="btn btn-sm btn-outline-danger"><i class="bi bi-power"></i></button>
+              <button type="button" class="btn btn-sm btn-outline-danger ag-confirm-btn"
+                      data-titulo="¿Desactivar cliente?" data-nombre="<?= s($c->nombre) ?>">
+                <i class="bi bi-power"></i>
+              </button>
             </form>
           </td>
         </tr>

@@ -23,10 +23,12 @@
           <td class="text-end">
             <?php if ($_SESSION['usuario_rol'] === 'admin'): ?>
             <a href="/<?= $_ENV['APP_NAME'] ?>/sucursales/editar?id=<?= $s->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/sucursales/eliminar" class="d-inline"
-                  onsubmit="return confirm('¿Desactivar esta sucursal?')">
+            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/sucursales/eliminar" class="d-inline ag-confirm-form">
               <input type="hidden" name="id" value="<?= $s->id ?>">
-              <button class="btn btn-sm btn-outline-danger"><i class="bi bi-power"></i></button>
+              <button type="button" class="btn btn-sm btn-outline-danger ag-confirm-btn"
+                      data-titulo="¿Desactivar sucursal?" data-nombre="<?= s($s->nombre) ?>">
+                <i class="bi bi-power"></i>
+              </button>
             </form>
             <?php endif; ?>
           </td>

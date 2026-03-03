@@ -18,10 +18,12 @@
           <td><?= $p->activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>' ?></td>
           <td class="text-end">
             <a href="/<?= $_ENV['APP_NAME'] ?>/proveedores/editar?id=<?= $p->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/proveedores/eliminar" class="d-inline"
-                  onsubmit="return confirm('¿Desactivar proveedor?')">
+            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/proveedores/eliminar" class="d-inline ag-confirm-form">
               <input type="hidden" name="id" value="<?= $p->id ?>">
-              <button class="btn btn-sm btn-outline-danger"><i class="bi bi-power"></i></button>
+              <button type="button" class="btn btn-sm btn-outline-danger ag-confirm-btn"
+                      data-titulo="¿Desactivar proveedor?" data-nombre="<?= s($p->nombre) ?>">
+                <i class="bi bi-power"></i>
+              </button>
             </form>
           </td>
         </tr>

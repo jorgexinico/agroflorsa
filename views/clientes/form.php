@@ -9,7 +9,7 @@ $action = $accion === 'crear'
       <div class="card-header"><i class="bi bi-person me-2"></i><?= s($titulo) ?></div>
       <div class="card-body">
         <?php include __DIR__ . '/../templates/alertas.php'; ?>
-        <form method="POST" action="<?= $action ?>">
+        <form method="POST" action="<?= $action ?>" id="form-cliente">
           <div class="mb-3">
             <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
             <input type="text" name="nombre" class="form-control" value="<?= s($cliente->nombre) ?>" required>
@@ -37,3 +37,5 @@ $action = $accion === 'crear'
     </div>
   </div>
 </div>
+
+<script src="<?= asset('build/js/clientes.js') ?>"></script>

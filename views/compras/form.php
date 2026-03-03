@@ -73,3 +73,5 @@
     </form>
   </div>
 </div>
+
+<script src="<?= asset('build/js/compras.js') ?>"></script>
