@@ -7,7 +7,9 @@
     <!-- Hidden template para JS -->
     <select id="productos-template" class="d-none">
       <?php foreach ($productos as $p): ?>
-      <option value="<?= $p->id ?>" data-sku="<?= s($p->sku ?? '') ?>">
+      <option value="<?= $p->id ?>"
+              data-sku="<?= s($p->sku ?? '') ?>"
+              data-maneja-vencimiento="<?= (int)$p->maneja_vencimiento ?>">
         <?= s($p->nombre) ?> (<?= s($p->unidad_abreviatura ?? '') ?>)
       </option>
       <?php endforeach; ?>
@@ -39,7 +41,7 @@
         </div>
       </div>
 
-      <!-- Tabla de products -->
+      <!-- Tabla de productos -->
       <div class="card border mb-3">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
           <span class="fw-semibold">Detalle de la compra</span>
@@ -54,6 +56,7 @@
                 <th style="min-width:200px">Producto</th>
                 <th style="width:110px">Cantidad</th>
                 <th style="width:130px">Costo unit.</th>
+                <th style="width:145px">Fecha venc.</th>
                 <th class="text-end" style="width:110px">Subtotal</th>
                 <th style="width:50px"></th>
               </tr>

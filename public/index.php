@@ -47,6 +47,7 @@ $router->post('/clientes/crear',  [ClientesController::class, 'crear']);
 $router->get('/clientes/editar',  [ClientesController::class, 'editar']);
 $router->post('/clientes/editar', [ClientesController::class, 'editar']);
 $router->post('/clientes/eliminar',[ClientesController::class, 'eliminar']);
+$router->post('/clientes/activar', [ClientesController::class, 'activar']);
 
 // ── PROVEEDORES ──────────────────────────────────────
 $router->get('/proveedores',          [ProveedoresController::class, 'index']);
@@ -55,6 +56,7 @@ $router->post('/proveedores/crear',   [ProveedoresController::class, 'crear']);
 $router->get('/proveedores/editar',   [ProveedoresController::class, 'editar']);
 $router->post('/proveedores/editar',  [ProveedoresController::class, 'editar']);
 $router->post('/proveedores/eliminar',[ProveedoresController::class, 'eliminar']);
+$router->post('/proveedores/activar', [ProveedoresController::class, 'activar']);
 
 // ── PRODUCTOS ────────────────────────────────────────
 $router->get('/productos',            [ProductosController::class, 'index']);

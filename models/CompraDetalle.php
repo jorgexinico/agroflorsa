@@ -11,7 +11,7 @@ class CompraDetalle extends ActiveRecord {
     protected static $tabla      = 'compra_detalle';
     protected static $idTabla    = 'id';
     protected static $columnasDB = [
-        'id','compra_id','producto_id','lote_id','cantidad','costo_unitario','subtotal'
+        'id','compra_id','producto_id','lote_id','cantidad','costo_unitario','subtotal','fecha_vencimiento'
     ];
 
     public ?int   $id            = null;
@@ -21,6 +21,7 @@ class CompraDetalle extends ActiveRecord {
     public float  $cantidad      = 0;
     public float  $costo_unitario = 0;
     public float  $subtotal      = 0;
+    public ?string $fecha_vencimiento = null;
 
     // Joins
     public ?string $producto_nombre    = null;

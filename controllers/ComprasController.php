@@ -37,9 +37,10 @@ class ComprasController {
             $observacion  = htmlspecialchars(trim($_POST['observacion'] ?? ''));
 
             // Items del detalle enviados como arrays
-            $items_producto = $_POST['producto_id'] ?? [];
-            $items_cantidad  = $_POST['cantidad']     ?? [];
-            $items_costo     = $_POST['costo_unitario'] ?? [];
+            $items_producto   = $_POST['producto_id']      ?? [];
+            $items_cantidad   = $_POST['cantidad']         ?? [];
+            $items_costo      = $_POST['costo_unitario']   ?? [];
+            $items_fecha_venc = $_POST['fecha_vencimiento'] ?? [];
 
             if (!$sucursal_id || empty($items_producto)) {
                 Compra::setAlerta('danger', 'Selecciona una sucursal y agrega al menos un producto');
@@ -72,13 +73,18 @@ class ComprasController {
                         $subtotal = round($cantidad * $costo, 2);
                         $totalCompra += $subtotal;
 
+                        // Fecha de vencimiento (solo si el producto la maneja)
+                        $fv = trim($items_fecha_venc[$i] ?? '');
+                        $fecha_venc = (!empty($fv)) ? $fv : null;
+
                         // Insertar detalle
-                        $detalle               = new CompraDetalle();
-                        $detalle->compra_id    = $compra_id;
-                        $detalle->producto_id  = $prod_id;
-                        $detalle->cantidad     = $cantidad;
-                        $detalle->costo_unitario = $costo;
-                        $detalle->subtotal     = $subtotal;
+                        $detalle                   = new CompraDetalle();
+                        $detalle->compra_id         = $compra_id;
+                        $detalle->producto_id       = $prod_id;
+                        $detalle->cantidad          = $cantidad;
+                        $detalle->costo_unitario    = $costo;
+                        $detalle->subtotal          = $subtotal;
+                        $detalle->fecha_vencimiento = $fecha_venc;
                         $detalle->crear();
 
                         // Actualizar stock

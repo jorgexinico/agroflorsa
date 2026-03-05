@@ -24,6 +24,7 @@ class ClientesController {
             $cliente->sincronizar($_POST);
             $alertas = $cliente->validar();
             if (empty($alertas)) {
+                $cliente->creado_en = date('Y-m-d H:i:s');
                 $cliente->crear();
                 header('Location: /' . $_ENV['APP_NAME'] . '/clientes?ok=1');
                 exit;
@@ -80,6 +81,22 @@ class ClientesController {
             $cliente->actualizar();
         }
         header('Location: /' . $_ENV['APP_NAME'] . '/clientes?ok=3');
+        exit;
+    }
+
+    public static function activar(Router $router): void {
+        isAuth();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /' . $_ENV['APP_NAME'] . '/clientes');
+            exit;
+        }
+        $id      = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
+        $cliente = Cliente::find($id);
+        if ($cliente) {
+            $cliente->activo = 1;
+            $cliente->actualizar();
+        }
+        header('Location: /' . $_ENV['APP_NAME'] . '/clientes?ok=4');
         exit;
     }
 }

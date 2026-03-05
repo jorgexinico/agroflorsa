@@ -24,6 +24,7 @@ class ProveedoresController {
             $proveedor->sincronizar($_POST);
             $alertas = $proveedor->validar();
             if (empty($alertas)) {
+                $proveedor->creado_en = date('Y-m-d H:i:s');
                 $proveedor->crear();
                 header('Location: /' . $_ENV['APP_NAME'] . '/proveedores?ok=1');
                 exit;
@@ -80,6 +81,22 @@ class ProveedoresController {
             $proveedor->actualizar();
         }
         header('Location: /' . $_ENV['APP_NAME'] . '/proveedores?ok=3');
+        exit;
+    }
+
+    public static function activar(Router $router): void {
+        isAuth();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /' . $_ENV['APP_NAME'] . '/proveedores');
+            exit;
+        }
+        $id        = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
+        $proveedor = Proveedor::find($id);
+        if ($proveedor) {
+            $proveedor->activo = 1;
+            $proveedor->actualizar();
+        }
+        header('Location: /' . $_ENV['APP_NAME'] . '/proveedores?ok=4');
         exit;
     }
 }
