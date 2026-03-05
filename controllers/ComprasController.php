@@ -55,6 +55,7 @@ class ComprasController {
                     $compra->proveedor_id = $proveedor_id;
                     $compra->observacion  = $observacion;
                     $compra->estado       = 'recibida';
+                    $compra->fecha        = date('Y-m-d');
                     $compra->total        = 0;
                     $resultado            = $compra->crear();
                     $compra_id            = (int)$resultado['id'];

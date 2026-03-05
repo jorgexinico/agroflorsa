@@ -18,9 +18,27 @@ class VentasController {
 
     public static function index(Router $router): void {
         isAuth();
-        $sucursal_id = $_SESSION['sucursal_id'] ?? 0;
+        $sucursal_id = (int)($_SESSION['sucursal_id'] ?? 0);
         $fecha       = $_GET['fecha'] ?? date('Y-m-d');
-        $ventas      = $sucursal_id ? Venta::getBySucursa((int)$sucursal_id, $fecha) : [];
+        $rol         = $_SESSION['usuario_rol'] ?? '';
+
+        if ($sucursal_id > 0) {
+            // Caso normal: usuario con turno activo
+            $ventas = Venta::getBySucursa($sucursal_id, $fecha);
+        } elseif ($rol === 'admin') {
+            // Admin sin turno: ve todas las sucursales
+            $ventas = Venta::fetchRaw(
+                "SELECT v.*, c.nombre AS cliente_nombre, s.nombre AS sucursal_nombre
+                 FROM ventas v
+                 LEFT JOIN clientes c ON c.id = v.cliente_id
+                 LEFT JOIN sucursales s ON s.id = v.sucursal_id
+                 WHERE v.estado != 'anulada' AND DATE(v.fecha) = :fecha
+                 ORDER BY v.fecha DESC",
+                [':fecha' => $fecha]
+            );
+        } else {
+            $ventas = [];
+        }
 
         $router->render('ventas/index', [
             'titulo'  => 'Ventas',
@@ -105,12 +123,16 @@ class VentasController {
                         $subtotal    = round($cantidad * $precio, 2);
                         $totalVenta += $subtotal;
 
+                        // Costo unitario del último movimiento de compra
+                        $costoUnitario = Inventario::getCostoUnitario($prod_id);
+
                         // Detalle
                         $detalle                  = new VentaDetalle();
                         $detalle->venta_id        = $venta_id;
                         $detalle->producto_id     = $prod_id;
                         $detalle->cantidad        = $cantidad;
                         $detalle->precio_unitario  = $precio;
+                        $detalle->costo_unitario  = $costoUnitario;
                         $detalle->subtotal        = $subtotal;
                         $detalle->crear();
 

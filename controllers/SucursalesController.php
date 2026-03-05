@@ -28,6 +28,7 @@ class SucursalesController {
             $sucursal->sincronizar($_POST);
             $alertas = $sucursal->validar();
             if (empty($alertas)) {
+                $sucursal->creado_en = date('Y-m-d H:i:s');
                 $resultado = $sucursal->crear();
                 if ($resultado['resultado']) {
                     header('Location: /' . $_ENV['APP_NAME'] . '/sucursales?ok=1');

@@ -32,6 +32,7 @@ class ProductosController {
 
             $alertas = $producto->validar();
             if (empty($alertas['danger'])) {
+                $producto->creado_en = date('Y-m-d H:i:s');
                 $producto->crear();
                 redirectTo('/productos?ok=1');
             }
@@ -167,6 +168,7 @@ class ProductosController {
                 continue;
             }
 
+            $p->creado_en = date('Y-m-d H:i:s');
             $resultado = $p->crear();
             if ($resultado) {
                 $importados++;

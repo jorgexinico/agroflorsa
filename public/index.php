@@ -17,6 +17,7 @@ use Controllers\InventarioController;
 use Controllers\ComprasController;
 use Controllers\TurnosController;
 use Controllers\VentasController;
+use Controllers\UsuariosController;
 
 $router = new Router();
 $router->setBaseURL('/' . $_ENV['APP_NAME']);
@@ -97,6 +98,14 @@ $router->get('/ventas',          [VentasController::class, 'index']);
 $router->get('/ventas/nueva',    [VentasController::class, 'nueva']);
 $router->post('/ventas/nueva',   [VentasController::class, 'nueva']);
 $router->get('/ventas/detalle',  [VentasController::class, 'detalle']);
+
+// ── USUARIOS ─────────────────────────────────────────
+$router->get('/usuarios',         [UsuariosController::class, 'index']);
+$router->get('/usuarios/crear',   [UsuariosController::class, 'crear']);
+$router->post('/usuarios/crear',  [UsuariosController::class, 'crear']);
+$router->get('/usuarios/editar',  [UsuariosController::class, 'editar']);
+$router->post('/usuarios/editar', [UsuariosController::class, 'editar']);
+$router->post('/usuarios/toggle', [UsuariosController::class, 'eliminar']);
 
 // ── COMPRUEBA RUTAS ──────────────────────────────────
 $router->comprobarRutas();

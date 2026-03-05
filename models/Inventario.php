@@ -88,6 +88,23 @@ class Inventario extends ActiveRecord {
     }
 
     /**
+     * Obtiene el último costo unitario registrado en inventario_movimientos
+     * para un producto dado (basado en compras o ajustes con costo positivo).
+     * Retorna 0.0 si no existe historial.
+     */
+    public static function getCostoUnitario(int $producto_id): float {
+        $row = self::fetchFirstRaw(
+            "SELECT costo_unitario
+             FROM inventario_movimientos
+             WHERE producto_id = :prod AND costo_unitario IS NOT NULL AND costo_unitario > 0
+             ORDER BY id DESC
+             LIMIT 1",
+            [':prod' => $producto_id]
+        );
+        return (float)($row['costo_unitario'] ?? 0);
+    }
+
+    /**
      * Registra un movimiento de inventario.
      */
     public static function registrarMovimiento(array $datos): bool {

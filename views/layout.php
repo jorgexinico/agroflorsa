@@ -144,6 +144,11 @@ if (($layout ?? '') === 'auth') : ?>
       <i class="bi bi-shop-window"></i>
       <span>Sucursales</span>
     </a>
+
+    <a href="<?= $base ?>/usuarios" class="ag-nav-item <?= isActive($base . '/usuarios') ?>">
+      <i class="bi bi-people-fill"></i>
+      <span>Usuarios</span>
+    </a>
     <?php endif; ?>
 
   </nav>
