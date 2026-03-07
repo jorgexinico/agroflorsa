@@ -24,6 +24,7 @@ class UnidadesController {
             $unidad->sincronizar($_POST);
             $alertas = $unidad->validar();
             if (empty($alertas)) {
+                $unidad->creado_en = date('Y-m-d H:i:s');
                 $unidad->crear();
                 header('Location: /' . $_ENV['APP_NAME'] . '/unidades?ok=1');
                 exit;

@@ -35,14 +35,32 @@ $errMap = ['ya_abierto' => 'Ya tienes un turno abierto.'];
 <?php endif; ?>
 
 <div class="card">
-  <div class="card-header"><i class="bi bi-clock-history me-2"></i>Historial de turnos</div>
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-clock-history me-2"></i>Historial de turnos</span>
+    <?php if (!empty($esAdmin)): ?>
+      <span class="badge bg-secondary">Vista global</span>
+    <?php endif; ?>
+  </div>
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead><tr><th>Turno</th><th>Sucursal</th><th>Apertura</th><th>Cierre</th><th>Estado</th><th class="text-end">Acción</th></tr></thead>
+      <thead>
+        <tr>
+          <th>Turno</th>
+          <?php if (!empty($esAdmin)): ?><th>Usuario</th><?php endif; ?>
+          <th>Sucursal</th>
+          <th>Apertura</th>
+          <th>Cierre</th>
+          <th>Estado</th>
+          <th class="text-end">Acción</th>
+        </tr>
+      </thead>
       <tbody>
         <?php foreach ($turnos as $t): ?>
         <tr>
           <td>#<?= $t['id'] ?></td>
+          <?php if (!empty($esAdmin)): ?>
+          <td class="small"><?= s($t['usuario_nombre']) ?></td>
+          <?php endif; ?>
           <td><?= s($t['sucursal_nombre']) ?></td>
           <td class="text-muted small"><?= date('d/m/Y H:i', strtotime($t['abierto_en'])) ?></td>
           <td class="text-muted small"><?= $t['cerrado_en'] ? date('d/m/Y H:i', strtotime($t['cerrado_en'])) : '—' ?></td>
@@ -56,7 +74,7 @@ $errMap = ['ya_abierto' => 'Ya tienes un turno abierto.'];
         </tr>
         <?php endforeach; ?>
         <?php if (empty($turnos)): ?>
-        <tr><td colspan="6" class="text-center text-muted py-4">No hay turnos registrados.</td></tr>
+        <tr><td colspan="<?= !empty($esAdmin) ? 7 : 6 ?>" class="text-center text-muted py-4">No hay turnos registrados.</td></tr>
         <?php endif; ?>
       </tbody>
     </table>

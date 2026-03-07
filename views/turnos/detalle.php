@@ -67,3 +67,9 @@
     </table>
   </div>
 </div>
+
+<div class="mt-3">
+  <a href="/<?= $_ENV['APP_NAME'] ?>/turnos" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Volver a Turnos
+  </a>
+</div>

@@ -18,6 +18,8 @@ use Controllers\ComprasController;
 use Controllers\TurnosController;
 use Controllers\VentasController;
 use Controllers\UsuariosController;
+use Controllers\CuentasPorCobrarController;
+
 
 $router = new Router();
 $router->setBaseURL('/' . $_ENV['APP_NAME']);
@@ -100,6 +102,13 @@ $router->get('/ventas',          [VentasController::class, 'index']);
 $router->get('/ventas/nueva',    [VentasController::class, 'nueva']);
 $router->post('/ventas/nueva',   [VentasController::class, 'nueva']);
 $router->get('/ventas/detalle',  [VentasController::class, 'detalle']);
+$router->post('/ventas/anular',  [VentasController::class, 'anular']);
+
+// ── CUENTAS POR COBRAR ─────────────────────────────
+$router->get('/cuentas-cobrar',          [CuentasPorCobrarController::class, 'index']);
+$router->get('/cuentas-cobrar/detalle',  [CuentasPorCobrarController::class, 'detalle']);
+$router->post('/cuentas-cobrar/abonar',  [CuentasPorCobrarController::class, 'abonar']);
+
 
 // ── USUARIOS ─────────────────────────────────────────
 $router->get('/usuarios',         [UsuariosController::class, 'index']);

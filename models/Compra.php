@@ -26,15 +26,17 @@ class Compra extends ActiveRecord {
     public ?string $proveedor_nombre = null;
     public ?string $sucursal_nombre  = null;
 
-    public static function allConDetalle(int $sucursal_id): array {
+    public static function allConDetalle(int $sucursal_id = 0): array {
+        $where  = $sucursal_id > 0 ? "WHERE c.sucursal_id = :suc" : "WHERE 1=1";
+        $params = $sucursal_id > 0 ? [':suc' => $sucursal_id] : [];
         return self::fetchRaw(
             "SELECT c.*, p.nombre AS proveedor_nombre, s.nombre AS sucursal_nombre
              FROM compras c
              LEFT JOIN proveedores p ON p.id = c.proveedor_id
              JOIN sucursales s ON s.id = c.sucursal_id
-             WHERE c.sucursal_id = :suc
+             $where
              ORDER BY c.fecha DESC",
-            [':suc' => $sucursal_id]
+            $params
         );
     }
 

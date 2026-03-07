@@ -127,6 +127,14 @@ class ActiveRecord {
      * ────────────────────────────────────────────── */
 
     public function crear(): array {
+        // Auto-asignar creado_en si el modelo lo soporta y aún no tiene valor
+        if (property_exists($this, 'creado_en')
+            && in_array('creado_en', static::$columnasDB)
+            && empty($this->creado_en)
+        ) {
+            $this->creado_en = date('Y-m-d H:i:s');
+        }
+
         $atributos = $this->atributos();
         $columnas  = implode(', ', array_keys($atributos));
         $marcas    = implode(', ', array_map(fn($k) => ":$k", array_keys($atributos)));

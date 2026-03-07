@@ -1,6 +1,11 @@
 <?php // views/compras/index.php ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <p class="text-muted mb-0"><?= count($compras) ?> compras registradas</p>
+  <p class="text-muted mb-0">
+    <?= count($compras) ?> compras registradas
+    <?php if (!empty($sucursal_actual)): ?>
+      — <span class="fw-semibold text-dark"><?= s($sucursal_actual) ?></span>
+    <?php endif; ?>
+  </p>
   <a href="/<?= $_ENV['APP_NAME'] ?>/compras/crear" class="btn btn-success btn-sm">
     <i class="bi bi-plus-circle me-1"></i>Nueva compra
   </a>

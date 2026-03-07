@@ -100,6 +100,11 @@ if (($layout ?? '') === 'auth') : ?>
       <span>Compras</span>
     </a>
 
+    <a href="<?= $base ?>/cuentas-cobrar" class="ag-nav-item <?= isActive($base . '/cuentas-cobrar') ?>">
+      <i class="bi bi-file-earmark-text"></i>
+      <span>Cuentas x Cobrar</span>
+    </a>
+
     <!-- INVENTARIO -->
     <div class="ag-nav-section">Inventario</div>
 

@@ -10,17 +10,32 @@ class TurnosController {
 
     public static function index(Router $router): void {
         isAuth();
-        // Listar turnos del usuario actual
-        $turnos = Turno::fetchRaw(
-            "SELECT t.*, s.nombre AS sucursal_nombre, u.nombre AS usuario_nombre
-             FROM turnos t
-             JOIN sucursales s ON s.id = t.sucursal_id
-             JOIN usuarios u ON u.id = t.usuario_id
-             WHERE t.usuario_id = :uid
-             ORDER BY t.abierto_en DESC
-             LIMIT 50",
-            [':uid' => $_SESSION['usuario_id']]
-        );
+        $rol     = $_SESSION['usuario_rol'] ?? '';
+        $esAdmin = in_array($rol, ['admin', 'supervisor']);
+
+        if ($esAdmin) {
+            // Admin/supervisor: todos los turnos
+            $turnos = Turno::fetchRaw(
+                "SELECT t.*, s.nombre AS sucursal_nombre, u.nombre AS usuario_nombre
+                 FROM turnos t
+                 JOIN sucursales s ON s.id = t.sucursal_id
+                 JOIN usuarios u ON u.id = t.usuario_id
+                 ORDER BY t.abierto_en DESC
+                 LIMIT 100"
+            );
+        } else {
+            // Vendedor: solo sus propios turnos
+            $turnos = Turno::fetchRaw(
+                "SELECT t.*, s.nombre AS sucursal_nombre, u.nombre AS usuario_nombre
+                 FROM turnos t
+                 JOIN sucursales s ON s.id = t.sucursal_id
+                 JOIN usuarios u ON u.id = t.usuario_id
+                 WHERE t.usuario_id = :uid
+                 ORDER BY t.abierto_en DESC
+                 LIMIT 50",
+                [':uid' => $_SESSION['usuario_id']]
+            );
+        }
 
         $turnoActivo = Turno::fetchFirstRaw(
             "SELECT t.*, s.nombre AS sucursal_nombre
@@ -31,9 +46,10 @@ class TurnosController {
         );
 
         $router->render('turnos/index', [
-            'titulo'      => 'Mis Turnos',
+            'titulo'      => 'Turnos',
             'turnos'      => $turnos,
             'turnoActivo' => $turnoActivo,
+            'esAdmin'     => $esAdmin,
         ]);
     }
 

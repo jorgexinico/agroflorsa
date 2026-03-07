@@ -9,7 +9,9 @@ use Models\Turno;
 use Models\Producto;
 use Models\Cliente;
 use Models\Inventario;
+use Models\CuentaPorCobrar;
 use Model\ActiveRecord;
+
 
 /**
  * VentasController — Módulo de ventas con control de inventario y turno.
@@ -198,6 +200,68 @@ class VentasController {
         ]);
     }
 
+    public static function anular(Router $router): void {
+        isAuth();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /' . $_ENV['APP_NAME'] . '/ventas');
+            exit;
+        }
+
+        $id    = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
+        $venta = Venta::find($id);
+
+        if (!$venta || $venta->estado === 'anulada') {
+            header('Location: /' . $_ENV['APP_NAME'] . '/ventas?err=invalid');
+            exit;
+        }
+
+        $db = ActiveRecord::getDB();
+        $db->beginTransaction();
+
+        try {
+            // ─── Revertir stock de cada item ───
+            $items = VentaDetalle::getByVenta($id);
+            foreach ($items as $item) {
+                $prod_id  = (int)$item['producto_id'];
+                $cantidad = (float)$item['cantidad'];
+
+                Inventario::ajustarStock($venta->sucursal_id, $prod_id, $cantidad);
+
+                Inventario::registrarMovimiento([
+                    'sucursal_id'    => $venta->sucursal_id,
+                    'producto_id'    => $prod_id,
+                    'tipo'           => 'anulacion',
+                    'referencia_tipo'=> 'ventas',
+                    'referencia_id'  => $id,
+                    'signo'          => 1,
+                    'cantidad'       => $cantidad,
+                ]);
+            }
+
+            // ─── Marcar la venta como anulada ───
+            ActiveRecord::ejecutar(
+                "UPDATE ventas SET estado = 'anulada' WHERE id = :id",
+                [':id' => $id]
+            );
+
+            // ─── Anular cuenta por cobrar si aplica ───
+            ActiveRecord::ejecutar(
+                "UPDATE cuentas_por_cobrar SET estado = 'anulada' WHERE venta_id = :vid",
+                [':vid' => $id]
+            );
+
+            $db->commit();
+            header('Location: /' . $_ENV['APP_NAME'] . '/ventas/detalle?id=' . $id . '&ok=anulada');
+            exit;
+
+        } catch (\Exception $e) {
+            $db->rollBack();
+            header('Location: /' . $_ENV['APP_NAME'] . '/ventas/detalle?id=' . $id . '&err=db');
+            exit;
+        }
+    }
+
     public static function detalle(Router $router): void {
         isAuth();
         $id    = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
@@ -217,12 +281,14 @@ class VentasController {
 
         $detalle = VentaDetalle::getByVenta($id);
         $pagos   = PagoVenta::getByVenta($id);
+        $cxc     = CuentaPorCobrar::getByVenta($id);
 
         $router->render('ventas/detalle', [
             'titulo'  => 'Detalle de Venta #' . $id,
             'venta'   => $venta,
             'detalle' => $detalle,
             'pagos'   => $pagos,
+            'cxc'     => $cxc,
         ]);
     }
 }

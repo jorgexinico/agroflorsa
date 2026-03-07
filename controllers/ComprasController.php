@@ -14,12 +14,17 @@ class ComprasController {
 
     public static function index(Router $router): void {
         isAuth();
+        // sucursal_id = 0 para admin sin turno → muestra todas las sucursales
         $sucursalId = (int)($_SESSION['sucursal_id'] ?? 0);
         $compras    = Compra::allConDetalle($sucursalId);
+        $sucursal_actual = $sucursalId > 0
+            ? (Sucursal::find($sucursalId)?->nombre ?? '')
+            : 'Todas las sucursales';
 
         $router->render('compras/index', [
-            'titulo'  => 'Compras',
-            'compras' => $compras,
+            'titulo'          => 'Compras',
+            'compras'         => $compras,
+            'sucursal_actual' => $sucursal_actual,
         ]);
     }
 

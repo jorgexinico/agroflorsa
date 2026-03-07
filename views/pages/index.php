@@ -1,38 +1,6 @@
 <?php
 // views/pages/index.php — Dashboard
-use Models\Venta;
-use Models\Turno;
-use Models\Inventario;
-use Model\ActiveRecord;
-
-$sucursal_id = $_SESSION['sucursal_id'] ?? 0;
-$hoy         = date('Y-m-d');
-
-// Estadísticas del día
-$ventasHoy = ActiveRecord::fetchFirstRaw(
-    "SELECT COALESCE(SUM(total),0) AS monto, COUNT(id) AS cantidad
-     FROM ventas WHERE DATE(fecha) = :hoy AND estado = 'emitida' AND sucursal_id = :suc",
-    [':hoy' => $hoy, ':suc' => $sucursal_id]
-) ?? ['monto' => 0, 'cantidad' => 0];
-
-$turnoActivo = $sucursal_id ? Turno::fetchFirstRaw(
-    "SELECT t.*, s.nombre AS sucursal_nombre
-     FROM turnos t JOIN sucursales s ON s.id = t.sucursal_id
-     WHERE t.usuario_id = :uid AND t.estado = 'abierto' LIMIT 1",
-    [':uid' => $_SESSION['usuario_id']]
-) : null;
-
-$totalProductos = ActiveRecord::fetchFirstRaw(
-    "SELECT COUNT(id) AS n FROM productos WHERE activo = 1"
-)['n'] ?? 0;
-
-$ultimasVentas = ActiveRecord::fetchRaw(
-    "SELECT v.id, v.total, v.fecha, v.tipo_pago, c.nombre AS cliente
-     FROM ventas v LEFT JOIN clientes c ON c.id = v.cliente_id
-     WHERE v.estado = 'emitida' AND v.sucursal_id = :suc
-     ORDER BY v.fecha DESC LIMIT 8",
-    [':suc' => $sucursal_id]
-);
+// Las variables vienen ya resueltas por AppController::index()
 ?>
 
 <div class="row g-3 mb-4">
@@ -44,12 +12,15 @@ $ultimasVentas = ActiveRecord::fetchRaw(
       </div>
       <div>
         <div class="stat-card__value text-success"><?= formatMoney((float)$ventasHoy['monto']) ?></div>
-        <div class="stat-card__label">Ventas hoy (<?= $ventasHoy['cantidad'] ?> facturas)</div>
+        <div class="stat-card__label">
+          Ventas hoy (<?= $ventasHoy['cantidad'] ?> facturas)
+          <?php if ($esAdmin): ?><span class="badge bg-secondary ms-1" style="font-size:.65rem">global</span><?php endif; ?>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Turno -->
+  <!-- Turno activo -->
   <div class="col-sm-6 col-xl-3">
     <div class="stat-card">
       <div class="stat-card__icon bg-primary bg-opacity-10">
@@ -60,7 +31,7 @@ $ultimasVentas = ActiveRecord::fetchRaw(
           <?= $turnoActivo ? '<span class="text-success">Abierto</span>' : '<span class="text-secondary">Sin turno</span>' ?>
         </div>
         <div class="stat-card__label">
-          <?= $turnoActivo ? s($turnoActivo['sucursal_nombre']) : 'No hay turno activo' ?>
+          <?= $turnoActivo ? s($turnoActivo['sucursal_nombre']) : ($esAdmin ? 'Vista de Administrador' : 'No hay turno activo') ?>
         </div>
       </div>
     </div>
@@ -79,9 +50,23 @@ $ultimasVentas = ActiveRecord::fetchRaw(
     </div>
   </div>
 
-  <!-- Acceso rápido -->
+  <!-- Acceso rápido / CxC pendiente -->
   <div class="col-sm-6 col-xl-3">
     <div class="stat-card">
+      <?php if ($cxcPendiente > 0): ?>
+      <div class="stat-card__icon bg-danger bg-opacity-10">
+        <i class="bi bi-file-earmark-text text-danger"></i>
+      </div>
+      <div>
+        <div class="stat-card__value text-danger"><?= formatMoney($cxcPendiente) ?></div>
+        <div class="stat-card__label">
+          Saldo CxC pendiente
+          <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar" class="d-block small text-decoration-none mt-1">
+            <i class="bi bi-arrow-right-circle me-1"></i>Ver cuentas
+          </a>
+        </div>
+      </div>
+      <?php else: ?>
       <div class="stat-card__icon bg-info bg-opacity-10">
         <i class="bi bi-lightning-charge text-info"></i>
       </div>
@@ -93,10 +78,11 @@ $ultimasVentas = ActiveRecord::fetchRaw(
           </a>
         <?php else: ?>
           <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/abrir" class="btn btn-sm btn-outline-success">
-            <i class="bi bi-play-circle me-1"></i>Abrir turno
+            <i class="bi bi-play-circle me-1"></i><?= $esAdmin ? 'Ir a Ventas' : 'Abrir turno' ?>
           </a>
         <?php endif; ?>
       </div>
+      <?php endif; ?>
     </div>
   </div>
 </div>
@@ -104,7 +90,7 @@ $ultimasVentas = ActiveRecord::fetchRaw(
 <!-- Últimas Ventas -->
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <span><i class="bi bi-receipt me-2 text-success"></i>Últimas ventas</span>
+    <span><i class="bi bi-receipt me-2 text-success"></i>Últimas ventas<?= $esAdmin ? ' (hoy — todas las sucursales)' : '' ?></span>
     <a href="/<?= $_ENV['APP_NAME'] ?>/ventas" class="btn btn-sm btn-outline-secondary">Ver todas</a>
   </div>
   <div class="card-body p-0">
@@ -115,7 +101,9 @@ $ultimasVentas = ActiveRecord::fetchRaw(
       <table class="table table-hover mb-0">
         <thead>
           <tr>
-            <th>#</th><th>Cliente</th><th>Fecha</th><th>Tipo</th><th class="text-end">Total</th><th></th>
+            <th>#</th><th>Cliente</th>
+            <?php if ($esAdmin): ?><th>Sucursal</th><?php endif; ?>
+            <th>Hora</th><th>Tipo</th><th class="text-end">Total</th><th></th>
           </tr>
         </thead>
         <tbody>
@@ -123,6 +111,7 @@ $ultimasVentas = ActiveRecord::fetchRaw(
           <tr>
             <td><span class="badge bg-light text-dark border"><?= $v['id'] ?></span></td>
             <td><?= s($v['cliente'] ?? 'Consumidor final') ?></td>
+            <?php if ($esAdmin): ?><td class="text-muted small"><?= s($v['sucursal_nombre'] ?? '') ?></td><?php endif; ?>
             <td class="text-muted" style="font-size:.82rem"><?= date('d/m H:i', strtotime($v['fecha'])) ?></td>
             <td><span class="badge <?= $v['tipo_pago']==='contado' ? 'bg-success' : 'bg-warning text-dark' ?>"><?= s($v['tipo_pago']) ?></span></td>
             <td class="text-end fw-semibold"><?= formatMoney((float)$v['total']) ?></td>
