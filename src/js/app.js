@@ -14,30 +14,60 @@ import { Toast } from './funciones.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // ── 1. Sidebar toggle ──────────────────────────────────
+  // ── 1. Sidebar toggle y Backdrop ───────────────────────
   const sidebarToggle = document.getElementById('sidebarToggle');
   const sidebar = document.getElementById('sidebar');
   const mainContent = document.getElementById('main-content');
-
-  if (sidebarToggle && sidebar) {
-    sidebarToggle.addEventListener('click', () => {
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('show');
-      } else {
-        sidebar.classList.toggle('collapsed');
-        mainContent?.classList.toggle('expanded');
-      }
-    });
+  
+  // Crear backdrop dinámico si no existe
+  let backdrop = document.querySelector('.sidebar-backdrop');
+  if (!backdrop) {
+    backdrop = document.createElement('div');
+    backdrop.className = 'sidebar-backdrop';
+    document.body.appendChild(backdrop);
   }
 
-  // ── 2. Cerrar sidebar al hacer clic fuera (mobile) ─────
-  document.addEventListener('click', (e) => {
-    if (window.innerWidth <= 768 && sidebar && sidebar.classList.contains('show')) {
-      if (!sidebar.contains(e.target) && e.target !== sidebarToggle) {
+  function toggleSidebar() {
+    if (window.innerWidth <= 768) {
+      const isShowing = sidebar.classList.contains('show');
+      if (isShowing) {
         sidebar.classList.remove('show');
+        backdrop.classList.remove('show');
+      } else {
+        sidebar.classList.add('show');
+        backdrop.classList.add('show');
       }
+    } else {
+      sidebar.classList.toggle('collapsed');
+      mainContent?.classList.toggle('expanded');
+    }
+  }
+
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener('click', toggleSidebar);
+  }
+
+  // ── 2. Cerrar sidebar al hacer clic en el backdrop ─────
+  backdrop.addEventListener('click', () => {
+    if (window.innerWidth <= 768 && sidebar.classList.contains('show')) {
+      sidebar.classList.remove('show');
+      backdrop.classList.remove('show');
     }
   });
+
+  // ── 2.5. Recordar posición del scroll del sidebar ───────
+  const sidebarNav = document.querySelector('.ag-sidebar__nav');
+  if (sidebarNav) {
+    // Restaurar scroll al cargar
+    const savedScroll = sessionStorage.getItem('sidebarScrollTop');
+    if (savedScroll) {
+      sidebarNav.scrollTop = parseInt(savedScroll, 10);
+    }
+    // Guardar scroll antes de salir de la página o al hacer clic en un enlace
+    sidebarNav.addEventListener('click', () => {
+      sessionStorage.setItem('sidebarScrollTop', sidebarNav.scrollTop);
+    });
+  }
 
   // ── 3. Confirmaciones SweetAlert2 (ag-confirm-btn) ─────
   document.addEventListener('click', (e) => {

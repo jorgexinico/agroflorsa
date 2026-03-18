@@ -93,9 +93,14 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between">
     <span><i class="bi bi-list-ul me-2"></i>Detalle de productos</span>
-    <button onclick="window.print()" class="btn btn-sm btn-outline-secondary">
-      <i class="bi bi-printer me-1"></i>Imprimir
-    </button>
+    <div>
+        <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/envio?id=<?= $venta['id'] ?>" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+            <i class="bi bi-file-earmark-pdf me-1"></i>Imprimir Envío
+        </a>
+        <button onclick="window.print()" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i>Imprimir
+        </button>
+    </div>
   </div>
   <div class="table-responsive">
     <table class="table table-sm mb-0">

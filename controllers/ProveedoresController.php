@@ -99,4 +99,37 @@ class ProveedoresController {
         header('Location: /' . $_ENV['APP_NAME'] . '/proveedores?ok=4');
         exit;
     }
+
+    public static function actualizarInline(Router $router): void {
+        isAuth();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+        
+        $json = file_get_contents('php://input');
+        $datos = json_decode($json, true);
+        
+        if (!$datos || empty($datos['id'])) {
+            echo json_encode(['ok' => false, 'error' => 'Datos inválidos']);
+            return;
+        }
+
+        $proveedor = Proveedor::find((int)$datos['id']);
+        if (!$proveedor) {
+            echo json_encode(['ok' => false, 'error' => 'Registro no encontrado']);
+            return;
+        }
+
+        if (isset($datos['nombre'])) $proveedor->nombre = trim($datos['nombre']);
+        if (isset($datos['nit'])) $proveedor->nit = trim($datos['nit']);
+        if (isset($datos['telefono'])) $proveedor->telefono = trim($datos['telefono']);
+
+        $alertas = $proveedor->validar();
+        if (empty($alertas['danger'])) {
+            $resultado = $proveedor->actualizar();
+            echo json_encode(['ok' => $resultado['resultado'] ?? true]);
+        } else {
+            echo json_encode(['ok' => false, 'error' => implode(', ', $alertas['danger'])]);
+        }
+        
+        exit;
+    }
 }

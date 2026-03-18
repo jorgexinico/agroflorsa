@@ -14,17 +14,19 @@
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead><tr><th>#</th><th>Hora</th><th>Cliente</th><th>Tipo pago</th><th>Estado</th><th class="text-end">Total</th><th></th></tr></thead>
+      <thead><tr><th>#</th><th>Hora</th><th>Cliente</th><th class="d-none-mobile">Tipo pago</th><th class="d-none-mobile">Estado</th><th class="text-end">Total</th><th></th></tr></thead>
       <tbody>
         <?php foreach ($ventas as $v): ?>
         <tr>
           <td><?= $v['id'] ?></td>
           <td class="text-muted small"><?= date('H:i', strtotime($v['fecha'])) ?></td>
-          <td><?= s($v['cliente_nombre'] ?? 'Consumidor final') ?></td>
-          <td><span class="badge <?= $v['tipo_pago']==='contado'?'bg-success':'bg-warning text-dark' ?>"><?= s($v['tipo_pago']) ?></span></td>
-          <td><span class="badge bg-<?= $v['estado']==='emitida'?'primary':'secondary' ?>"><?= s($v['estado']) ?></span></td>
-          <td class="text-end fw-semibold"><?= formatMoney((float)$v['total']) ?></td>
-          <td><a href="/<?= $_ENV['APP_NAME'] ?>/ventas/detalle?id=<?= $v['id'] ?>" class="btn btn-sm btn-outline-secondary py-0"><i class="bi bi-eye"></i></a></td>
+          <td>
+            <div class="text-truncate" style="max-width: 150px;"><?= s($v['cliente_nombre'] ?? 'Consumidor final') ?></div>
+          </td>
+          <td class="d-none-mobile"><span class="badge <?= $v['tipo_pago']==='contado'?'bg-success':'bg-warning text-dark' ?>"><?= s($v['tipo_pago']) ?></span></td>
+          <td class="d-none-mobile"><span class="badge bg-<?= $v['estado']==='emitida'?'primary':'secondary' ?>"><?= s($v['estado']) ?></span></td>
+          <td class="text-end fw-semibold text-nowrap"><?= formatMoney((float)$v['total']) ?></td>
+          <td><a href="/<?= $_ENV['APP_NAME'] ?>/ventas/detalle?id=<?= $v['id'] ?>" class="btn btn-sm btn-outline-secondary py-0 px-2"><i class="bi bi-chevron-right"></i></a></td>
         </tr>
         <?php endforeach; ?>
         <?php if (empty($ventas)): ?>

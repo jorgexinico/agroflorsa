@@ -291,4 +291,30 @@ class VentasController {
             'cxc'     => $cxc,
         ]);
     }
+
+    public static function envio(Router $router): void {
+        isAuth();
+        $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
+        $venta = Venta::fetchFirstRaw(
+            "SELECT v.*, c.nombre AS cliente_nombre, c.nit AS cliente_nit, 
+                    c.direccion AS cliente_direccion, c.telefono AS cliente_telefono
+             FROM ventas v
+             LEFT JOIN clientes c ON c.id = v.cliente_id
+             WHERE v.id = :id",
+            [':id' => $id]
+        );
+
+        if (!$venta) {
+            header('Location: /' . $_ENV['APP_NAME'] . '/ventas');
+            exit;
+        }
+
+        $detalle = VentaDetalle::getByVenta($id);
+
+        $router->render('ventas/envio', [
+            'venta'   => $venta,
+            'detalle' => $detalle,
+            'layout'  => 'auth' // Utiliza auth o uno vacío para evitar el sidebar en la impresión
+        ]);
+    }
 }

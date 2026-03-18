@@ -13,18 +13,48 @@ $action = $accion === 'crear'
           <div class="row g-3">
             <div class="col-md-8">
               <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
-              <input type="text" name="nombre" class="form-control" value="<?= s($producto->nombre) ?>" required>
+              <input type="text" id="nombre_producto" name="nombre" class="form-control" value="<?= s($producto->nombre) ?>" required>
             </div>
             <div class="col-md-4">
               <label class="form-label fw-semibold">SKU</label>
-              <input type="text" name="sku" class="form-control" value="<?= s($producto->sku ?? '') ?>">
+              <input type="text" id="sku_producto" name="sku" class="form-control" value="<?= s($producto->sku ?? '') ?>" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Precio Público (Q) <span class="text-danger">*</span></label>
+              <input type="number" step="0.01" min="0" name="precio_publico" class="form-control" value="<?= s($producto->precio_publico) ?>" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Precio Mayorista (Q) <span class="text-danger">*</span></label>
+              <input type="number" step="0.01" min="0" name="precio_mayorista" class="form-control" value="<?= s($producto->precio_mayorista) ?>" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Marca</label>
+              <select name="marca_id" id="marca_id" class="form-select">
+                <option value="">Seleccione...</option>
+                <?php foreach ($marcas as $m): ?>
+                <option value="<?= $m->id ?>" <?= $producto->marca_id == $m->id ? 'selected' : '' ?>>
+                  <?= s($m->nombre) ?>
+                </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Categoría</label>
+              <select name="categoria_id" id="categoria_id" class="form-select">
+                <option value="">Seleccione...</option>
+                <?php foreach ($categorias as $c): ?>
+                <option value="<?= $c->id ?>" <?= $producto->categoria_id == $c->id ? 'selected' : '' ?>>
+                  <?= s($c->nombre) ?>
+                </option>
+                <?php endforeach; ?>
+              </select>
             </div>
             <div class="col-md-6">
               <label class="form-label fw-semibold">Unidad de Medida <span class="text-danger">*</span></label>
-              <select name="unidad_id" class="form-select" required>
+              <select name="unidad_id" id="unidad_id" class="form-select" required>
                 <option value="">Seleccione...</option>
                 <?php foreach ($unidades as $u): ?>
-                <option value="<?= $u->id ?>" <?= $producto->unidad_id == $u->id ? 'selected' : '' ?>>
+                <option value="<?= $u->id ?>" data-abreviatura="<?= s($u->abreviatura) ?>" <?= $producto->unidad_id == $u->id ? 'selected' : '' ?>>
                   <?= s($u->nombre) ?> (<?= s($u->abreviatura) ?>)
                 </option>
                 <?php endforeach; ?>
@@ -58,3 +88,5 @@ $action = $accion === 'crear'
     </div>
   </div>
 </div>
+
+<script src="<?= asset('build/js/productos.js') ?>"></script>

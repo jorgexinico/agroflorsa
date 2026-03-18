@@ -38,16 +38,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Agregar primera fila por defecto
     addRowVenta(tbody);
-});
 
+    // Cambiar tipo de precio en masa
+    const tipoPrecioSelector = document.getElementById('tipo-precio');
+    if (tipoPrecioSelector && tbody) {
+        tipoPrecioSelector.addEventListener('change', () => {
+            const currentTipo = tipoPrecioSelector.value;
+            const selects = tbody.querySelectorAll('.venta-select');
+            
+            selects.forEach(sel => {
+                const row = sel.closest('tr');
+                const opt = sel.selectedOptions[0];
+                if (opt) {
+                    const precio = currentTipo === 'mayorista' 
+                                   ? (opt.dataset.precioMayorista || 0) 
+                                   : (opt.dataset.precioPublico || 0);
+                    row.querySelector('.venta-precio').value = precio;
+                    recalcRowVenta(row);
+                }
+            });
+            recalcTotalVenta();
+        });
+    }
+});
 // ── Agregar fila ─────────────────────────────────────────
 function addRowVenta(tbody) {
     const select = document.getElementById('productos-template');
     if (!select) return;
 
+    // Obtener qué tipo de precio está seleccionado ("publico" o "mayorista")
+    const tipoPrecioSelector = document.getElementById('tipo-precio');
+    const tipoActual = tipoPrecioSelector ? tipoPrecioSelector.value : 'publico';
+
     const options = Array.from(select.options)
-        .map(o => `<option value="${o.value}" data-precio="${o.dataset.precio || 0}" data-sku="${o.dataset.sku || ''}">${o.text}</option>`)
-        .join('');
+        .map(o => {
+            const pPub = o.dataset.precioPublico || 0;
+            const pMay = o.dataset.precioMayorista || 0;
+            const currentPrice = tipoActual === 'mayorista' ? pMay : pPub;
+            return `<option value="${o.value}" 
+                      data-precio-publico="${pPub}" 
+                      data-precio-mayorista="${pMay}" 
+                      data-sku="${o.dataset.sku || ''}">${o.text}</option>`;
+        }).join('');
 
     const row = `
     <tr>
@@ -60,16 +92,24 @@ function addRowVenta(tbody) {
 
     tbody.insertAdjacentHTML('beforeend', row);
 
-    // Auto-fill precio al seleccionar producto
+    // Auto-fill precio al seleccionar producto basado en tipo actual
     const lastRow = tbody.lastElementChild;
     const sel = lastRow.querySelector('.venta-select');
     if (sel) {
         sel.addEventListener('change', () => {
-            const precio = sel.selectedOptions[0]?.dataset.precio || 0;
+            const currentTipo = document.getElementById('tipo-precio')?.value || 'publico';
+            const option = sel.selectedOptions[0];
+            const precio = currentTipo === 'mayorista' 
+                           ? (option?.dataset.precioMayorista || 0) 
+                           : (option?.dataset.precioPublico || 0);
+            
             lastRow.querySelector('.venta-precio').value = precio;
             recalcRowVenta(lastRow);
             recalcTotalVenta();
         });
+        
+        // Trigger inicial si ya hay un producto (en este caso el #1)
+        sel.dispatchEvent(new Event('change'));
     }
 }
 

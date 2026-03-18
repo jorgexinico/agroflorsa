@@ -83,4 +83,36 @@ class UnidadesController {
         header('Location: /' . $_ENV['APP_NAME'] . '/unidades?ok=3');
         exit;
     }
+
+    public static function actualizarInline(Router $router): void {
+        isAuth();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+        
+        $json = file_get_contents('php://input');
+        $datos = json_decode($json, true);
+        
+        if (!$datos || empty($datos['id'])) {
+            echo json_encode(['ok' => false, 'error' => 'Datos inválidos']);
+            return;
+        }
+
+        $unidad = UnidadMedida::find((int)$datos['id']);
+        if (!$unidad) {
+            echo json_encode(['ok' => false, 'error' => 'Registro no encontrado']);
+            return;
+        }
+
+        if (isset($datos['nombre'])) $unidad->nombre = trim($datos['nombre']);
+        if (isset($datos['abreviatura'])) $unidad->abreviatura = trim($datos['abreviatura']);
+
+        $alertas = $unidad->validar();
+        if (empty($alertas['danger'])) {
+            $resultado = $unidad->actualizar();
+            echo json_encode(['ok' => $resultado['resultado'] ?? true]);
+        } else {
+            echo json_encode(['ok' => false, 'error' => implode(', ', $alertas['danger'])]);
+        }
+        
+        exit;
+    }
 }

@@ -5,15 +5,15 @@
 
 <div class="row g-3 mb-4">
   <!-- Ventas hoy -->
-  <div class="col-sm-6 col-xl-3">
-    <div class="stat-card">
+  <div class="col-sm-6 col-xl">
+    <div class="stat-card h-100">
       <div class="stat-card__icon bg-success bg-opacity-10">
         <i class="bi bi-cash-stack text-success"></i>
       </div>
       <div>
         <div class="stat-card__value text-success"><?= formatMoney((float)$ventasHoy['monto']) ?></div>
         <div class="stat-card__label">
-          Ventas hoy (<?= $ventasHoy['cantidad'] ?> facturas)
+          Ventas hoy (<?= $ventasHoy['cantidad'] ?>)
           <?php if ($esAdmin): ?><span class="badge bg-secondary ms-1" style="font-size:.65rem">global</span><?php endif; ?>
         </div>
       </div>
@@ -21,8 +21,8 @@
   </div>
 
   <!-- Turno activo -->
-  <div class="col-sm-6 col-xl-3">
-    <div class="stat-card">
+  <div class="col-sm-6 col-xl">
+    <div class="stat-card h-100">
       <div class="stat-card__icon bg-primary bg-opacity-10">
         <i class="bi bi-clock-history text-primary"></i>
       </div>
@@ -31,42 +31,47 @@
           <?= $turnoActivo ? '<span class="text-success">Abierto</span>' : '<span class="text-secondary">Sin turno</span>' ?>
         </div>
         <div class="stat-card__label">
-          <?= $turnoActivo ? s($turnoActivo['sucursal_nombre']) : ($esAdmin ? 'Vista de Administrador' : 'No hay turno activo') ?>
+          <?= $turnoActivo ? s($turnoActivo['sucursal_nombre']) : ($esAdmin ? 'Vista Admin' : 'No hay turno') ?>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Productos activos -->
-  <div class="col-sm-6 col-xl-3">
-    <div class="stat-card">
-      <div class="stat-card__icon bg-warning bg-opacity-10">
-        <i class="bi bi-box-seam text-warning"></i>
-      </div>
-      <div>
-        <div class="stat-card__value"><?= $totalProductos ?></div>
-        <div class="stat-card__label">Productos activos</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Acceso rápido / CxC pendiente -->
-  <div class="col-sm-6 col-xl-3">
-    <div class="stat-card">
-      <?php if ($cxcPendiente > 0): ?>
+  <!-- CxC pendiente -->
+  <div class="col-sm-6 col-xl">
+    <div class="stat-card h-100">
       <div class="stat-card__icon bg-danger bg-opacity-10">
         <i class="bi bi-file-earmark-text text-danger"></i>
       </div>
       <div>
         <div class="stat-card__value text-danger"><?= formatMoney($cxcPendiente) ?></div>
         <div class="stat-card__label">
-          Saldo CxC pendiente
-          <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar" class="d-block small text-decoration-none mt-1">
-            <i class="bi bi-arrow-right-circle me-1"></i>Ver cuentas
-          </a>
+          Saldo CxC
+          <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar" class="d-block small text-decoration-none mt-1">Ver cuentas</a>
         </div>
       </div>
-      <?php else: ?>
+    </div>
+  </div>
+
+  <!-- CxP pendiente -->
+  <div class="col-sm-6 col-xl">
+    <div class="stat-card h-100">
+      <div class="stat-card__icon bg-warning bg-opacity-10">
+        <i class="bi bi-wallet2 text-warning"></i>
+      </div>
+      <div>
+        <div class="stat-card__value text-warning"><?= formatMoney($cxpPendiente) ?></div>
+        <div class="stat-card__label">
+          Deuda CxP
+          <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-pagar" class="d-block small text-decoration-none mt-1 text-warning">Ver cuentas</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acceso rápido -->
+  <div class="col-sm-6 col-xl">
+    <div class="stat-card h-100">
       <div class="stat-card__icon bg-info bg-opacity-10">
         <i class="bi bi-lightning-charge text-info"></i>
       </div>
@@ -74,15 +79,14 @@
         <div class="stat-card__label fw-semibold mb-2">Acceso rápido</div>
         <?php if ($turnoActivo): ?>
           <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/nueva" class="btn btn-sm btn-success">
-            <i class="bi bi-cart-plus me-1"></i>Nueva venta
+            <i class="bi bi-cart-plus me-1"></i>Vender
           </a>
         <?php else: ?>
           <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/abrir" class="btn btn-sm btn-outline-success">
-            <i class="bi bi-play-circle me-1"></i><?= $esAdmin ? 'Ir a Ventas' : 'Abrir turno' ?>
+            <i class="bi bi-play-circle me-1"></i><?= $esAdmin ? 'Turnos' : 'Abrir turno' ?>
           </a>
         <?php endif; ?>
       </div>
-      <?php endif; ?>
     </div>
   </div>
 </div>

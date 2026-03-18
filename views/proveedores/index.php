@@ -15,16 +15,31 @@ if ($ok && isset($msgs[$ok])): ?>
 </div>
 <div class="card">
   <div class="table-responsive">
-    <table class="table table-hover mb-0">
+    <table class="table table-hover align-middle mb-0">
       <thead><tr><th>Nombre</th><th>NIT</th><th>Teléfono</th><th>Estado</th><th></th></tr></thead>
       <tbody>
         <?php foreach ($proveedores as $p): ?>
-        <tr>
-          <td class="fw-semibold"><?= s($p->nombre) ?></td>
-          <td class="text-muted"><?= s($p->nit ?? '—') ?></td>
-          <td><?= s($p->telefono ?? '—') ?></td>
+        <tr data-id="<?= $p->id ?>">
+          <!-- Editar Nombre -->
+          <td>
+            <input type="text" class="form-control form-control-sm border-0 bg-transparent fw-semibold p-0 w-100" 
+                   value="<?= s($p->nombre) ?>"
+                   onchange="actualizarInline(<?= $p->id ?>, 'nombre', this.value)">
+          </td>
+          <!-- Editar NIT -->
+          <td>
+            <input type="text" class="form-control form-control-sm border-0 bg-transparent text-muted p-0 w-100" 
+                   value="<?= s($p->nit ?? '') ?>" placeholder="—"
+                   onchange="actualizarInline(<?= $p->id ?>, 'nit', this.value)">
+          </td>
+          <!-- Editar Teléfono -->
+          <td>
+            <input type="text" class="form-control form-control-sm border-0 bg-transparent p-0 w-100" 
+                   value="<?= s($p->telefono ?? '') ?>" placeholder="—"
+                   onchange="actualizarInline(<?= $p->id ?>, 'telefono', this.value)">
+          </td>
           <td><?= $p->activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>' ?></td>
-          <td class="text-end">
+          <td class="text-end text-nowrap">
             <a href="/<?= $_ENV['APP_NAME'] ?>/proveedores/editar?id=<?= $p->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
             <?php if ($p->activo): ?>
             <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/proveedores/eliminar" class="d-inline ag-confirm-form">
@@ -50,3 +65,32 @@ if ($ok && isset($msgs[$ok])): ?>
     </table>
   </div>
 </div>
+
+<script>
+async function actualizarInline(id, campo, valor) {
+    try {
+        const bodyData = { id: id };
+        bodyData[campo] = valor;
+
+        const response = await fetch('/<?= $_ENV['APP_NAME'] ?>/proveedores/actualizar-inline', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(bodyData)
+        });
+
+        const data = await response.json();
+        
+        if (!data.ok) {
+            Swal.fire('Error', data.error || 'No se pudo actualizar el valor', 'error');
+        } else {
+            const Toast = Swal.mixin({
+                toast: true, position: 'bottom-end', showConfirmButton: false, timer: 1500, timerProgressBar: true
+            });
+            Toast.fire({ icon: 'success', title: 'Actualizado' });
+        }
+    } catch (error) {
+        console.error("Error al actualizar: ", error);
+        Swal.fire('Error de Red', 'Hubo un problema de conexión al guardar.', 'error');
+    }
+}
+</script>

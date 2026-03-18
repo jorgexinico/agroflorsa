@@ -99,4 +99,37 @@ class ClientesController {
         header('Location: /' . $_ENV['APP_NAME'] . '/clientes?ok=4');
         exit;
     }
+
+    public static function actualizarInline(Router $router): void {
+        isAuth();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
+        
+        $json = file_get_contents('php://input');
+        $datos = json_decode($json, true);
+        
+        if (!$datos || empty($datos['id'])) {
+            echo json_encode(['ok' => false, 'error' => 'Datos inválidos']);
+            return;
+        }
+
+        $cliente = Cliente::find((int)$datos['id']);
+        if (!$cliente) {
+            echo json_encode(['ok' => false, 'error' => 'Registro no encontrado']);
+            return;
+        }
+
+        if (isset($datos['nombre'])) $cliente->nombre = trim($datos['nombre']);
+        if (isset($datos['nit'])) $cliente->nit = trim($datos['nit']);
+        if (isset($datos['telefono'])) $cliente->telefono = trim($datos['telefono']);
+
+        $alertas = $cliente->validar();
+        if (empty($alertas['danger'])) {
+            $resultado = $cliente->actualizar();
+            echo json_encode(['ok' => $resultado['resultado'] ?? true]);
+        } else {
+            echo json_encode(['ok' => false, 'error' => implode(', ', $alertas['danger'])]);
+        }
+        
+        exit;
+    }
 }

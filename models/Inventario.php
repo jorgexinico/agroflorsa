@@ -72,6 +72,36 @@ class Inventario extends ActiveRecord {
     }
 
     /**
+     * Agrega (positivo) o descuenta (negativo) stock de un lote específico.
+     */
+    public static function ajustarStockLote(int $sucursal_id, int $lote_id, float $delta): bool {
+        $existe = self::fetchFirstRaw(
+            "SELECT id, cantidad FROM inventario_existencias_lote
+             WHERE sucursal_id = :suc AND lote_id = :lote",
+            [':suc' => $sucursal_id, ':lote' => $lote_id]
+        );
+
+        if ($existe) {
+            if ($existe['cantidad'] + $delta < 0) return false;
+            
+            self::ejecutar(
+                "UPDATE inventario_existencias_lote
+                 SET cantidad = cantidad + :delta
+                 WHERE id = :id",
+                [':delta' => $delta, ':id' => $existe['id']]
+            );
+        } else {
+            if ($delta < 0) return false;
+            self::ejecutar(
+                "INSERT INTO inventario_existencias_lote (sucursal_id, lote_id, cantidad)
+                 VALUES (:suc, :lote, :cant)",
+                [':suc' => $sucursal_id, ':lote' => $lote_id, ':cant' => $delta]
+            );
+        }
+        return true;
+    }
+
+    /**
      * Retorna todo el stock de una sucursal con nombre del producto y unidad.
      */
     public static function getStockSucursal(int $sucursal_id): array {

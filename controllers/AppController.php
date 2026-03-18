@@ -76,12 +76,18 @@ class AppController {
             );
         }
 
+        // ── Cuentas por pagar pendientes (saldo global) ─────────────
+        $cxpPendiente = (float)(ActiveRecord::fetchFirstRaw(
+            "SELECT COALESCE(SUM(saldo),0) AS saldo FROM cuentas_por_pagar WHERE estado IN ('pendiente','parcial')"
+        )['saldo'] ?? 0);
+
         $router->render('pages/index', [
             'titulo'         => 'Dashboard',
             'ventasHoy'      => $ventasHoy,
             'turnoActivo'    => $turnoActivo,
             'totalProductos' => $totalProductos,
             'cxcPendiente'   => $cxcPendiente,
+            'cxpPendiente'   => $cxpPendiente,
             'ultimasVentas'  => $ultimasVentas,
             'esAdmin'        => ($rol === 'admin' && $sucursal_id === 0),
         ]);

@@ -63,13 +63,8 @@
         <table class="table table-sm mb-0">
           <thead><tr><th>Columna</th><th>Valor ejemplo</th><th>¿Requerido?</th></tr></thead>
           <tbody>
-            <tr><td><code>nombre</code></td><td>Herbicida XY</td><td><span class="badge bg-danger">Sí</span></td></tr>
-            <tr><td><code>sku</code></td><td>HRB-001</td><td><span class="badge bg-secondary">No</span></td></tr>
-            <tr>
-              <td><code>tipo</code></td>
-              <td><span class="text-muted small">mercaderia, materia_prima, terminado</span></td>
-              <td><span class="badge bg-secondary">No</span></td>
-            </tr>
+            <tr><td><code>nombre</code></td><td>Bravo 720</td><td><span class="badge bg-danger">Sí</span></td></tr>
+            <tr><td><code>marca</code></td><td>Syngenta</td><td><span class="badge bg-danger">Sí</span></td></tr>
             <tr>
               <td><code>unidad</code></td>
               <td>
@@ -77,9 +72,11 @@
                   <span class="badge bg-light text-dark border me-1"><?= s($u->abreviatura) ?></span>
                 <?php endforeach; ?>
               </td>
-              <td><span class="badge bg-danger">Sí</span></td>
+              <td><span class="badge bg-secondary">No*</span> <br><small class="text-muted">*Se inferirá del nombre si se omite</small></td>
             </tr>
-            <tr><td><code>maneja_vencimiento</code></td><td>0 o 1</td><td><span class="badge bg-secondary">No</span></td></tr>
+            <tr><td><code>precio_publico</code></td><td>130.50</td><td><span class="badge bg-secondary">No</span></td></tr>
+            <tr><td><code>precio_mayorista</code></td><td>115.00</td><td><span class="badge bg-secondary">No</span></td></tr>
+            <tr><td><code>sku</code></td><td><span class="text-muted small">Auto-generado</span></td><td><span class="badge bg-secondary">No</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -213,8 +210,14 @@ document.getElementById('btn-importar').addEventListener('click', async () => {
     });
 
     document.getElementById('progress-bar').style.width = '100%';
+    document.getElementById('progress-bar').classList.remove('progress-bar-animated', 'progress-bar-striped');
     document.getElementById('progress-pct').textContent = '100%';
     document.getElementById('progress-label').textContent = 'Completado';
+    
+    // Ocultar la zona de progreso después de 1 segundo
+    setTimeout(() => {
+        document.getElementById('progress-wrap').classList.add('d-none');
+    }, 1500);
 
     const json = await resp.json();
     mostrarResultado(json);
@@ -259,14 +262,13 @@ function mostrarResultado(json) {
   document.getElementById('resultado-inner').innerHTML = html;
 }
 
-// ── Descargar plantilla .xlsx ────────────────────────────
 document.getElementById('btn-download-template').addEventListener('click', (e) => {
   e.preventDefault();
 
   const datos = [
-    { nombre: 'Herbicida Ejemplo', sku: 'HRB-001', tipo: 'mercaderia', unidad: 'L', maneja_vencimiento: 0 },
-    { nombre: 'Fertilizante NPK',  sku: 'FRT-002', tipo: 'mercaderia', unidad: 'Kg', maneja_vencimiento: 1 },
-    { nombre: 'Semilla Maíz',      sku: 'SEM-003', tipo: 'materia_prima', unidad: 'Qq', maneja_vencimiento: 1 },
+    { nombre: 'Bravo 720 1L', marca: 'Syngenta', unidad: '', precio_publico: 130.50, precio_mayorista: 115.00 },
+    { nombre: 'Abono 15-15-15', marca: 'Yara', unidad: 'Qq', precio_publico: 250.00, precio_mayorista: 235.00 },
+    { nombre: 'Machete 20"', marca: 'Bellota', unidad: 'Und', precio_publico: 65.00, precio_mayorista: 52.00 },
   ];
 
   const ws = XLSX.utils.json_to_sheet(datos);
@@ -274,7 +276,7 @@ document.getElementById('btn-download-template').addEventListener('click', (e) =
   XLSX.utils.book_append_sheet(wb, ws, 'Plantilla');
 
   // Ancho de columnas
-  ws['!cols'] = [{ wch: 30 }, { wch: 12 }, { wch: 14 }, { wch: 10 }, { wch: 20 }];
+  ws['!cols'] = [{ wch: 30 }, { wch: 15 }, { wch: 10 }, { wch: 18 }, { wch: 15 }, { wch: 15 }];
 
   XLSX.writeFile(wb, 'plantilla_productos_agroflorsa.xlsx');
 });

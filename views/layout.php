@@ -105,6 +105,11 @@ if (($layout ?? '') === 'auth') : ?>
       <span>Cuentas x Cobrar</span>
     </a>
 
+    <a href="<?= $base ?>/cuentas-pagar" class="ag-nav-item <?= isActive($base . '/cuentas-pagar') ?>">
+      <i class="bi bi-wallet2"></i>
+      <span>Cuentas x Pagar</span>
+    </a>
+
     <!-- INVENTARIO -->
     <div class="ag-nav-section">Inventario</div>
 
@@ -139,6 +144,16 @@ if (($layout ?? '') === 'auth') : ?>
     <a href="<?= $base ?>/unidades" class="ag-nav-item <?= isActive($base . '/unidades') ?>">
       <i class="bi bi-rulers"></i>
       <span>Unidades</span>
+    </a>
+
+    <a href="<?= $base ?>/marcas" class="ag-nav-item <?= isActive($base . '/marcas') ?>">
+      <i class="bi bi-tag-fill"></i>
+      <span>Marcas</span>
+    </a>
+
+    <a href="<?= $base ?>/categorias" class="ag-nav-item <?= isActive($base . '/categorias') ?>">
+      <i class="bi bi-tags-fill"></i>
+      <span>Categorías</span>
     </a>
 
     <!-- ADMIN -->

@@ -1,32 +1,29 @@
-<?php // views/unidades/index.php ?>
+<?php // views/categorias/index.php ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <p class="text-muted mb-0"><?= count($unidades) ?> unidades</p>
-  <a href="/<?= $_ENV['APP_NAME'] ?>/unidades/crear" class="btn btn-success btn-sm">
-    <i class="bi bi-plus-circle me-1"></i>Nueva unidad
+  <p class="text-muted mb-0"><?= count($categorias) ?> categorías</p>
+  <a href="/<?= $_ENV['APP_NAME'] ?>/categorias/crear" class="btn btn-success btn-sm">
+    <i class="bi bi-plus-circle me-1"></i>Nueva categoría
   </a>
 </div>
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>Nombre</th><th>Abreviatura</th><th></th></tr></thead>
+      <thead><tr><th>Nombre</th><th>Descripción</th><th></th></tr></thead>
       <tbody>
-        <?php foreach ($unidades as $u): ?>
-        <tr data-id="<?= $u->id ?>">
+        <?php foreach ($categorias as $c): ?>
+        <tr data-id="<?= $c->id ?>">
           <td>
             <input type="text" class="form-control form-control-sm border-0 bg-transparent fw-semibold p-0 w-100" 
-                   value="<?= s($u->nombre) ?>"
-                   onchange="actualizarInline(<?= $u->id ?>, 'nombre', this.value)">
+                   value="<?= s($c->nombre) ?>"
+                   onchange="actualizarInline(<?= $c->id ?>, 'nombre', this.value)">
           </td>
           <td>
-            <div class="d-inline-flex align-items-center bg-secondary rounded px-2 py-1">
-                <input type="text" class="form-control form-control-sm border-0 bg-transparent text-white fw-bold p-0 text-center" 
-                       style="width: 50px;"
-                       value="<?= s($u->abreviatura) ?>"
-                       onchange="actualizarInline(<?= $u->id ?>, 'abreviatura', this.value)">
-            </div>
+            <input type="text" class="form-control form-control-sm border-0 bg-transparent text-muted p-0 w-100" 
+                   value="<?= s($c->descripcion ?? '') ?>" placeholder="—"
+                   onchange="actualizarInline(<?= $c->id ?>, 'descripcion', this.value)">
           </td>
           <td class="text-end text-nowrap">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/unidades/editar?id=<?= $u->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+            <a href="/<?= $_ENV['APP_NAME'] ?>/categorias/editar?id=<?= $c->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -41,7 +38,7 @@ async function actualizarInline(id, campo, valor) {
         const bodyData = { id: id };
         bodyData[campo] = valor;
 
-        const response = await fetch('/<?= $_ENV['APP_NAME'] ?>/unidades/actualizar-inline', {
+        const response = await fetch('/<?= $_ENV['APP_NAME'] ?>/categorias/actualizar-inline', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(bodyData)

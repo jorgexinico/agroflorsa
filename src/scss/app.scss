@@ -298,9 +298,92 @@ body.ag-auth-body {
   }
 }
 
-// ── MOBILE ───────────────────────────────────────────────
+// ── MOBILE RESPONSIVE TWEAKS ─────────────────────────────
 @media (max-width: 768px) {
-  .ag-sidebar { transform: translateX(-#{$sidebar-width}); }
-  .ag-sidebar.show { transform: translateX(0); }
-  .ag-main { margin-left: 0; }
+  // Sidebar se convierte en Offcanvas flotante con overlay
+  .ag-sidebar { 
+    transform: translateX(-100%); 
+    transition: transform 0.3s ease-in-out;
+    box-shadow: none;
+    z-index: 1050; // por encima del topbar
+  }
+  
+  .ag-sidebar.show { 
+    transform: translateX(0); 
+    box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+  }
+
+  // Backdrop/overlay gris cuando el sidebar está abierto
+  .sidebar-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,.5);
+    z-index: 1045;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .sidebar-backdrop.show {
+    display: block;
+    opacity: 1;
+  }
+
+  .ag-main { 
+    margin-left: 0; 
+  }
+
+  // Ajustes de Topbar para móviles
+  .ag-topbar {
+    padding: 0 1rem;
+    &__title {
+      font-size: 1.1rem; // Más grande y legible
+      margin-left: .5rem;
+    }
+    // Botón hamburguesa más grande
+    &__toggle i {
+      font-size: 1.8rem;
+    }
+  }
+
+  // Ajustes de contenedor principal
+  .ag-content {
+    padding: 1rem; // Menos padding en móviles
+  }
+
+  // Hacer touch targets (botones) más amigables
+  .btn {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    // Evitar que el texto quede muy chiquito
+    font-size: 0.95rem;
+  }
+  
+  .btn-sm {
+    padding-top: 0.45rem;
+    padding-bottom: 0.45rem;
+    font-size: 0.85rem;
+  }
+
+  // Hacer inputs táctiles más grandes
+  .form-control, .form-select {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    font-size: 1rem; /* Evita auto-zoom en iOS Safari */
+  }
+
+  // Ajustes de tablas en móvil
+  .table {
+    font-size: 0.85rem;
+    // Hacer columnas menos importantes invisibles en vez de forzar scroll horizontal masivo
+    .d-none-mobile {
+      display: none !important;
+    }
+  }
+}
+
+// Clase utilitaria global para ocultar algo solo en móviles
+@media (max-width: 576px) {
+  .d-xs-none {
+    display: none !important;
+  }
 }
