@@ -8,6 +8,7 @@ class ProveedoresController {
 
     public static function index(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $proveedores = Proveedor::all('nombre');
         $router->render('proveedores/index', [
             'titulo'      => 'Proveedores',
@@ -17,6 +18,7 @@ class ProveedoresController {
 
     public static function crear(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $proveedor = new Proveedor();
         $alertas   = [];
 
@@ -41,6 +43,7 @@ class ProveedoresController {
 
     public static function editar(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $id        = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
         $proveedor = Proveedor::find($id);
         $alertas   = [];
@@ -70,6 +73,7 @@ class ProveedoresController {
 
     public static function eliminar(Router $router): void {
         isAuth();
+        isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /' . $_ENV['APP_NAME'] . '/proveedores');
             exit;
@@ -86,6 +90,7 @@ class ProveedoresController {
 
     public static function activar(Router $router): void {
         isAuth();
+        isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /' . $_ENV['APP_NAME'] . '/proveedores');
             exit;
@@ -102,6 +107,7 @@ class ProveedoresController {
 
     public static function actualizarInline(Router $router): void {
         isAuth();
+        isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
         
         $json = file_get_contents('php://input');

@@ -128,6 +128,14 @@ class VentasController {
                         // Costo unitario del último movimiento de compra
                         $costoUnitario = Inventario::getCostoUnitario($prod_id);
 
+                        // ─── VALIDACIÓN: No vender por debajo del costo ───
+                        if ($precio < $costoUnitario) {
+                            $prod = Producto::find($prod_id);
+                            throw new \Exception(
+                                "Precio insuficiente para «{$prod->nombre}»: el costo es Q" . number_format($costoUnitario, 2) . " y el precio de venta es Q" . number_format($precio, 2)
+                            );
+                        }
+
                         // Detalle
                         $detalle                  = new VentaDetalle();
                         $detalle->venta_id        = $venta_id;

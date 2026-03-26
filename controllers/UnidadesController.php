@@ -8,6 +8,7 @@ class UnidadesController {
 
     public static function index(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $unidades = UnidadMedida::all('nombre');
         $router->render('unidades/index', [
             'titulo'   => 'Unidades de Medida',
@@ -17,6 +18,7 @@ class UnidadesController {
 
     public static function crear(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $unidad  = new UnidadMedida();
         $alertas = [];
 
@@ -41,6 +43,7 @@ class UnidadesController {
 
     public static function editar(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $id      = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
         $unidad  = UnidadMedida::find($id);
         $alertas = [];
@@ -86,6 +89,7 @@ class UnidadesController {
 
     public static function actualizarInline(Router $router): void {
         isAuth();
+        isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
         
         $json = file_get_contents('php://input');

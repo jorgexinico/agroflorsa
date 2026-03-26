@@ -8,6 +8,7 @@ class CategoriasController {
 
     public static function index(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $categorias = Categoria::whereArray(['activo' => 1]);
         $router->render('categorias/index', [
             'titulo'     => 'Categorías',
@@ -17,6 +18,7 @@ class CategoriasController {
 
     public static function crear(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $categoria = new Categoria();
         $alertas   = [];
 
@@ -42,6 +44,7 @@ class CategoriasController {
 
     public static function editar(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $id        = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
         $categoria = Categoria::find($id);
         $alertas   = [];
@@ -88,6 +91,7 @@ class CategoriasController {
 
     public static function actualizarInline(Router $router): void {
         isAuth();
+        isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
         
         $json = file_get_contents('php://input');

@@ -11,6 +11,7 @@ class SucursalesController {
 
     public static function index(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $sucursales = Sucursal::all('nombre');
         $router->render('sucursales/index', [
             'titulo'     => 'Sucursales',

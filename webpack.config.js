@@ -11,6 +11,7 @@ module.exports = {
     'js/proveedores': './src/js/proveedores.js',
     'js/productos': './src/js/productos.js',
     'js/turnos': './src/js/turnos.js',
+    'js/inventario': './src/js/inventario.js',
   },
   output: {
     filename: '[name].js',

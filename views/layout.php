@@ -95,11 +95,19 @@ if (($layout ?? '') === 'auth') : ?>
       <span>Turnos</span>
     </a>
 
+    <?php if ($usuarioRol === 'admin'): ?>
     <a href="<?= $base ?>/compras" class="ag-nav-item <?= isActive($base . '/compras') ?>">
       <i class="bi bi-truck"></i>
       <span>Compras</span>
     </a>
+    <?php endif; ?>
 
+    <a href="<?= $base ?>/traslados" class="ag-nav-item <?= isActive($base . '/traslados') ?>">
+      <i class="bi bi-arrow-left-right text-info"></i>
+      <span>Traslados</span>
+    </a>
+
+    <?php if ($usuarioRol === 'admin'): ?>
     <a href="<?= $base ?>/cuentas-cobrar" class="ag-nav-item <?= isActive($base . '/cuentas-cobrar') ?>">
       <i class="bi bi-file-earmark-text"></i>
       <span>Cuentas x Cobrar</span>
@@ -109,6 +117,7 @@ if (($layout ?? '') === 'auth') : ?>
       <i class="bi bi-wallet2"></i>
       <span>Cuentas x Pagar</span>
     </a>
+    <?php endif; ?>
 
     <!-- INVENTARIO -->
     <div class="ag-nav-section">Inventario</div>
@@ -118,24 +127,34 @@ if (($layout ?? '') === 'auth') : ?>
       <span>Stock Actual</span>
     </a>
 
+    <?php if ($usuarioRol === 'admin'): ?>
     <a href="<?= $base ?>/inventario/ajuste" class="ag-nav-item <?= isActive($base . '/inventario/ajuste') ?>">
       <i class="bi bi-pencil-square"></i>
       <span>Ajuste Manual</span>
+    </a>
+    <?php endif; ?>
+
+    <a href="<?= $base ?>/inventario/movimientos" class="ag-nav-item <?= isActive($base . '/inventario/movimientos') ?>">
+      <i class="bi bi-clock-history text-info"></i>
+      <span>Historial de Movimientos</span>
     </a>
 
     <!-- CATÁLOGOS -->
     <div class="ag-nav-section">Catálogos</div>
 
+    <?php if ($usuarioRol === 'admin'): ?>
     <a href="<?= $base ?>/productos" class="ag-nav-item <?= isActive($base . '/productos') ?>">
       <i class="bi bi-box-seam"></i>
       <span>Productos</span>
     </a>
+    <?php endif; ?>
 
     <a href="<?= $base ?>/clientes" class="ag-nav-item <?= isActive($base . '/clientes') ?>">
       <i class="bi bi-people"></i>
       <span>Clientes</span>
     </a>
 
+    <?php if ($usuarioRol === 'admin'): ?>
     <a href="<?= $base ?>/proveedores" class="ag-nav-item <?= isActive($base . '/proveedores') ?>">
       <i class="bi bi-building"></i>
       <span>Proveedores</span>
@@ -154,6 +173,22 @@ if (($layout ?? '') === 'auth') : ?>
     <a href="<?= $base ?>/categorias" class="ag-nav-item <?= isActive($base . '/categorias') ?>">
       <i class="bi bi-tags-fill"></i>
       <span>Categorías</span>
+    </a>
+    <?php endif; ?>
+
+    <!-- REPORTES -->
+    <div class="ag-nav-section">Reportes</div>
+
+    <?php if ($usuarioRol === 'admin'): ?>
+    <a href="<?= $base ?>/reportes/utilidades" class="ag-nav-item <?= isActive($base . '/reportes/utilidades') ?>">
+      <i class="bi bi-graph-up-arrow text-success"></i>
+      <span>Ganancias</span>
+    </a>
+    <?php endif; ?>
+
+    <a href="<?= $base ?>/reportes/vencimientos" class="ag-nav-item <?= isActive($base . '/reportes/vencimientos') ?>">
+      <i class="bi bi-calendar-event text-danger"></i>
+      <span>Vencimientos</span>
     </a>
 
     <!-- ADMIN -->

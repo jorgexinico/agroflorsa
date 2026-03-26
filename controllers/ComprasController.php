@@ -14,6 +14,7 @@ class ComprasController {
 
     public static function index(Router $router): void {
         isAuth();
+        isRole(['admin']);
         // sucursal_id = 0 para admin sin turno → muestra todas las sucursales
         $sucursalId = (int)($_SESSION['sucursal_id'] ?? 0);
         $compras    = Compra::allConDetalle($sucursalId);
@@ -30,6 +31,7 @@ class ComprasController {
 
     public static function crear(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $sucursales  = Sucursal::getActivas();
         $proveedores = Proveedor::getActivos();
         $productos   = Producto::allConUnidad();
@@ -160,6 +162,7 @@ class ComprasController {
 
     public static function detalleAjax(Router $router): void {
         isAuth();
+        isRole(['admin']);
         header('Content-Type: application/json');
 
         $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);

@@ -11,6 +11,7 @@ class ProductosController {
 
     public static function index(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $productos = Producto::allConUnidad();
         $categorias = Categoria::whereArray(['activo' => 1]);
         $router->render('productos/index', [
@@ -22,6 +23,7 @@ class ProductosController {
 
     public static function crear(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $producto = new Producto();
         $unidades = UnidadMedida::all();
         $marcas   = Marca::all('nombre');
@@ -61,6 +63,7 @@ class ProductosController {
 
     public static function editar(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $id       = (int)($_GET['id'] ?? 0);
         $producto = Producto::find($id);
         if (!$producto) redirectTo('/productos');
@@ -101,6 +104,7 @@ class ProductosController {
 
     public static function eliminar(Router $router): void {
         isAuth();
+        isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') redirectTo('/productos');
 
         $id       = (int)($_POST['id'] ?? 0);
@@ -118,6 +122,7 @@ class ProductosController {
      */
     public static function actualizarInline(Router $router): void {
         isAuth();
+        isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') return;
         
         $json = file_get_contents('php://input');
@@ -233,6 +238,7 @@ class ProductosController {
      */
     public static function importar(Router $router): void {
         isAuth();
+        isRole(['admin']);
 
         // GET — mostrar vista de importación
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {

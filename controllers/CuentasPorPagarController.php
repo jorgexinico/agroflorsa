@@ -11,6 +11,7 @@ class CuentasPorPagarController {
 
     public static function index(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $proveedor_id = filter_var($_GET['proveedor_id'] ?? 0, FILTER_VALIDATE_INT);
         $cuentas      = CuentaPorPagar::getPendientes($proveedor_id);
         $proveedores  = Proveedor::getActivos();
@@ -25,6 +26,7 @@ class CuentasPorPagarController {
 
     public static function detalle(Router $router): void {
         isAuth();
+        isRole(['admin']);
         $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
         $cxp = CuentaPorPagar::fetchFirstRaw(
             "SELECT cxp.*, p.nombre AS proveedor_nombre, c.fecha AS compra_fecha, s.nombre AS sucursal_nombre
@@ -52,6 +54,7 @@ class CuentasPorPagarController {
 
     public static function abonar(Router $router): void {
         isAuth();
+        isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-pagar');
             exit;
