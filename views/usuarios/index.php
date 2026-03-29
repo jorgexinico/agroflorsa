@@ -1,7 +1,7 @@
 <?php // views/usuarios/index.php ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
   <p class="mb-0 text-muted">Gestión de usuarios del sistema.</p>
-  <a href="/<?= $_ENV['APP_NAME'] ?>/usuarios/crear" class="btn btn-primary btn-sm">
+  <a href="<?= $urlBase ?>/usuarios/crear" class="btn btn-primary btn-sm">
     <i class="bi bi-person-plus me-1"></i>Nuevo Usuario
   </a>
 </div>
@@ -38,11 +38,11 @@
           </td>
           <td class="small text-muted"><?= $u->creado_en ? date('d/m/Y', strtotime($u->creado_en)) : '—' ?></td>
           <td class="text-end">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/usuarios/editar?id=<?= $u->id ?>"
+            <a href="<?= $urlBase ?>/usuarios/editar?id=<?= $u->id ?>"
                class="btn btn-sm btn-outline-secondary py-0 me-1" title="Editar">
               <i class="bi bi-pencil"></i>
             </a>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/usuarios/toggle" class="d-inline"
+            <form method="POST" action="<?= $urlBase ?>/usuarios/toggle" class="d-inline"
                   onsubmit="return confirm('¿<?= $u->activo ? 'Desactivar' : 'Activar' ?> al usuario <?= s($u->nombre) ?>?')">
               <input type="hidden" name="id" value="<?= $u->id ?>">
               <button type="submit" class="btn btn-sm py-0 <?= $u->activo ? 'btn-outline-danger' : 'btn-outline-success' ?>"

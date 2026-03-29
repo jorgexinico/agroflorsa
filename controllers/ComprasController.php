@@ -140,8 +140,7 @@ class ComprasController {
                     }
 
                     $db->commit();
-                    header('Location: /' . $_ENV['APP_NAME'] . '/compras?ok=1');
-                    exit;
+                    redirectTo('/compras?ok=1');
 
                 } catch (\Exception $e) {
                     $db->rollBack();

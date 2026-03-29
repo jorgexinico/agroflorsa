@@ -25,7 +25,8 @@ use Controllers\TrasladosController;
 use Controllers\ReportesController;
 
 $router = new Router();
-$router->setBaseURL('/' . $_ENV['APP_NAME']);
+global $urlBase;
+$router->setBaseURL($urlBase);
 
 // ── AUTH ─────────────────────────────────────────────
 $router->get('/login',   [AuthController::class, 'login']);

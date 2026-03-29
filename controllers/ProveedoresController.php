@@ -84,8 +84,7 @@ class ProveedoresController {
             $proveedor->activo = 0;
             $proveedor->actualizar();
         }
-        header('Location: /' . $_ENV['APP_NAME'] . '/proveedores?ok=3');
-        exit;
+        redirectTo('/proveedores?ok=3');
     }
 
     public static function activar(Router $router): void {
@@ -101,8 +100,7 @@ class ProveedoresController {
             $proveedor->activo = 1;
             $proveedor->actualizar();
         }
-        header('Location: /' . $_ENV['APP_NAME'] . '/proveedores?ok=4');
-        exit;
+        redirectTo('/proveedores?ok=4');
     }
 
     public static function actualizarInline(Router $router): void {

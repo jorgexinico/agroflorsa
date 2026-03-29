@@ -29,8 +29,7 @@ class CategoriasController {
                 $categoria->creado_en = date('Y-m-d H:i:s');
                 $categoria->activo = 1;
                 $categoria->crear();
-                header('Location: /' . $_ENV['APP_NAME'] . '/categorias?ok=1');
-                exit;
+                redirectTo('/categorias?ok=1');
             }
         }
 
@@ -50,8 +49,7 @@ class CategoriasController {
         $alertas   = [];
 
         if (!$categoria) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/categorias');
-            exit;
+            redirectTo('/categorias');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -59,8 +57,7 @@ class CategoriasController {
             $alertas = $categoria->validar();
             if (empty($alertas['danger'])) {
                 $categoria->actualizar();
-                header('Location: /' . $_ENV['APP_NAME'] . '/categorias?ok=2');
-                exit;
+                redirectTo('/categorias?ok=2');
             }
         }
 
@@ -76,8 +73,7 @@ class CategoriasController {
         isAuth();
         isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/categorias');
-            exit;
+            redirectTo('/categorias');
         }
         $id        = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
         $categoria = Categoria::find($id);
@@ -85,8 +81,7 @@ class CategoriasController {
             $categoria->activo = 0;
             $categoria->actualizar();
         }
-        header('Location: /' . $_ENV['APP_NAME'] . '/categorias?ok=3');
-        exit;
+        redirectTo('/categorias?ok=3');
     }
 
     public static function actualizarInline(Router $router): void {

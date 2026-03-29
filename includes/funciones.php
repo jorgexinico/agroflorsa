@@ -36,7 +36,8 @@ function asset(string $ruta): string {
 
 // ── REDIRECCIÓN ──────────────────────────────────────
 function redirectTo(string $ruta): void {
-    header('Location: /' . $_ENV['APP_NAME'] . $ruta);
+    global $urlBase;
+    header('Location: ' . $urlBase . $ruta);
     exit;
 }
 
@@ -46,8 +47,9 @@ function redirectTo(string $ruta): void {
  * No llama session_start() porque ya se hizo en app.php.
  */
 function isAuth(): void {
+    global $urlBase;
     if (!isset($_SESSION['usuario_id'])) {
-        header('Location: /' . $_ENV['APP_NAME'] . '/login');
+        header('Location: ' . $urlBase . '/login');
         exit;
     }
 }
@@ -57,8 +59,9 @@ function isAuth(): void {
  * @param string[] $roles  Ej: ['admin','supervisor']
  */
 function isRole(array $roles): void {
+    global $urlBase;
     if (!isset($_SESSION['usuario_rol']) || !in_array($_SESSION['usuario_rol'], $roles)) {
-        header('Location: /' . $_ENV['APP_NAME'] . '/dashboard?err=403');
+        header('Location: ' . $urlBase . '/dashboard?err=403');
         exit;
     }
 }

@@ -26,8 +26,7 @@ class ClientesController {
             if (empty($alertas)) {
                 $cliente->creado_en = date('Y-m-d H:i:s');
                 $cliente->crear();
-                header('Location: /' . $_ENV['APP_NAME'] . '/clientes?ok=1');
-                exit;
+                redirectTo('/clientes?ok=1');
             }
         }
 
@@ -46,8 +45,7 @@ class ClientesController {
         $alertas = [];
 
         if (!$cliente) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/clientes');
-            exit;
+            redirectTo('/clientes');
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -55,8 +53,7 @@ class ClientesController {
             $alertas = $cliente->validar();
             if (empty($alertas)) {
                 $cliente->actualizar();
-                header('Location: /' . $_ENV['APP_NAME'] . '/clientes?ok=2');
-                exit;
+                redirectTo('/clientes?ok=2');
             }
         }
 
@@ -80,8 +77,7 @@ class ClientesController {
             $cliente->activo = 0;
             $cliente->actualizar();
         }
-        header('Location: /' . $_ENV['APP_NAME'] . '/clientes?ok=3');
-        exit;
+        redirectTo('/clientes?ok=3');
     }
 
     public static function activar(Router $router): void {
@@ -96,8 +92,7 @@ class ClientesController {
             $cliente->activo = 1;
             $cliente->actualizar();
         }
-        header('Location: /' . $_ENV['APP_NAME'] . '/clientes?ok=4');
-        exit;
+        redirectTo('/clientes?ok=4');
     }
 
     public static function actualizarInline(Router $router): void {

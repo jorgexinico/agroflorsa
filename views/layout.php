@@ -4,8 +4,8 @@
  * La variable $contenido se inyecta desde Router::render()
  * La variable $layout puede ser 'auth' para páginas sin sidebar
  */
-$appName = $_ENV['APP_NAME'] ?? 'agroflorsa';
-$base    = '/' . $appName;
+global $urlBase;
+$base = $urlBase;
 
 $usuarioNombre = $_SESSION['usuario_nombre'] ?? '';
 $usuarioRol    = $_SESSION['usuario_rol']    ?? '';

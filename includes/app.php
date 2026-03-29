@@ -12,6 +12,9 @@ ini_set('display_errors', $_ENV['DEBUG_MODE']);
 ini_set('display_startup_errors', $_ENV['DEBUG_MODE']);
 error_reporting(-$_ENV['DEBUG_MODE']);
 
+// Prefijo de URL dinámico según APP_NAME
+$urlBase = (!empty($_ENV['APP_NAME'])) ? '/' . $_ENV['APP_NAME'] : '';
+
 require 'funciones.php';
 require 'database.php';
 // Conectarnos a la base de datos
