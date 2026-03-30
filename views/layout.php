@@ -4,8 +4,10 @@
  * La variable $contenido se inyecta desde Router::render()
  * La variable $layout puede ser 'auth' para páginas sin sidebar
  */
-global $urlBase;
-$base = $urlBase;
+/**
+ * $base se deriva de APP_NAME
+ */
+$base = '/' . $_ENV['APP_NAME'];
 
 $usuarioNombre = $_SESSION['usuario_nombre'] ?? '';
 $usuarioRol    = $_SESSION['usuario_rol']    ?? '';
@@ -137,6 +139,13 @@ if (($layout ?? '') === 'auth') : ?>
     <a href="<?= $base ?>/inventario/movimientos" class="ag-nav-item <?= isActive($base . '/inventario/movimientos') ?>">
       <i class="bi bi-clock-history text-info"></i>
       <span>Historial de Movimientos</span>
+    </a>
+
+    <!-- CONSULTA RÁPIDA -->
+    <div class="ag-nav-section">Consultas</div>
+    <a href="<?= $base ?>/precios" class="ag-nav-item <?= isActive($base . '/precios') ?>">
+      <i class="bi bi-search-heart-fill text-warning"></i>
+      <span class="fw-bold">Consulta de Precios</span>
     </a>
 
     <!-- CATÁLOGOS -->

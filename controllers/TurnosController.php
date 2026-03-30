@@ -5,6 +5,7 @@ use MVC\Router;
 use Models\Turno;
 use Models\Sucursal;
 use Models\Venta;
+use Model\ActiveRecord;
 
 class TurnosController {
 
@@ -60,11 +61,14 @@ class TurnosController {
 
         // Verificar si ya tiene turno abierto
         $yaAbierto = Turno::fetchFirstRaw(
-            "SELECT id FROM turnos WHERE usuario_id = :uid AND estado = 'abierto' LIMIT 1",
+            "SELECT id, sucursal_id FROM turnos WHERE usuario_id = :uid AND estado = 'abierto' LIMIT 1",
             [':uid' => $_SESSION['usuario_id']]
         );
         if ($yaAbierto) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/turnos?err=ya_abierto');
+            // Reconectar automáticamente si ya tiene un turno abierto
+            $_SESSION['turno_id']    = (int)$yaAbierto['id'];
+            $_SESSION['sucursal_id'] = (int)$yaAbierto['sucursal_id'];
+            header('Location: /' . $_ENV['APP_NAME'] . '/dashboard?welcome_back=1');
             exit;
         }
 
@@ -120,13 +124,32 @@ class TurnosController {
         }
 
         $ventas   = Venta::getByTurno($id);
+        
+        // Obtener detalles de todas las ventas del turno para el acordeón
+        $todosLosDetalles = ActiveRecord::fetchRaw(
+            "SELECT vd.*, p.nombre AS producto_nombre, u.abreviatura AS unidad
+             FROM venta_detalle vd
+             JOIN ventas v ON v.id = vd.venta_id
+             JOIN productos p ON p.id = vd.producto_id
+             JOIN unidades_medida u ON u.id = p.unidad_id
+             WHERE v.turno_id = :tid",
+            [':tid' => $id]
+        );
+
+        // Agrupar detalles por venta_id
+        $detallesPorVenta = [];
+        foreach ($todosLosDetalles as $det) {
+            $detallesPorVenta[$det['venta_id']][] = $det;
+        }
+
         $totales  = Turno::calcularTotales($id);
 
         $router->render('turnos/detalle', [
-            'titulo'  => 'Detalle del Turno',
-            'turno'   => $turno,
-            'ventas'  => $ventas,
-            'totales' => $totales,
+            'titulo'           => 'Detalle del Turno',
+            'turno'            => $turno,
+            'ventas'           => $ventas,
+            'detallesPorVenta' => $detallesPorVenta,
+            'totales'          => $totales,
         ]);
     }
 

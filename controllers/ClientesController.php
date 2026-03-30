@@ -68,8 +68,7 @@ class ClientesController {
     public static function eliminar(Router $router): void {
         isAuth();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/clientes');
-            exit;
+            redirectTo('/clientes');
         }
         $id      = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
         $cliente = Cliente::find($id);
@@ -83,8 +82,7 @@ class ClientesController {
     public static function activar(Router $router): void {
         isAuth();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/clientes');
-            exit;
+            redirectTo('/clientes');
         }
         $id      = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
         $cliente = Cliente::find($id);

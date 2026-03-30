@@ -292,7 +292,16 @@ class InventarioController {
     public static function movimientos(Router $router): void {
         isAuth();
         
-        $sucursal_id  = (int)($_GET['sucursal_id'] ?? 0);
+        $mi_rol       = $_SESSION['usuario_rol'] ?? '';
+        $mi_sucursal  = (int)($_SESSION['sucursal_id'] ?? 0);
+
+        // Si es vendedor, forzar su sucursal y prohibir ver otras
+        if ($mi_rol === 'vendedor') {
+            $sucursal_id = $mi_sucursal;
+        } else {
+            $sucursal_id  = (int)($_GET['sucursal_id'] ?? 0);
+        }
+
         $producto_id  = (int)($_GET['producto_id'] ?? 0);
         $tipo        = $_GET['tipo'] ?? '';
         $fecha_inicio = $_GET['fecha_inicio'] ?? date('Y-m-01');

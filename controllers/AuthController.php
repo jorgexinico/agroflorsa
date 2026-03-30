@@ -11,10 +11,8 @@ class AuthController {
 
     public static function login(Router $router): void {
         // Si ya está logueado, redirigir al dashboard
-        global $urlBase;
         if (isset($_SESSION['usuario_id'])) {
-            header('Location: ' . $urlBase . '/dashboard');
-            exit;
+            redirectTo('/dashboard');
         }
 
         $alertas = [];
@@ -41,8 +39,7 @@ class AuthController {
                     $_SESSION['usuario_nombre'] = $encontrado->nombre;
                     $_SESSION['usuario_rol']    = $encontrado->rol;
 
-                    header('Location: ' . $urlBase . '/dashboard');
-                    exit;
+                    redirectTo('/dashboard');
                 }
             }
         }
@@ -55,10 +52,8 @@ class AuthController {
     }
 
     public static function logout(Router $router): void {
-        global $urlBase;
         $_SESSION = [];
         session_destroy();
-        header('Location: ' . $urlBase . '/login');
-        exit;
+        redirectTo('/login');
     }
 }

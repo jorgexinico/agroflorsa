@@ -99,13 +99,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
 
   if (params.has('ok')) {
-    // Los mensajes ok vienen del servidor; si hay texto en el DOM lo leemos,
-    // de lo contrario mostramos mensaje genérico.
+    const type = params.get('type');
     const msgEl = document.getElementById('flash-ok-msg');
-    Toast.fire({
-      icon: 'success',
-      title: msgEl ? msgEl.dataset.msg : '¡Operación completada!',
-    });
+    const msg = msgEl ? msgEl.dataset.msg : '¡Operación completada!';
+
+    if (type === 'traslado_recibido') {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Traslado Recibido!',
+        text: 'La mercadería ha sido ingresada al stock de tu sucursal correctamente.',
+        confirmButtonColor: '#0d6efd',
+        timer: 5000,
+        timerProgressBar: true
+      });
+    } else {
+      Toast.fire({
+        icon: 'success',
+        title: msg,
+      });
+    }
   }
 
   if (params.get('err') === '403') {

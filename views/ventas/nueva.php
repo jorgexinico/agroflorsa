@@ -11,6 +11,28 @@
   <div class="card-body">
     <?php include __DIR__ . '/../templates/alertas.php'; ?>
 
+    <div class="row align-items-center mb-3">
+      <div class="col-md-6">
+        <h1 class="h3 mb-0">Nueva Venta</h1>
+      </div>
+      <?php if (!empty($sucursales)): ?>
+      <div class="col-md-6 text-md-end">
+        <div class="d-inline-flex align-items-center gap-2">
+          <label class="small fw-bold text-muted text-nowrap mb-0">Vender desde:</label>
+          <select class="form-select form-select-sm" style="width: 200px;" onchange="window.location.href='?sucursal_id='+this.value">
+            <?php foreach ($sucursales as $suc): ?>
+            <option value="<?= $suc->id ?>" <?= $suc->id == $sucursal_id ? 'selected' : '' ?>>
+              <?= s($suc->nombre) ?>
+            </option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+      </div>
+      <?php endif; ?>
+    </div>
+
+    <template id="productos-data" data-productos='<?= json_encode($productos) ?>'></template>
+
     <!-- Hidden select template para JS -->
     <select id="productos-template" class="d-none">
       <?php foreach ($productos as $p): ?>
@@ -18,8 +40,9 @@
               data-precio-publico="<?= (float)$p->precio_publico ?>"
               data-precio-mayorista="<?= (float)$p->precio_mayorista ?>"
               data-sku="<?= s($p->sku ?? '') ?>"
+              data-stock="<?= (float)$p->stock ?>"
               data-maneja-vencimiento="<?= (int)$p->maneja_vencimiento ?>">
-        <?= s($p->nombre) ?> (<?= s($p->unidad_abreviatura ?? '') ?>)
+        <?= s($p->nombre) ?> (<?= s($p->unidad_abreviatura ?? '') ?>) — Stock: <?= (float)$p->stock ?>
       </option>
       <?php endforeach; ?>
     </select>
@@ -87,21 +110,29 @@
             <tbody id="venta-items"></tbody>
           </table>
         </div>
-        <div class="card-footer text-end bg-white">
-          <div class="d-flex justify-content-between align-items-center mb-1 d-sm-none">
-            <span class="text-muted small">Desliza la tabla para ver más →</span>
-          </div>
-          <strong class="me-2 fs-5">Total:</strong>
-          <span id="venta-total" class="text-success fw-bold fs-3">Q 0.00</span>
-        </div>
-      </div>
+    <tfoot>
+      <tr class="bg-light fw-bold">
+        <td colspan="3" class="text-end py-3">TOTAL ESTIMADO</td>
+        <td class="text-end py-3 text-primary fs-4" id="venta-total">Q 0.00</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
 
-      <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end mt-4">
-        <a href="/<?= $_ENV['APP_NAME'] ?>/ventas" class="btn btn-outline-secondary btn-lg py-2 fs-6">Cancelar</a>
-        <button type="submit" class="btn btn-success btn-lg py-2 fs-6 px-sm-5">
-          <i class="bi bi-check-circle me-2"></i>Confirmar venta
-        </button>
-      </div>
+<div class="row mt-4">
+  <div class="col-12 text-end d-flex justify-content-between align-items-center">
+    <button type="button" id="btn-clear-cart-local" class="btn btn-outline-danger d-none">
+      <i class="bi bi-trash3 me-1"></i>Vaciar Carrito
+    </button>
+    <div class="ms-auto">
+      <a href="/<?= $_ENV['APP_NAME'] ?>/ventas" class="btn btn-outline-secondary me-2">Cancelar</a>
+      <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">
+        <i class="bi bi-check2-circle me-1"></i>Confirmar Venta
+      </button>
+    </div>
+  </div>
+</div>
     </form>
   </div>
 </div>

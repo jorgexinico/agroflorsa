@@ -42,10 +42,31 @@ class VentasController {
             $ventas = [];
         }
 
+        // Obtener detalles para el acordeón
+        $detallesPorVenta = [];
+        if (!empty($ventas)) {
+            $ids = array_column($ventas, 'id');
+            $placeholders = str_repeat('?,', count($ids) - 1) . '?';
+            
+            $todosLosDetalles = ActiveRecord::fetchRaw(
+                "SELECT vd.*, p.nombre AS producto_nombre, u.abreviatura AS unidad
+                 FROM venta_detalle vd
+                 JOIN productos p ON p.id = vd.producto_id
+                 JOIN unidades_medida u ON u.id = p.unidad_id
+                 WHERE vd.venta_id IN ($placeholders)",
+                $ids
+            );
+
+            foreach ($todosLosDetalles as $det) {
+                $detallesPorVenta[$det['venta_id']][] = $det;
+            }
+        }
+
         $router->render('ventas/index', [
-            'titulo'  => 'Ventas',
-            'ventas'  => $ventas,
-            'fecha'   => $fecha,
+            'titulo'           => 'Historial de Ventas',
+            'ventas'           => $ventas,
+            'detallesPorVenta' => $detallesPorVenta,
+            'fecha'            => $fecha,
         ]);
     }
 
@@ -57,13 +78,29 @@ class VentasController {
         isAuth();
 
         if (empty($_SESSION['turno_id'])) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/turnos/abrir');
-            exit;
+            redirectTo('/turnos/abrir');
         }
 
-        $productos = Producto::allConUnidad();
-        $clientes  = Cliente::getActivos();
-        $alertas   = [];
+        $rol = $_SESSION['usuario_rol'] ?? '';
+        $sucursal_id = (int)($_SESSION['sucursal_id'] ?? 0);
+        
+        // Si es admin, puede elegir otra sucursal vía GET para ver stock
+        if ($rol === 'admin' && isset($_GET['sucursal_id'])) {
+            $sucursal_id = (int)$_GET['sucursal_id'];
+        }
+
+        $productos = Producto::fetchRaw(
+            "SELECT p.*, um.abreviatura AS unidad_abreviatura, iep.cantidad AS stock
+             FROM productos p
+             JOIN unidades_medida um ON um.id = p.unidad_id
+             JOIN inventario_existencias_producto iep ON iep.producto_id = p.id
+             WHERE iep.sucursal_id = :suc AND iep.cantidad > 0 AND p.activo = 1
+             ORDER BY p.nombre ASC",
+            [':suc' => $sucursal_id]
+        );
+        $clientes   = Cliente::getActivos();
+        $sucursales = ($rol === 'admin') ? Sucursal::getActivas() : [];
+        $alertas    = [];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $turno_id    = (int)$_SESSION['turno_id'];
@@ -189,8 +226,7 @@ class VentasController {
                     }
 
                     $db->commit();
-                    header('Location: /' . $_ENV['APP_NAME'] . '/ventas/detalle?id=' . $venta_id);
-                    exit;
+                    redirectTo('/ventas/detalle?id=' . $venta_id);
 
                 } catch (\Exception $e) {
                     $db->rollBack();
@@ -212,16 +248,14 @@ class VentasController {
         isAuth();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/ventas');
-            exit;
+            redirectTo('/ventas');
         }
 
         $id    = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
         $venta = Venta::find($id);
 
         if (!$venta || $venta->estado === 'anulada') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/ventas?err=invalid');
-            exit;
+            redirectTo('/ventas?err=invalid');
         }
 
         $db = ActiveRecord::getDB();
@@ -260,13 +294,11 @@ class VentasController {
             );
 
             $db->commit();
-            header('Location: /' . $_ENV['APP_NAME'] . '/ventas/detalle?id=' . $id . '&ok=anulada');
-            exit;
+            redirectTo('/ventas/detalle?id=' . $id . '&ok=anulada');
 
         } catch (\Exception $e) {
             $db->rollBack();
-            header('Location: /' . $_ENV['APP_NAME'] . '/ventas/detalle?id=' . $id . '&err=db');
-            exit;
+            redirectTo('/ventas/detalle?id=' . $id . '&err=db');
         }
     }
 
@@ -283,8 +315,7 @@ class VentasController {
         );
 
         if (!$venta) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/ventas');
-            exit;
+            redirectTo('/ventas');
         }
 
         $detalle = VentaDetalle::getByVenta($id);
@@ -313,8 +344,7 @@ class VentasController {
         );
 
         if (!$venta) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/ventas');
-            exit;
+            redirectTo('/ventas');
         }
 
         $detalle = VentaDetalle::getByVenta($id);

@@ -51,8 +51,7 @@ class CuentasPorCobrarController {
         );
 
         if (!$cuenta) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-cobrar');
-            exit;
+            redirectTo('/cuentas-cobrar');
         }
 
         $abonos = PagoCxC::getByCxC($id);
@@ -69,8 +68,7 @@ class CuentasPorCobrarController {
         isAuth();
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-cobrar');
-            exit;
+            redirectTo('/cuentas-cobrar');
         }
 
         $cxc_id     = filter_var($_POST['cxc_id'] ?? 0, FILTER_VALIDATE_INT);
@@ -81,13 +79,11 @@ class CuentasPorCobrarController {
         $cuenta = CuentaPorCobrar::find($cxc_id);
 
         if (!$cuenta || $cuenta->estado === 'pagada' || $cuenta->estado === 'anulada') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-cobrar?err=invalid');
-            exit;
+            redirectTo('/cuentas-cobrar?err=invalid');
         }
 
         if ($monto <= 0 || $monto > (float)$cuenta->saldo) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-cobrar/detalle?id=' . $cxc_id . '&err=monto');
-            exit;
+            redirectTo('/cuentas-cobrar/detalle?id=' . $cxc_id . '&err=monto');
         }
 
         $db = ActiveRecord::getDB();
@@ -121,13 +117,11 @@ class CuentasPorCobrarController {
             );
 
             $db->commit();
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-cobrar/detalle?id=' . $cxc_id . '&ok=1');
-            exit;
+            redirectTo('/cuentas-cobrar/detalle?id=' . $cxc_id . '&ok=1');
 
         } catch (\Exception $e) {
             $db->rollBack();
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-cobrar/detalle?id=' . $cxc_id . '&err=db');
-            exit;
+            redirectTo('/cuentas-cobrar/detalle?id=' . $cxc_id . '&err=db');
         }
     }
 }

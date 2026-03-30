@@ -25,8 +25,7 @@ use Controllers\TrasladosController;
 use Controllers\ReportesController;
 
 $router = new Router();
-global $urlBase;
-$router->setBaseURL($urlBase);
+$router->setBaseURL('/' . $_ENV['APP_NAME']);
 
 // ── AUTH ─────────────────────────────────────────────
 $router->get('/login',   [AuthController::class, 'login']);
@@ -166,6 +165,9 @@ $router->post('/usuarios/crear',  [UsuariosController::class, 'crear']);
 $router->get('/usuarios/editar',  [UsuariosController::class, 'editar']);
 $router->post('/usuarios/editar', [UsuariosController::class, 'editar']);
 $router->post('/usuarios/toggle', [UsuariosController::class, 'eliminar']);
+
+// ── CONSULTA DE PRECIOS ──────────────────────────────
+$router->get('/precios',         [\Controllers\PreciosController::class, 'index']);
 
 // ── COMPRUEBA RUTAS ──────────────────────────────────
 $router->comprobarRutas();

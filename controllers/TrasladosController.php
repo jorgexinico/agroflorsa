@@ -183,7 +183,7 @@ class TrasladosController {
             $traslado->actualizar();
 
             $db->commit();
-            header('Location: /' . $_ENV['APP_NAME'] . '/traslados?ok=2');
+            header('Location: /' . $_ENV['APP_NAME'] . '/traslados?ok=2&type=traslado_recibido');
             exit;
 
         } catch (\Exception $e) {
