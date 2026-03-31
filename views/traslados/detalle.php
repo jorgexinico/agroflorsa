@@ -19,7 +19,11 @@
                     </div>
                     <div class="col-sm-4">
                         <label class="text-muted small d-block">Estado:</label>
-                        <span class="badge bg-success">RECIBIDO</span>
+                        <?php if ($traslado['estado'] === 'enviado'): ?>
+                            <span class="badge bg-warning text-dark">ENVIADO (PENDIENTE)</span>
+                        <?php else: ?>
+                            <span class="badge bg-success">RECIBIDO</span>
+                        <?php endif; ?>
                     </div>
                     <?php if ($traslado['nota']): ?>
                     <div class="col-12 mt-2">

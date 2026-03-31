@@ -26,19 +26,26 @@ class AppController {
         );
 
         // ── KPIs de ventas ──────────────────────────────────────────
-        if ($sucursal_id > 0) {
-            // Usuario con sucursal asignada: filtra por sucursal
+        if ($rol !== 'admin') {
+            // Vendedor: solo sus ventas
             $ventasHoy = ActiveRecord::fetchFirstRaw(
-                "SELECT COALESCE(SUM(total),0) AS monto, COUNT(id) AS cantidad
-                 FROM ventas WHERE DATE(fecha) = :hoy AND estado = 'emitida' AND sucursal_id = :suc",
-                [':hoy' => $hoy, ':suc' => $sucursal_id]
+                "SELECT COALESCE(SUM(v.total),0) AS monto, COUNT(v.id) AS cantidad
+                 FROM ventas v JOIN turnos t ON t.id = v.turno_id
+                 WHERE DATE(v.fecha) = :hoy AND v.estado = 'emitida' AND t.usuario_id = :uid",
+                [':hoy' => $hoy, ':uid' => $_SESSION['usuario_id']]
             );
         } else {
-            // Admin sin turno: ve global de hoy
+            // Admin: global de hoy (opcionalmente filtrado por sucursal si tiene una asignada)
+            $where = "WHERE DATE(fecha) = :hoy AND estado = 'emitida'";
+            $p     = [':hoy' => $hoy];
+            if ($sucursal_id > 0) {
+                $where .= " AND sucursal_id = :suc";
+                $p[':suc'] = $sucursal_id;
+            }
             $ventasHoy = ActiveRecord::fetchFirstRaw(
                 "SELECT COALESCE(SUM(total),0) AS monto, COUNT(id) AS cantidad
-                 FROM ventas WHERE DATE(fecha) = :hoy AND estado = 'emitida'",
-                [':hoy' => $hoy]
+                 FROM ventas $where",
+                $p
             );
         }
         $ventasHoy = $ventasHoy ?? ['monto' => 0, 'cantidad' => 0];
@@ -54,25 +61,38 @@ class AppController {
         )['saldo'] ?? 0);
 
         // ── Últimas ventas ──────────────────────────────────────────
-        if ($sucursal_id > 0) {
+        if ($rol !== 'admin') {
+            // Vendedor: solo sus ventas
             $ultimasVentas = ActiveRecord::fetchRaw(
-                "SELECT v.id, v.total, v.fecha, v.tipo_pago, c.nombre AS cliente,
-                        '' AS sucursal_nombre
-                 FROM ventas v LEFT JOIN clientes c ON c.id = v.cliente_id
-                 WHERE v.estado = 'emitida' AND v.sucursal_id = :suc
+                "SELECT v.id, v.total, v.fecha, v.tipo_pago, c.nombre AS cliente, s.nombre AS sucursal_nombre
+                 FROM ventas v 
+                 JOIN turnos t ON t.id = v.turno_id
+                 JOIN sucursales s ON s.id = v.sucursal_id
+                 LEFT JOIN clientes c ON c.id = v.cliente_id
+                 WHERE v.estado = 'emitida' AND t.usuario_id = :uid
                  ORDER BY v.fecha DESC LIMIT 8",
-                [':suc' => $sucursal_id]
+                [':uid' => $_SESSION['usuario_id']]
             );
         } else {
+            // Admin: global de hoy
+            $where = "WHERE v.estado = 'emitida'";
+            $p     = [];
+            if ($sucursal_id > 0) {
+                $where .= " AND v.sucursal_id = :suc";
+                $p[':suc'] = $sucursal_id;
+            } else {
+                $where .= " AND DATE(v.fecha) = :hoy";
+                $p[':hoy'] = $hoy;
+            }
+
             $ultimasVentas = ActiveRecord::fetchRaw(
-                "SELECT v.id, v.total, v.fecha, v.tipo_pago, c.nombre AS cliente,
-                        s.nombre AS sucursal_nombre
+                "SELECT v.id, v.total, v.fecha, v.tipo_pago, c.nombre AS cliente, s.nombre AS sucursal_nombre
                  FROM ventas v
                  LEFT JOIN clientes c ON c.id = v.cliente_id
                  LEFT JOIN sucursales s ON s.id = v.sucursal_id
-                 WHERE v.estado = 'emitida' AND DATE(v.fecha) = :hoy
+                 $where
                  ORDER BY v.fecha DESC LIMIT 8",
-                [':hoy' => $hoy]
+                $p
             );
         }
 

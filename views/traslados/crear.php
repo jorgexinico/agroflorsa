@@ -14,7 +14,9 @@
                             <select name="sucursal_origen_id" class="form-select" required>
                                 <option value="">Seleccionar origen...</option>
                                 <?php foreach ($sucursales as $s): ?>
-                                    <option value="<?= $s->id ?>"><?= s($s->nombre) ?></option>
+                                    <option value="<?= $s->id ?>" <?= (($datos['sucursal_origen_id'] ?? '') == $s->id) ? 'selected' : '' ?>>
+                                        <?= s($s->nombre) ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -23,13 +25,15 @@
                             <select name="sucursal_destino_id" class="form-select" required>
                                 <option value="">Seleccionar destino...</option>
                                 <?php foreach ($sucursales as $s): ?>
-                                    <option value="<?= $s->id ?>"><?= s($s->nombre) ?></option>
+                                    <option value="<?= $s->id ?>" <?= (($datos['sucursal_destino_id'] ?? '') == $s->id) ? 'selected' : '' ?>>
+                                        <?= s($s->nombre) ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-bold">Nota / Observación</label>
-                            <input type="text" name="nota" class="form-control" placeholder="Ej: Abastecimiento semanal">
+                            <input type="text" name="nota" class="form-control" placeholder="Ej: Abastecimiento semanal" value="<?= s($datos['nota'] ?? '') ?>">
                         </div>
                     </div>
 
@@ -65,7 +69,35 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr id="filaVacia"><td colspan="3" class="text-center py-3 text-muted small">No hay productos agregados</td></tr>
+                                    <?php if (!empty($datos['producto_id'])): ?>
+                                        <?php foreach ($datos['producto_id'] as $i => $pid): 
+                                            // Buscar el nombre del producto en el array $productos
+                                            $prodNombre = 'Producto #' . $pid;
+                                            foreach ($productos as $p) {
+                                                if ($p->id == $pid) {
+                                                    $prodNombre = $p->nombre;
+                                                    break;
+                                                }
+                                            }
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <?= s($prodNombre) ?>
+                                                <input type="hidden" name="producto_id[]" value="<?= $pid ?>">
+                                            </td>
+                                            <td>
+                                                <input type="number" name="cantidad[]" class="form-control form-control-sm text-end" value="<?= $datos['cantidad'][$i] ?>" step="0.001" readonly>
+                                            </td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr id="filaVacia"><td colspan="3" class="text-center py-3 text-muted small">No hay productos agregados</td></tr>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -185,5 +217,10 @@ document.addEventListener('DOMContentLoaded', function() {
         inpCant.value = '';
         stockInfo.textContent = '';
     });
+
+    // Si ya hay un origen seleccionado (re-poblado por error), cargar sus productos
+    if (selOrigen.value) {
+        selOrigen.dispatchEvent(new Event('change'));
+    }
 });
 </script>

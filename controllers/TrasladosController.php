@@ -113,6 +113,7 @@ class TrasladosController {
                     $db->rollBack();
                     Traslado::setAlerta('danger', $e->getMessage());
                     $alertas = Traslado::getAlertas();
+                    $datos = $_POST; // Preservar datos para la vista
                 }
             }
         }
@@ -121,7 +122,8 @@ class TrasladosController {
             'titulo'     => 'Nuevo Traslado (Envío)',
             'sucursales' => $sucursales,
             'productos'  => $productos,
-            'alertas'    => $alertas
+            'alertas'    => $alertas,
+            'datos'      => $datos ?? []
         ]);
     }
 

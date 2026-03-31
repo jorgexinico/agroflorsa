@@ -24,22 +24,25 @@ class VentasController {
         $fecha       = $_GET['fecha'] ?? date('Y-m-d');
         $rol         = $_SESSION['usuario_rol'] ?? '';
 
-        if ($sucursal_id > 0) {
-            // Caso normal: usuario con turno activo
-            $ventas = Venta::getBySucursa($sucursal_id, $fecha);
-        } elseif ($rol === 'admin') {
-            // Admin sin turno: ve todas las sucursales
-            $ventas = Venta::fetchRaw(
-                "SELECT v.*, c.nombre AS cliente_nombre, s.nombre AS sucursal_nombre
-                 FROM ventas v
-                 LEFT JOIN clientes c ON c.id = v.cliente_id
-                 LEFT JOIN sucursales s ON s.id = v.sucursal_id
-                 WHERE v.estado != 'anulada' AND DATE(v.fecha) = :fecha
-                 ORDER BY v.fecha DESC",
-                [':fecha' => $fecha]
-            );
+        if ($rol === 'admin') {
+            // Admin: ve todas las sucursales si no tiene sucursal_id, o filtra por la que tenga
+            if ($sucursal_id > 0) {
+                $ventas = Venta::getBySucursa($sucursal_id, $fecha);
+            } else {
+                $ventas = Venta::fetchRaw(
+                    "SELECT v.*, c.nombre AS cliente_nombre, s.nombre AS sucursal_nombre
+                     FROM ventas v
+                     LEFT JOIN clientes c ON c.id = v.cliente_id
+                     LEFT JOIN sucursales s ON s.id = v.sucursal_id
+                     WHERE v.estado != 'anulada' AND DATE(v.fecha) = :fecha
+                     ORDER BY v.fecha DESC",
+                    [':fecha' => $fecha]
+                );
+            }
         } else {
-            $ventas = [];
+            // Vendedor: ve sus ventas (con o sin turno activo)
+            $usuario_id = (int)($_SESSION['usuario_id'] ?? 0);
+            $ventas = Venta::getByUsuario($usuario_id, $fecha);
         }
 
         // Obtener detalles para el acordeón

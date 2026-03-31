@@ -36,13 +36,13 @@
     <!-- Hidden select template para JS -->
     <select id="productos-template" class="d-none">
       <?php foreach ($productos as $p): ?>
-      <option value="<?= $p->id ?>"
-              data-precio-publico="<?= (float)$p->precio_publico ?>"
-              data-precio-mayorista="<?= (float)$p->precio_mayorista ?>"
-              data-sku="<?= s($p->sku ?? '') ?>"
-              data-stock="<?= (float)$p->stock ?>"
-              data-maneja-vencimiento="<?= (int)$p->maneja_vencimiento ?>">
-        <?= s($p->nombre) ?> (<?= s($p->unidad_abreviatura ?? '') ?>) — Stock: <?= (float)$p->stock ?>
+      <option value="<?= $p['id'] ?>"
+              data-precio-publico="<?= (float)$p['precio_publico'] ?>"
+              data-precio-mayorista="<?= (float)$p['precio_mayorista'] ?>"
+              data-sku="<?= s($p['sku'] ?? '') ?>"
+              data-stock="<?= (float)$p['stock'] ?>"
+              data-maneja-vencimiento="<?= (int)$p['maneja_vencimiento'] ?>">
+        <?= s($p['nombre']) ?> (<?= s($p['unidad_abreviatura'] ?? '') ?>) — Stock: <?= (float)$p['stock'] ?>
       </option>
       <?php endforeach; ?>
     </select>

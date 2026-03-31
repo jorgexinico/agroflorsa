@@ -55,6 +55,28 @@ class Venta extends ActiveRecord {
         );
     }
 
+    /**
+     * Retorna ventas de un usuario (vendedor) en una fecha, 
+     * independientemente de la sucursal (unido vía turnos).
+     */
+    public static function getByUsuario(int $usuario_id, string $fecha = ''): array {
+        $where = "WHERE t.usuario_id = :usr AND v.estado != 'anulada'";
+        $params = [':usr' => $usuario_id];
+        if ($fecha) {
+            $where  .= " AND DATE(v.fecha) = :fecha";
+            $params[':fecha'] = $fecha;
+        }
+        return self::fetchRaw(
+            "SELECT v.*, c.nombre AS cliente_nombre, s.nombre AS sucursal_nombre
+             FROM ventas v
+             JOIN turnos t ON t.id = v.turno_id
+             LEFT JOIN clientes c ON c.id = v.cliente_id
+             JOIN sucursales s ON s.id = v.sucursal_id
+             $where ORDER BY v.fecha DESC",
+            $params
+        );
+    }
+
     public function validar(): array {
         static::$alertas = [];
         if (empty($this->turno_id))   self::setAlerta('danger', 'No hay turno abierto');

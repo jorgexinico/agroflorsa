@@ -13,6 +13,12 @@ $usuarioNombre = $_SESSION['usuario_nombre'] ?? '';
 $usuarioRol    = $_SESSION['usuario_rol']    ?? '';
 $turnoId       = $_SESSION['turno_id']       ?? null;
 $sucursalId    = $_SESSION['sucursal_id']    ?? null;
+$sucursalNombre = '';
+
+if ($sucursalId) {
+    $res = Model\ActiveRecord::fetchFirstRaw("SELECT nombre FROM sucursales WHERE id = :id", [':id' => $sucursalId]);
+    $sucursalNombre = $res['nombre'] ?? '';
+}
 
 // Detectar ruta actual para marcar ítem activo
 $currentUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -64,7 +70,9 @@ if (($layout ?? '') === 'auth') : ?>
   <div class="ag-sidebar__turno">
     <span class="badge bg-success w-100 text-start px-3 py-2" style="font-size:.75rem">
       <i class="bi bi-circle-fill blink me-1" style="font-size:.5rem"></i>
-      Turno #<?= $turnoId ?> activo
+      Turno #<?= $turnoId ?> activo 
+      <br>
+      <small><?= s($sucursalNombre) ?></small>
     </span>
   </div>
   <?php endif; ?>

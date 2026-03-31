@@ -42,7 +42,7 @@
                                     $mi_rol = $_SESSION['usuario_rol'] ?? '';
                                     if ($t['estado'] === 'enviado' && ($mi_rol === 'admin' || $mi_suc === (int)$t['sucursal_destino_id'])): 
                                 ?>
-                                <form action="/<?= $_ENV['APP_NAME'] ?>/traslados/recibir" method="POST" onsubmit="return confirm('¿Confirmas que has recibido estos productos en tu sucursal?')">
+                                <form action="/<?= $_ENV['APP_NAME'] ?>/traslados/recibir" method="POST" class="form-recibir">
                                     <input type="hidden" name="id" value="<?= $t['id'] ?>">
                                     <button type="submit" class="btn btn-success btn-sm" title="Recibir Mercadería">
                                         <i class="bi bi-box-seam me-1"></i>Recibir
@@ -62,3 +62,28 @@
         </table>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('.form-recibir');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: '¿Confirmar Recepción?',
+                text: '¿Confirmas que has recibido estos productos en tu sucursal? Esta acción actualizará el inventario.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#198754',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, recibir',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>

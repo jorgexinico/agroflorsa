@@ -3,6 +3,7 @@ namespace Controllers;
 
 use MVC\Router;
 use Models\Usuario;
+use Model\ActiveRecord;
 
 /**
  * AuthController — Login y Logout
@@ -38,6 +39,17 @@ class AuthController {
                     $_SESSION['usuario_id']     = $encontrado->id;
                     $_SESSION['usuario_nombre'] = $encontrado->nombre;
                     $_SESSION['usuario_rol']    = $encontrado->rol;
+
+                    // ── Restaurar Turno Activo (si existe) ────────
+                    $turnoActivo = ActiveRecord::fetchFirstRaw(
+                        "SELECT id, sucursal_id FROM turnos 
+                         WHERE usuario_id = :uid AND estado = 'abierto' LIMIT 1",
+                        [':uid' => $encontrado->id]
+                    );
+                    if ($turnoActivo) {
+                        $_SESSION['turno_id']    = (int)$turnoActivo['id'];
+                        $_SESSION['sucursal_id'] = (int)$turnoActivo['sucursal_id'];
+                    }
 
                     redirectTo('/dashboard');
                 }
