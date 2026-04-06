@@ -12,7 +12,8 @@
     </form>
   </div>
   <div class="col-md-5">
-    <?php if ($sucursalId): ?>
+    <?php $usuarioRol = $_SESSION['usuario_rol'] ?? ''; ?>
+    <?php if ($sucursalId && in_array($usuarioRol, ['admin', 'supervisor'])): ?>
     <div class="input-group">
       <span class="input-group-text bg-white border-2 border-end-0"><i class="bi bi-search text-success"></i></span>
       <input type="text" id="global-product-search" class="form-control border-2 border-start-0" 
@@ -33,24 +34,32 @@
     <?php endif; ?>
   </div>
   <div class="col-auto ms-auto">
+    <?php if (in_array($usuarioRol, ['admin', 'supervisor'])): ?>
     <a href="<?= $base ?>/inventario/ajuste" class="btn btn-outline-primary btn-sm">
       <i class="bi bi-pencil-square me-1"></i>Ajuste manual
     </a>
     <a href="<?= $base ?>/compras/crear" class="btn btn-success btn-sm ms-2">
       <i class="bi bi-truck me-1"></i>Registrar compra
     </a>
+    <?php endif; ?>
   </div>
 </div>
 
 <?php if ($sucursalId && !empty($stock)): ?>
 <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <div>
+    <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+      <div class="d-flex align-items-center me-3">
         <i class="bi bi-boxes me-2"></i>Stock de sucursal
         <span class="text-muted small ms-2 d-none d-sm-inline"><?= count($stock) ?> productos</span>
       </div>
-      <button class="btn btn-sm btn-outline-success border-2 fw-bold" onclick="exportarExcel()">
-        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Descargar Excel
+      <div class="flex-grow-1 mx-sm-3" style="max-width: 400px;">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" id="filtro-tabla-stock" class="form-control" placeholder="Buscar producto en la tabla (Nombre o SKU)...">
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline-success border-2 fw-bold flex-shrink-0" onclick="exportarExcel()">
+        <i class="bi bi-file-earmark-spreadsheet me-1"></i>Excel
       </button>
     </div>
     <div class="table-responsive">
@@ -117,6 +126,24 @@
   const sucursalId = <?= (int)$sucursalId ?>;
 
   document.addEventListener('DOMContentLoaded', () => {
+      // 1. Buscador/Filtro directo en la tabla de stock (accesible para todos)
+      const filterInput = document.getElementById('filtro-tabla-stock');
+      if (filterInput) {
+          filterInput.addEventListener('keyup', function() {
+              const val = this.value.toLowerCase().trim();
+              const rows = document.querySelectorAll('#tablaStockBody tr:not(.row-new)');
+              rows.forEach(row => {
+                  const text = row.textContent.toLowerCase();
+                  if (text.includes(val)) {
+                      row.style.display = '';
+                  } else {
+                      row.style.display = 'none';
+                  }
+              });
+          });
+      }
+
+      // 2. Buscador global para agregar nuevo ingreso (solo admin)
       const searchInput = document.getElementById('global-product-search');
       if (searchInput) {
           searchInput.addEventListener('input', (e) => {

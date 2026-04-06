@@ -149,4 +149,4 @@
   </div>
 </div>
 
-<script src="<?= asset('build/js/ventas.js') ?>"></script>
+<script src="<?= asset('build/js/ventas.js') ?>?v=<?= time() ?>"></script>

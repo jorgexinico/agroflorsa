@@ -41,22 +41,37 @@ class ReportesController {
     public static function vencimientos(Router $router): void {
         isAuth();
         
+        $filtro = $_GET['estado'] ?? 'todos';
+
         // Lotes que vencen en los próximos 90 días
+        $where = "1=1";
+        if ($filtro === 'proximos') {
+            $where .= " AND l.fecha_vencimiento IS NOT NULL AND l.fecha_vencimiento <= DATE_ADD(CURDATE(), INTERVAL 90 DAY) AND l.fecha_vencimiento >= CURDATE()";
+        } elseif ($filtro === 'vencidos') {
+            $where .= " AND l.fecha_vencimiento IS NOT NULL AND l.fecha_vencimiento < CURDATE()";
+        } elseif ($filtro === 'vigentes') {
+            $where .= " AND (l.fecha_vencimiento IS NULL OR l.fecha_vencimiento > DATE_ADD(CURDATE(), INTERVAL 90 DAY))";
+        }
+
         $vencimientos = ActiveRecord::fetchRaw(
-            "SELECT l.*, p.nombre AS producto, p.sku, s.nombre AS sucursal, iel.cantidad
+            "SELECT l.*, p.nombre AS producto, p.sku, s.nombre AS sucursal, IFNULL(iel.cantidad, 0) AS cantidad
              FROM lotes l
              JOIN productos p ON p.id = l.producto_id
-             JOIN inventario_existencias_lote iel ON iel.lote_id = l.id
-             JOIN sucursales s ON s.id = iel.sucursal_id
-             WHERE l.fecha_vencimiento IS NOT NULL 
-               AND l.fecha_vencimiento <= DATE_ADD(CURDATE(), INTERVAL 90 DAY)
-               AND iel.cantidad > 0
-             ORDER BY l.fecha_vencimiento ASC"
+             LEFT JOIN inventario_existencias_lote iel ON iel.lote_id = l.id
+             LEFT JOIN sucursales s ON s.id = iel.sucursal_id
+             WHERE $where
+             ORDER BY 
+                CASE 
+                    WHEN l.fecha_vencimiento IS NULL THEN 1 
+                    ELSE 0 
+                END, 
+                l.fecha_vencimiento ASC"
         );
 
         $router->render('reportes/vencimientos', [
-            'titulo'       => 'Alerta de Vencimientos',
-            'vencimientos' => $vencimientos
+            'titulo'       => 'Lotes y Vencimientos',
+            'vencimientos' => $vencimientos,
+            'estado'       => $filtro
         ]);
     }
 

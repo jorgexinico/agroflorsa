@@ -9,7 +9,9 @@
       <?php foreach ($productos as $p): ?>
       <option value="<?= $p->id ?>"
               data-sku="<?= s($p->sku ?? '') ?>"
-              data-maneja-vencimiento="<?= (int)$p->maneja_vencimiento ?>">
+              data-maneja-vencimiento="<?= (int)$p->maneja_vencimiento ?>"
+              data-pub="<?= (float)$p->precio_publico ?>"
+              data-may="<?= (float)$p->precio_mayorista ?>">
         <?= s($p->nombre) ?> (<?= s($p->unidad_abreviatura ?? '') ?>)
       </option>
       <?php endforeach; ?>
@@ -56,13 +58,26 @@
             <i class="bi bi-plus-circle me-1"></i>Agregar producto
           </button>
         </div>
+        <div class="mb-4 bg-light p-3 rounded border mx-3 mt-3">
+          <label class="form-label fw-bold text-success"><i class="bi bi-search me-1"></i>Buscador de Productos (Nombre o SKU)</label>
+          <input type="text" id="buscar-producto-compra" class="form-control form-control-lg border-success border-2" 
+                 placeholder="Escribe el nombre o escanea el SKU del producto..." list="lista-productos-compra" autofocus>
+          <datalist id="lista-productos-compra">
+            <?php foreach ($productos as $p): ?>
+            <option value="<?= s($p->nombre) ?> [SKU: <?= s($p->sku ?? 'S/S') ?>]" data-id="<?= $p->id ?>" data-sku="<?= s($p->sku ?? '') ?>"></option>
+            <?php endforeach; ?>
+          </datalist>
+          <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i>Al seleccionar un producto, se añadirá automáticamente a la lista de abajo para ingresar sus detalles.</div>
+        </div>
         <div class="table-responsive">
           <table class="table table-sm mb-0">
             <thead class="table-light">
               <tr>
                 <th style="min-width:200px">Producto</th>
                 <th style="min-width:110px">Cantidad</th>
-                <th style="min-width:130px">Costo U.</th>
+                <th style="min-width:130px">Costo Nuevo</th>
+                <th style="min-width:110px">Pr. Público</th>
+                <th style="min-width:110px">Pr. Mayorista</th>
                 <th style="min-width:145px">Fecha venc.</th>
                 <th class="text-end" style="min-width:110px">Subtotal</th>
                 <th style="width:40px"></th>
@@ -90,4 +105,4 @@
   </div>
 </div>
 
-<script src="<?= asset('build/js/compras.js') ?>"></script>
+<script src="<?= asset('build/js/compras.js') ?>?v=<?= time() ?>"></script>

@@ -219,8 +219,8 @@ if (($layout ?? '') === 'auth') : ?>
     <?php endif; ?>
 
     <a href="<?= $base ?>/reportes/vencimientos" class="ag-nav-item <?= isActive($base . '/reportes/vencimientos') ?>">
-      <i class="bi bi-calendar-event text-danger"></i>
-      <span>Vencimientos</span>
+      <i class="bi bi-upc-scan text-danger"></i>
+      <span>Lotes y Vencimientos</span>
     </a>
 
     <!-- ADMIN -->

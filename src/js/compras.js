@@ -14,6 +14,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnAdd.addEventListener('click', () => addRowCompra(tbody));
 
+    // ── Buscador de productos con datalist ───────────────
+    const searchInput = document.getElementById('buscar-producto-compra');
+    const dataList = document.getElementById('lista-productos-compra');
+    
+    if (searchInput && dataList) {
+        // Evitar envío por Enter (lectores de códigos de barra)
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                procesarBusqueda(e);
+            }
+        });
+
+        function procesarBusqueda(e) {
+            const val = e.target.value.trim().toLowerCase();
+            if (!val) return;
+            const options = dataList.options;
+            
+            for (let i = 0; i < options.length; i++) {
+                const optValue = options[i].value.trim().toLowerCase();
+                const optSku = (options[i].dataset.sku || options[i].getAttribute('data-sku') || '').trim().toLowerCase();
+                
+                if (optValue === val || (optSku !== '' && optSku === val)) {
+                    const id = options[i].dataset.id || options[i].getAttribute('data-id');
+                    if (id) {
+                        e.target.value = ''; // Limpiar buscador
+                        addRowCompra(tbody, id);
+                        searchInput.blur();
+                        setTimeout(() => searchInput.focus(), 50);
+                    }
+                    break;
+                }
+            }
+        }
+
+        searchInput.addEventListener('input', procesarBusqueda);
+        searchInput.addEventListener('change', procesarBusqueda);
+    }
+
     // Quitar fila
     tbody.addEventListener('click', (e) => {
         if (e.target.closest('.btn-remove-row')) {
@@ -30,10 +69,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Actualizar celda de fecha vencimiento al cambiar producto
+    // Actualizar celda de fecha vencimiento y precios al cambiar producto
     tbody.addEventListener('change', (e) => {
         if (e.target.matches('select[name="producto_id[]"]')) {
-            actualizarFechaVenc(e.target);
+            const select = e.target;
+            const tr = select.closest('tr');
+            
+            actualizarFechaVenc(select);
+            
+            const selectedOpt = select.options[select.selectedIndex];
+            if (selectedOpt && selectedOpt.value) {
+                const pub = parseFloat(selectedOpt.dataset.pub || 0).toFixed(2);
+                const may = parseFloat(selectedOpt.dataset.may || 0).toFixed(2);
+                
+                tr.querySelector('.compra-pub').value = pub;
+                tr.querySelector('.compra-may').value = may;
+                
+                const titlePub = tr.querySelector('.title-pub');
+                if (titlePub) titlePub.textContent = 'Act: Q' + pub;
+                
+                const titleMay = tr.querySelector('.title-may');
+                if (titleMay) titleMay.textContent = 'Act: Q' + may;
+            }
         }
     });
 
@@ -63,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Primera fila por defecto
-    addRowCompra(tbody);
+    // Primera fila por defecto - Comentada para iniciar vacío como en ventas
+    // addRowCompra(tbody);
 });
 
 // ── Actualizar celda de fecha vencimiento ─────────────────
@@ -90,19 +147,41 @@ function actualizarFechaVenc(select) {
 }
 
 // ── Agregar fila ──────────────────────────────────────────
-function addRowCompra(tbody) {
+function addRowCompra(tbody, initialProductId = null) {
     const select = document.getElementById('productos-template');
     if (!select) return;
 
     const options = Array.from(select.options)
-        .map(o => `<option value="${o.value}" data-sku="${o.dataset.sku || ''}" data-maneja-vencimiento="${o.dataset.manejaVencimiento || 0}">${o.text}</option>`)
+        .map(o => {
+            const selected = (initialProductId && String(o.value) === String(initialProductId)) ? 'selected' : '';
+            return `<option value="${o.value}" data-sku="${o.dataset.sku || ''}" data-maneja-vencimiento="${o.dataset.manejaVencimiento || 0}" data-pub="${o.dataset.pub || 0}" data-may="${o.dataset.may || 0}" ${selected}>${o.text}</option>`;
+        })
         .join('');
 
     const row = `
     <tr>
       <td><select name="producto_id[]" class="form-select form-select-sm" required><option value="">Seleccione...</option>${options}</select></td>
-      <td><input type="number" name="cantidad[]" class="form-control form-control-sm compra-cantidad" min="0.001" step="0.001" value="1" required></td>
-      <td><input type="number" name="costo_unitario[]" class="form-control form-control-sm compra-costo" min="0" step="0.0001" value="0" required></td>
+      <td><input type="number" name="cantidad[]" class="form-control form-control-sm compra-cantidad" min="0.001" step="any" value="1" required></td>
+      <td>
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">Q</span>
+            <input type="number" name="costo_unitario[]" class="form-control form-control-sm compra-costo" min="0" step="0.0001" value="0" required>
+        </div>
+      </td>
+      <td>
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">Q</span>
+            <input type="number" name="precio_publico[]" class="form-control form-control-sm compra-pub" min="0" step="0.01" required>
+        </div>
+        <div class="x-small text-muted mt-1 title-pub">Act: Q0.00</div>
+      </td>
+      <td>
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">Q</span>
+            <input type="number" name="precio_mayorista[]" class="form-control form-control-sm compra-may" min="0" step="0.01" required>
+        </div>
+        <div class="x-small text-muted mt-1 title-may">Act: Q0.00</div>
+      </td>
       <td class="celda-fecha-venc"><input type="hidden" name="fecha_vencimiento[]" value=""><span class="text-muted small">N/A</span></td>
       <td class="text-end fw-semibold subtotal-cell">Q 0.00</td>
       <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-row"><i class="bi bi-trash"></i></button></td>
@@ -110,10 +189,18 @@ function addRowCompra(tbody) {
 
     tbody.insertAdjacentHTML('beforeend', row);
 
-    // Revisar si el primer producto por defecto ya maneja vencimiento
+    // Revisar si el producto seleccionado maneja vencimiento
     const newRow = tbody.lastElementChild;
     const newSelect = newRow.querySelector('select[name="producto_id[]"]');
-    if (newSelect) actualizarFechaVenc(newSelect);
+    
+    if (newSelect) {
+        if (initialProductId) {
+            newSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            actualizarFechaVenc(newSelect);
+            // Focus en cantidad automágicamente
+            setTimeout(() => newRow.querySelector('.compra-cantidad')?.focus(), 50);
+        }
+    }
 }
 
 // ── Recalcular fila ───────────────────────────────────────

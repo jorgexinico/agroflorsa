@@ -122,6 +122,19 @@ class ComprasController {
                             'cantidad'       => $cantidad,
                             'costo_unitario' => $costo,
                         ]);
+
+                        // ─── Actualizar precios de venta globales ───
+                        $p_publico   = (float)($_POST['precio_publico'][$i] ?? 0);
+                        $p_mayorista = (float)($_POST['precio_mayorista'][$i] ?? 0);
+
+                        if ($p_publico > 0 || $p_mayorista > 0) {
+                            $producto_update = Producto::find($prod_id);
+                            if ($producto_update) {
+                                if ($p_publico > 0) $producto_update->precio_publico = $p_publico;
+                                if ($p_mayorista > 0) $producto_update->precio_mayorista = $p_mayorista;
+                                $producto_update->actualizar();
+                            }
+                        }
                     }
 
                     // Actualizar total en la compra
