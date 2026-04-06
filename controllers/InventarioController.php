@@ -59,6 +59,7 @@ class InventarioController {
                     // Crear el encabezado del ajuste
                     $ajuste = new AjusteInventario();
                     $ajuste->sucursal_id = $sucursal_id;
+                    $ajuste->fecha       = date('Y-m-d H:i:s');
                     $ajuste->motivo      = $motivo ?: 'Ajuste masivo/Carga inicial';
                     $ajuste->usuario_id  = $usuario_id;
                     $res_ajuste = $ajuste->crear();

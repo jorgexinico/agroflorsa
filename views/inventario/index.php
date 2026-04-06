@@ -151,18 +151,38 @@
 
       // 2. Buscador global para agregar nuevo ingreso (solo admin)
       const searchInput = document.getElementById('global-product-search');
-      if (searchInput) {
-          searchInput.addEventListener('input', (e) => {
-              const val = e.target.value;
-              const opts = document.getElementById('productos-globales').options;
-              for (let i = 0; i < opts.length; i++) {
-                  if (opts[i].value === val) {
-                      agregarFilaDirecta(opts[i]);
+      const dataListGlobales = document.getElementById('productos-globales');
+      
+      if (searchInput && dataListGlobales) {
+          // Evitar envío por Enter (lectores de códigos de barra)
+          searchInput.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter') {
+                  e.preventDefault();
+                  procesarBusquedaGlobal(e);
+              }
+          });
+
+          function procesarBusquedaGlobal(e) {
+              const val = e.target.value.trim().toLowerCase();
+              if (!val) return;
+              const options = dataListGlobales.options;
+              
+              for (let i = 0; i < options.length; i++) {
+                  const optValue = options[i].value.trim().toLowerCase();
+                  const optSku = (options[i].dataset.sku || '').trim().toLowerCase();
+                  
+                  if (optValue === val || (optSku !== '' && optSku === val)) {
+                      agregarFilaDirecta(options[i]);
                       e.target.value = ''; // Limpiar buscador
+                      searchInput.blur();
+                      setTimeout(() => searchInput.focus(), 50);
                       break;
                   }
               }
-          });
+          }
+
+          searchInput.addEventListener('input', procesarBusquedaGlobal);
+          searchInput.addEventListener('change', procesarBusquedaGlobal);
       }
   });
 
