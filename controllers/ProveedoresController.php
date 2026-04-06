@@ -28,7 +28,7 @@ class ProveedoresController {
             if (empty($alertas)) {
                 $proveedor->creado_en = date('Y-m-d H:i:s');
                 $proveedor->crear();
-                header('Location: /' . $_ENV['APP_NAME'] . '/proveedores?ok=1');
+                redirectTo('/proveedores?ok=1');
                 exit;
             }
         }
@@ -49,7 +49,7 @@ class ProveedoresController {
         $alertas   = [];
 
         if (!$proveedor) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/proveedores');
+            redirectTo('/proveedores');
             exit;
         }
 
@@ -58,7 +58,7 @@ class ProveedoresController {
             $alertas = $proveedor->validar();
             if (empty($alertas)) {
                 $proveedor->actualizar();
-                header('Location: /' . $_ENV['APP_NAME'] . '/proveedores?ok=2');
+                redirectTo('/proveedores?ok=2');
                 exit;
             }
         }
@@ -75,7 +75,7 @@ class ProveedoresController {
         isAuth();
         isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/proveedores');
+            redirectTo('/proveedores');
             exit;
         }
         $id        = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
@@ -91,7 +91,7 @@ class ProveedoresController {
         isAuth();
         isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/proveedores');
+            redirectTo('/proveedores');
             exit;
         }
         $id        = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);

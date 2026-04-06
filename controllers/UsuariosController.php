@@ -55,7 +55,7 @@ class UsuariosController {
                         $usuario->creado_en = date('Y-m-d H:i:s');
                         $resultado = $usuario->crear();
                         if ($resultado['resultado']) {
-                            header('Location: /' . $_ENV['APP_NAME'] . '/usuarios?ok=1');
+                            redirectTo('/usuarios?ok=1');
                             exit;
                         }
                     }
@@ -80,7 +80,7 @@ class UsuariosController {
         $alertas = [];
 
         if (!$usuario) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/usuarios');
+            redirectTo('/usuarios');
             exit;
         }
 
@@ -106,7 +106,7 @@ class UsuariosController {
                     $usuario->hashPassword();
                 }
                 $usuario->actualizar();
-                header('Location: /' . $_ENV['APP_NAME'] . '/usuarios?ok=2');
+                redirectTo('/usuarios?ok=2');
                 exit;
             }
 
@@ -129,7 +129,7 @@ class UsuariosController {
         isRole(['admin']);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/usuarios');
+            redirectTo('/usuarios');
             exit;
         }
 
@@ -142,7 +142,7 @@ class UsuariosController {
             $usuario->actualizar();
         }
 
-        header('Location: /' . $_ENV['APP_NAME'] . '/usuarios?ok=3');
+        redirectTo('/usuarios?ok=3');
         exit;
     }
 }

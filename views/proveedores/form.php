@@ -1,7 +1,6 @@
-<?php // views/proveedores/form.php
 $action = $accion === 'crear'
-    ? '/' . $_ENV['APP_NAME'] . '/proveedores/crear'
-    : '/' . $_ENV['APP_NAME'] . '/proveedores/editar?id=' . $proveedor->id;
+    ? "$base/proveedores/crear"
+    : "$base/proveedores/editar?id=" . $proveedor->id;
 ?>
 <div class="row justify-content-center">
   <div class="col-md-6">

@@ -1,7 +1,6 @@
-<?php // views/categorias/form.php
 $action = $accion === 'crear' 
-    ? '/' . $_ENV['APP_NAME'] . '/categorias/crear' 
-    : '/' . $_ENV['APP_NAME'] . '/categorias/editar?id=' . $categoria->id; 
+    ? "$base/categorias/crear" 
+    : "$base/categorias/editar?id=" . $categoria->id; 
 ?>
 <div class="row justify-content-center">
   <div class="col-md-6">

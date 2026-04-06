@@ -76,7 +76,7 @@ class TurnosController {
             // Reconectar automáticamente si ya tiene un turno abierto
             $_SESSION['turno_id']    = (int)$yaAbierto['id'];
             $_SESSION['sucursal_id'] = (int)$yaAbierto['sucursal_id'];
-            header('Location: /' . $_ENV['APP_NAME'] . '/dashboard?welcome_back=1');
+            redirectTo('/dashboard?welcome_back=1');
             exit;
         }
 
@@ -102,7 +102,7 @@ class TurnosController {
                 $_SESSION['turno_id']    = $turno_id;
                 $_SESSION['sucursal_id'] = $sucursal_id;
 
-                header('Location: /' . $_ENV['APP_NAME'] . '/turnos/detalle?id=' . $turno_id);
+                redirectTo('/turnos/detalle?id=' . $turno_id);
                 exit;
             }
         }
@@ -127,7 +127,7 @@ class TurnosController {
         );
 
         if (!$turno) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/turnos');
+            redirectTo('/turnos');
             exit;
         }
 
@@ -167,7 +167,7 @@ class TurnosController {
         $turno = Turno::find($id);
 
         if (!$turno || $turno->estado !== 'abierto' || $turno->usuario_id != $_SESSION['usuario_id']) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/turnos');
+            redirectTo('/turnos');
             exit;
         }
 
@@ -199,7 +199,7 @@ class TurnosController {
             // Limpiar sesión de turno
             unset($_SESSION['turno_id'], $_SESSION['sucursal_id']);
 
-            header('Location: /' . $_ENV['APP_NAME'] . '/turnos/reporte?id=' . $id);
+            redirectTo('/turnos/reporte?id=' . $id);
             exit;
         }
 
@@ -224,7 +224,7 @@ class TurnosController {
         );
 
         if (!$turno) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/turnos');
+            redirectTo('/turnos');
             exit;
         }
 

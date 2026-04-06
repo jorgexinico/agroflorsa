@@ -28,7 +28,7 @@ class UnidadesController {
             if (empty($alertas)) {
                 $unidad->creado_en = date('Y-m-d H:i:s');
                 $unidad->crear();
-                header('Location: /' . $_ENV['APP_NAME'] . '/unidades?ok=1');
+                redirectTo('/unidades?ok=1');
                 exit;
             }
         }
@@ -49,7 +49,7 @@ class UnidadesController {
         $alertas = [];
 
         if (!$unidad) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/unidades');
+            redirectTo('/unidades');
             exit;
         }
 
@@ -58,7 +58,7 @@ class UnidadesController {
             $alertas = $unidad->validar();
             if (empty($alertas)) {
                 $unidad->actualizar();
-                header('Location: /' . $_ENV['APP_NAME'] . '/unidades?ok=2');
+                redirectTo('/unidades?ok=2');
                 exit;
             }
         }
@@ -75,7 +75,7 @@ class UnidadesController {
         isAuth();
         isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/unidades');
+            redirectTo('/unidades');
             exit;
         }
         $id     = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
@@ -83,7 +83,7 @@ class UnidadesController {
         if ($unidad) {
             $unidad->eliminar();
         }
-        header('Location: /' . $_ENV['APP_NAME'] . '/unidades?ok=3');
+        redirectTo('/unidades?ok=3');
         exit;
     }
 

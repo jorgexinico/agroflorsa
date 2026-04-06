@@ -1,7 +1,6 @@
-<?php // views/productos/form.php
 $action = $accion === 'crear'
-    ? '/' . $_ENV['APP_NAME'] . '/productos/crear'
-    : '/' . $_ENV['APP_NAME'] . '/productos/editar?id=' . $producto->id;
+    ? "$base/productos/crear"
+    : "$base/productos/editar?id=" . $producto->id;
 ?>
 <div class="row justify-content-center">
   <div class="col-md-7">

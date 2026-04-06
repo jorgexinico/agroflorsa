@@ -39,7 +39,7 @@ class CuentasPorPagarController {
         );
 
         if (!$cxp) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-pagar');
+            redirectTo('/cuentas-pagar');
             exit;
         }
 
@@ -56,7 +56,7 @@ class CuentasPorPagarController {
         isAuth();
         isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-pagar');
+            redirectTo('/cuentas-pagar');
             exit;
         }
 
@@ -68,7 +68,7 @@ class CuentasPorPagarController {
         $cxp = CuentaPorPagar::find($cxp_id);
 
         if (!$cxp || $monto <= 0 || $monto > $cxp->saldo) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-pagar/detalle?id=' . $cxp_id . '&err=monto_invalido');
+            redirectTo('/cuentas-pagar/detalle?id=' . $cxp_id . '&err=monto_invalido');
             exit;
         }
 
@@ -103,12 +103,12 @@ class CuentasPorPagarController {
             );
 
             $db->commit();
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-pagar/detalle?id=' . $cxp_id . '&ok=abono');
+            redirectTo('/cuentas-pagar/detalle?id=' . $cxp_id . '&ok=abono');
             exit;
 
         } catch (\Exception $e) {
             $db->rollBack();
-            header('Location: /' . $_ENV['APP_NAME'] . '/cuentas-pagar/detalle?id=' . $cxp_id . '&err=db');
+            redirectTo('/cuentas-pagar/detalle?id=' . $cxp_id . '&err=db');
             exit;
         }
     }

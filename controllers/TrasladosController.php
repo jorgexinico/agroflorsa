@@ -106,7 +106,7 @@ class TrasladosController {
                     }
 
                     $db->commit();
-                    header('Location: /' . $_ENV['APP_NAME'] . '/traslados?ok=1');
+                    redirectTo('/traslados?ok=1');
                     exit;
 
                 } catch (\Exception $e) {
@@ -133,7 +133,7 @@ class TrasladosController {
     public static function recibir(Router $router): void {
         isAuth();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/traslados');
+            redirectTo('/traslados');
             exit;
         }
 
@@ -141,7 +141,7 @@ class TrasladosController {
         $traslado = Traslado::find($id);
 
         if (!$traslado || $traslado->estado !== 'enviado') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/traslados?err=invalid');
+            redirectTo('/traslados?err=invalid');
             exit;
         }
 
@@ -149,7 +149,7 @@ class TrasladosController {
         $mi_sucursal = (int)($_SESSION['sucursal_id'] ?? 0);
         $mi_rol = $_SESSION['usuario_rol'] ?? '';
         if ($mi_rol !== 'admin' && $mi_sucursal !== (int)$traslado->sucursal_destino_id) {
-             header('Location: /' . $_ENV['APP_NAME'] . '/traslados?err=not_authorized');
+             redirectTo('/traslados?err=not_authorized');
              exit;
         }
 
@@ -185,12 +185,12 @@ class TrasladosController {
             $traslado->actualizar();
 
             $db->commit();
-            header('Location: /' . $_ENV['APP_NAME'] . '/traslados?ok=2&type=traslado_recibido');
+            redirectTo('/traslados?ok=2&type=traslado_recibido');
             exit;
 
         } catch (\Exception $e) {
             $db->rollBack();
-            header('Location: /' . $_ENV['APP_NAME'] . '/traslados?err=db');
+            redirectTo('/traslados?err=db');
             exit;
         }
     }
@@ -208,7 +208,7 @@ class TrasladosController {
         );
 
         if (!$traslado) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/traslados text');
+            redirectTo('/traslados');
             exit;
         }
 

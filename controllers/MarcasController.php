@@ -27,7 +27,7 @@ class MarcasController {
             $alertas = $marca->validar();
             if (empty($alertas['danger'])) {
                 $marca->crear();
-                header('Location: /' . $_ENV['APP_NAME'] . '/marcas?ok=1');
+                redirectTo('/marcas?ok=1');
                 exit;
             }
         }
@@ -48,7 +48,7 @@ class MarcasController {
         $alertas = [];
 
         if (!$marca) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/marcas');
+            redirectTo('/marcas');
             exit;
         }
 
@@ -57,7 +57,7 @@ class MarcasController {
             $alertas = $marca->validar();
             if (empty($alertas['danger'])) {
                 $marca->actualizar();
-                header('Location: /' . $_ENV['APP_NAME'] . '/marcas?ok=2');
+                redirectTo('/marcas?ok=2');
                 exit;
             }
         }
@@ -74,7 +74,7 @@ class MarcasController {
         isAuth();
         isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/marcas');
+            redirectTo('/marcas');
             exit;
         }
         $id    = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
@@ -82,7 +82,7 @@ class MarcasController {
         if ($marca) {
             $marca->eliminar();
         }
-        header('Location: /' . $_ENV['APP_NAME'] . '/marcas?ok=3');
+        redirectTo('/marcas?ok=3');
         exit;
     }
 

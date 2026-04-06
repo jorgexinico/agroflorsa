@@ -1,7 +1,6 @@
-<?php // views/sucursales/form.php
 $action = $accion === 'crear'
-    ? '/' . $_ENV['APP_NAME'] . '/sucursales/crear'
-    : '/' . $_ENV['APP_NAME'] . '/sucursales/editar?id=' . $sucursal->id;
+    ? "$base/sucursales/crear"
+    : "$base/sucursales/editar?id=" . $sucursal->id;
 ?>
 <div class="row justify-content-center">
   <div class="col-md-6">

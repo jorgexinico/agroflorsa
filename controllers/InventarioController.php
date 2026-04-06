@@ -116,7 +116,7 @@ class InventarioController {
                     }
 
                     $db->commit();
-                    header('Location: /' . $_ENV['APP_NAME'] . '/inventario?ok=1&sucursal_id=' . $sucursal_id);
+                    redirectTo('/inventario?ok=1&sucursal_id=' . $sucursal_id);
                     exit;
 
                 } catch (\Exception $e) {
@@ -144,7 +144,7 @@ class InventarioController {
         $producto_id = (int)($_GET['producto_id'] ?? 0);
 
         if (!$producto_id || !$sucursal_id) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/inventario');
+            redirectTo('/inventario');
             exit;
         }
 

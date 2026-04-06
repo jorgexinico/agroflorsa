@@ -32,7 +32,7 @@ class SucursalesController {
                 $sucursal->creado_en = date('Y-m-d H:i:s');
                 $resultado = $sucursal->crear();
                 if ($resultado['resultado']) {
-                    header('Location: /' . $_ENV['APP_NAME'] . '/sucursales?ok=1');
+                    redirectTo('/sucursales?ok=1');
                     exit;
                 }
             }
@@ -54,7 +54,7 @@ class SucursalesController {
         $alertas  = [];
 
         if (!$sucursal) {
-            header('Location: /' . $_ENV['APP_NAME'] . '/sucursales');
+            redirectTo('/sucursales');
             exit;
         }
 
@@ -63,7 +63,7 @@ class SucursalesController {
             $alertas = $sucursal->validar();
             if (empty($alertas)) {
                 $sucursal->actualizar();
-                header('Location: /' . $_ENV['APP_NAME'] . '/sucursales?ok=2');
+                redirectTo('/sucursales?ok=2');
                 exit;
             }
         }
@@ -89,7 +89,7 @@ class SucursalesController {
             $sucursal->activa = 0;
             $sucursal->actualizar();
         }
-        header('Location: /' . $_ENV['APP_NAME'] . '/sucursales?ok=3');
+        redirectTo('/sucursales?ok=3');
         exit;
     }
 
@@ -106,7 +106,7 @@ class SucursalesController {
             $sucursal->activa = 1;
             $sucursal->actualizar();
         }
-        header('Location: /' . $_ENV['APP_NAME'] . '/sucursales?ok=4'); // ok=4 could represent reactivation success
+        redirectTo('/sucursales?ok=4');
         exit;
     }
 
