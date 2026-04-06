@@ -85,9 +85,15 @@
             <td class="text-end fw-bold <?= (float)$item['cantidad'] <= 0 ? 'text-danger' : 'text-success' ?>">
               <?= number_format((float)$item['cantidad'], 3) ?>
             </td>
-            <td class="text-center text-muted">—</td>
-            <td class="text-center text-muted">—</td>
-            <td class="text-center text-muted">—</td>
+            <td class="text-center text-muted fw-semibold">
+              <?= $item['ultimo_costo'] ? formatMoney((float)$item['ultimo_costo']) : '—' ?>
+            </td>
+            <td class="text-center text-primary fw-semibold">
+              <?= formatMoney((float)$item['precio_publico']) ?>
+            </td>
+            <td class="text-center text-secondary fw-semibold">
+              <?= formatMoney((float)$item['precio_mayorista']) ?>
+            </td>
             <td class="text-end">
               <a href="<?= $base ?>/inventario/kardex?producto_id=<?= $item['producto_id'] ?>&sucursal_id=<?= $sucursalId ?>" 
                  class="btn btn-outline-dark btn-sm" title="Ver Kardex">
