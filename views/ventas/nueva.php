@@ -96,6 +96,18 @@
             <i class="bi bi-plus-circle me-1"></i>Agregar producto
           </button>
         </div>
+        <div class="mb-4 bg-light p-3 rounded border">
+          <label class="form-label fw-bold text-success"><i class="bi bi-search me-1"></i>Buscador de Productos (Nombre o SKU)</label>
+          <input type="text" id="buscar-producto-venta" class="form-control form-control-lg border-success border-2" 
+                 placeholder="Escribe el nombre o escanea el SKU del producto..." list="lista-productos-venta" autofocus>
+          <datalist id="lista-productos-venta">
+            <?php foreach ($productos as $p): ?>
+            <option value="<?= s($p['nombre']) ?> [SKU: <?= s($p['sku'] ?? 'S/S') ?>]" data-id="<?= $p['id'] ?>" data-sku="<?= s($p['sku'] ?? '') ?>"></option>
+            <?php endforeach; ?>
+          </datalist>
+          <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i>Al seleccionar un producto, se añadirá automáticamente a la lista de abajo.</div>
+        </div>
+
         <div class="table-responsive">
           <table class="table table-sm mb-0">
             <thead class="table-light">

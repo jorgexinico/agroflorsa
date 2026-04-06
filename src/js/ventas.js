@@ -13,6 +13,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     btnAdd.addEventListener('click', () => addRowVenta(tbody));
 
+    // ── Buscador de productos con datalist ───────────────
+    const searchInput = document.getElementById('buscar-producto-venta');
+    const dataList = document.getElementById('lista-productos-venta');
+    
+    if (searchInput && dataList) {
+        // Evitar que al escanear o presionar Enter se envíe el formulario
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                procesarBusqueda(e);
+            }
+        });
+
+        function procesarBusqueda(e) {
+            const val = e.target.value.trim().toLowerCase();
+            if (!val) return;
+            const options = dataList.options;
+            
+            for (let i = 0; i < options.length; i++) {
+                const optValue = options[i].value.trim().toLowerCase();
+                const optSku = (options[i].dataset.sku || options[i].getAttribute('data-sku') || '').trim().toLowerCase();
+                
+                // Buscar por opción exacta o por SKU
+                if (optValue === val || (optSku !== '' && optSku === val)) {
+                    const id = options[i].dataset.id || options[i].getAttribute('data-id');
+                    if (id) {
+                        e.target.value = ''; // Limpiar buscador
+                        addRowVenta(tbody, id);
+                        // Desenfoque y reenfoque rápido para limpiar estado del datalist y navegadores móviles
+                        searchInput.blur();
+                        setTimeout(() => searchInput.focus(), 50);
+                    }
+                    break;
+                }
+            }
+        }
+
+        searchInput.addEventListener('input', procesarBusqueda);
+        searchInput.addEventListener('change', procesarBusqueda);
+    }
+
     tbody.addEventListener('click', (e) => {
         if (e.target.closest('.btn-remove-row')) {
             e.target.closest('tr').remove();
@@ -50,8 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     } else {
-        // Solo agregar fila vacía inicial si no hay carrito
-        addRowVenta(tbody);
+        // La tabla inicia vacía para obligar el uso del buscador
+        // addRowVenta(tbody); 
     }
 
     // Limpiar carrito al enviar el formulario (o al tener éxito)
@@ -125,7 +166,7 @@ function addRowVenta(tbody, initialProductId = null) {
         <div class="mt-1"><small class="text-muted stock-label">Stock: --</small></div>
       </td>
       <td>
-        <input type="number" name="cantidad[]" class="form-control form-control-sm venta-cantidad" min="0.001" step="0.001" value="1" required>
+        <input type="number" name="cantidad[]" class="form-control form-control-sm venta-cantidad" min="0.001" step="any" value="1" required>
       </td>
       <td>
         <input type="number" name="precio_unitario[]" class="form-control form-control-sm venta-precio" min="0" step="0.01" value="0" required>
@@ -162,6 +203,8 @@ function addRowVenta(tbody, initialProductId = null) {
         // Si hay una selección inicial, disparar el cambio
         if (initialProductId) {
             sel.dispatchEvent(new Event('change'));
+            // Focus en cantidad
+            setTimeout(() => lastRow.querySelector('.venta-cantidad')?.focus(), 50);
         }
     }
 }
