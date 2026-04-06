@@ -54,6 +54,9 @@ class Router
     public function render($view, $datos = [])
     {
 
+        // Inyectar el base path para evitar dobles slashes en las vistas
+        $datos['base'] = $_ENV['APP_NAME'] ? '/' . $_ENV['APP_NAME'] : '';
+
         // Leer lo que le pasamos  a la vista
         foreach ($datos as $key => $value) {
             $$key = $value;  // Doble signo de dolar significa: variable variable, básicamente nuestra variable sigue siendo la original, pero al asignarla a otra no la reescribe, mantiene su valor, de esta forma el nombre de la variable se asigna dinamicamente
@@ -68,6 +71,7 @@ class Router
     }
 
     public function load($view, $datos = []){
+        $datos['base'] = $_ENV['APP_NAME'] ? '/' . $_ENV['APP_NAME'] : '';
         foreach ($datos as $key => $value) {
             $$key = $value;  // Doble signo de dolar significa: variable variable, básicamente nuestra variable sigue siendo la original, pero al asignarla a otra no la reescribe, mantiene su valor, de esta forma el nombre de la variable se asigna dinamicamente
         }

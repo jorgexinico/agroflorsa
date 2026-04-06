@@ -1,7 +1,7 @@
 <?php // views/categorias/index.php ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
   <p class="text-muted mb-0"><?= count($categorias) ?> categorías</p>
-  <a href="/<?= $_ENV['APP_NAME'] ?>/categorias/crear" class="btn btn-success btn-sm">
+  <a href="<?= $base ?>/categorias/crear" class="btn btn-success btn-sm">
     <i class="bi bi-plus-circle me-1"></i>Nueva categoría
   </a>
 </div>
@@ -23,7 +23,7 @@
                    onchange="actualizarInline(<?= $c->id ?>, 'descripcion', this.value)">
           </td>
           <td class="text-end text-nowrap">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/categorias/editar?id=<?= $c->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+            <a href="<?= $base ?>/categorias/editar?id=<?= $c->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -38,7 +38,7 @@ async function actualizarInline(id, campo, valor) {
         const bodyData = { id: id };
         bodyData[campo] = valor;
 
-        const response = await fetch('/<?= $_ENV['APP_NAME'] ?>/categorias/actualizar-inline', {
+        const response = await fetch('<?= $base ?>/categorias/actualizar-inline', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(bodyData)

@@ -3,7 +3,7 @@
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
                 <h5 class="mb-0"><i class="bi bi-truck me-2"></i>Traslado #<?= $traslado['id'] ?></h5>
-                <a href="/<?= $_ENV['APP_NAME'] ?>/traslados" class="btn btn-outline-secondary btn-sm">Regresar</a>
+                <a href="<?= $base ?>/traslados" class="btn btn-outline-secondary btn-sm">Regresar</a>
             </div>
             <div class="card-body">
                 <div class="row g-3 mb-4">

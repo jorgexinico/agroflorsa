@@ -47,7 +47,7 @@
         <div class="stat-card__value text-danger"><?= formatMoney($cxcPendiente) ?></div>
         <div class="stat-card__label">
           Saldo CxC
-          <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar" class="d-block small text-decoration-none mt-1">Ver cuentas</a>
+          <a href="<?= $base ?>/cuentas-cobrar" class="d-block small text-decoration-none mt-1">Ver cuentas</a>
         </div>
       </div>
     </div>
@@ -63,7 +63,7 @@
         <div class="stat-card__value text-warning"><?= formatMoney($cxpPendiente) ?></div>
         <div class="stat-card__label">
           Deuda CxP
-          <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-pagar" class="d-block small text-decoration-none mt-1 text-warning">Ver cuentas</a>
+          <a href="<?= $base ?>/cuentas-pagar" class="d-block small text-decoration-none mt-1 text-warning">Ver cuentas</a>
         </div>
       </div>
     </div>
@@ -78,11 +78,11 @@
       <div>
         <div class="stat-card__label fw-semibold mb-2">Acceso rápido</div>
         <?php if ($turnoActivo): ?>
-          <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/nueva" class="btn btn-sm btn-success">
+          <a href="<?= $base ?>/ventas/nueva" class="btn btn-sm btn-success">
             <i class="bi bi-cart-plus me-1"></i>Vender
           </a>
         <?php else: ?>
-          <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/abrir" class="btn btn-sm btn-outline-success">
+          <a href="<?= $base ?>/turnos/abrir" class="btn btn-sm btn-outline-success">
             <i class="bi bi-play-circle me-1"></i><?= $esAdmin ? 'Turnos' : 'Abrir turno' ?>
           </a>
         <?php endif; ?>
@@ -95,7 +95,7 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <span><i class="bi bi-receipt me-2 text-success"></i>Últimas ventas<?= $esAdmin ? ' (hoy — todas las sucursales)' : '' ?></span>
-    <a href="/<?= $_ENV['APP_NAME'] ?>/ventas" class="btn btn-sm btn-outline-secondary">Ver todas</a>
+    <a href="<?= $base ?>/ventas" class="btn btn-sm btn-outline-secondary">Ver todas</a>
   </div>
   <div class="card-body p-0">
     <?php if (empty($ultimasVentas)): ?>
@@ -119,7 +119,7 @@
             <td class="text-muted" style="font-size:.82rem"><?= date('d/m H:i', strtotime($v['fecha'])) ?></td>
             <td><span class="badge <?= $v['tipo_pago']==='contado' ? 'bg-success' : 'bg-warning text-dark' ?>"><?= s($v['tipo_pago']) ?></span></td>
             <td class="text-end fw-semibold"><?= formatMoney((float)$v['total']) ?></td>
-            <td><a href="/<?= $_ENV['APP_NAME'] ?>/ventas/detalle?id=<?= $v['id'] ?>" class="btn btn-sm btn-outline-secondary py-0"><i class="bi bi-eye"></i></a></td>
+            <td><a href="<?= $base ?>/ventas/detalle?id=<?= $v['id'] ?>" class="btn btn-sm btn-outline-secondary py-0"><i class="bi bi-eye"></i></a></td>
           </tr>
           <?php endforeach; ?>
         </tbody>

@@ -35,8 +35,17 @@ function asset(string $ruta): string {
 }
 
 // ── REDIRECCIÓN ──────────────────────────────────────
+/**
+ * Genera una URL absoluta al recurso indicado,
+ * respetando el prefijo de APP_NAME si existe.
+ */
+function url(string $path = ''): string {
+    $base = trim($_ENV['APP_NAME'] ?? '', '/');
+    return ($base ? '/' . $base : '') . '/' . ltrim($path, '/');
+}
+
 function redirectTo(string $ruta): void {
-    header('Location: /' . $_ENV['APP_NAME'] . $ruta);
+    header('Location: ' . url($ruta));
     exit;
 }
 
@@ -47,7 +56,7 @@ function redirectTo(string $ruta): void {
  */
 function isAuth(): void {
     if (!isset($_SESSION['usuario_id'])) {
-        header('Location: /' . $_ENV['APP_NAME'] . '/login');
+        header('Location: ' . url('/login'));
         exit;
     }
 }
@@ -58,7 +67,7 @@ function isAuth(): void {
  */
 function isRole(array $roles): void {
     if (!isset($_SESSION['usuario_rol']) || !in_array($_SESSION['usuario_rol'], $roles)) {
-        header('Location: /' . $_ENV['APP_NAME'] . '/dashboard?err=403');
+        header('Location: ' . url('/dashboard?err=403'));
         exit;
     }
 }

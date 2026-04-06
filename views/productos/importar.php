@@ -104,13 +104,13 @@
 </div>
 
 <div class="mt-3">
-  <a href="/<?= $_ENV['APP_NAME'] ?>/productos" class="btn btn-outline-secondary btn-sm">
+  <a href="<?= $base ?>/productos" class="btn btn-outline-secondary btn-sm">
     <i class="bi bi-arrow-left me-1"></i>Volver a productos
   </a>
 </div>
 
 <script>
-const BASE = '/<?= $_ENV['APP_NAME'] ?>';
+const BASE = '<?= $base ?>';
 let datosParaImportar = [];
 
 // ── Drag & Drop ──────────────────────────────────────────

@@ -88,7 +88,7 @@
           </div>
 
           <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end mt-5">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/inventario" class="btn btn-outline-secondary px-4 py-2">
+            <a href="<?= $base ?>/inventario" class="btn btn-outline-secondary px-4 py-2">
               <i class="bi bi-x-circle me-1"></i>Cancelar
             </a>
             <button type="submit" class="btn btn-warning px-5 py-2 fw-bold shadow-sm">

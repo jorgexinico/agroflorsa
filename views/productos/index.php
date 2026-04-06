@@ -2,10 +2,10 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <p class="text-muted mb-0"><?= count($productos) ?> productos activos</p>
   <div class="d-flex gap-2">
-    <a href="/<?= $_ENV['APP_NAME'] ?>/productos/importar" class="btn btn-outline-success btn-sm">
+    <a href="<?= $base ?>/productos/importar" class="btn btn-outline-success btn-sm">
       <i class="bi bi-file-earmark-excel me-1"></i>Importar Excel
     </a>
-    <a href="/<?= $_ENV['APP_NAME'] ?>/productos/crear" class="btn btn-success btn-sm">
+    <a href="<?= $base ?>/productos/crear" class="btn btn-success btn-sm">
       <i class="bi bi-plus-circle me-1"></i>Nuevo producto
     </a>
   </div>
@@ -60,8 +60,8 @@
 
           <td><?= $p->maneja_vencimiento ? '<i class="bi bi-check-circle text-success"></i>' : '<i class="bi bi-dash text-muted"></i>' ?></td>
           <td class="text-end text-nowrap">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/productos/editar?id=<?= $p->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/productos/eliminar" class="d-inline ag-confirm-form">
+            <a href="<?= $base ?>/productos/editar?id=<?= $p->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+            <form method="POST" action="<?= $base ?>/productos/eliminar" class="d-inline ag-confirm-form">
               <input type="hidden" name="id" value="<?= $p->id ?>">
               <button type="button" class="btn btn-sm btn-outline-danger ag-confirm-btn"
                       data-titulo="¿Desactivar producto?" data-nombre="<?= s($p->nombre) ?>">
@@ -83,7 +83,7 @@ async function actualizarInline(id, campo, valor) {
         const bodyData = { id: id };
         bodyData[campo] = valor;
 
-        const response = await fetch('/<?= $_ENV['APP_NAME'] ?>/productos/actualizar-inline', {
+        const response = await fetch('<?= $base ?>/productos/actualizar-inline', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

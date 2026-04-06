@@ -7,7 +7,7 @@
 /**
  * $base se deriva de APP_NAME
  */
-$base = '/' . $_ENV['APP_NAME'];
+$base = $_ENV['APP_NAME'] ? '/' . $_ENV['APP_NAME'] : '';
 
 $usuarioNombre = $_SESSION['usuario_nombre'] ?? '';
 $usuarioRol    = $_SESSION['usuario_rol']    ?? '';

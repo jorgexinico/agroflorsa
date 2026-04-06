@@ -2,7 +2,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <p class="text-muted mb-0"><?= count($sucursales) ?> sucursales registradas</p>
   <?php if ($_SESSION['usuario_rol'] === 'admin'): ?>
-  <a href="/<?= $_ENV['APP_NAME'] ?>/sucursales/crear" class="btn btn-success btn-sm">
+  <a href="<?= $base ?>/sucursales/crear" class="btn btn-success btn-sm">
     <i class="bi bi-plus-circle me-1"></i>Nueva sucursal
   </a>
   <?php endif; ?>
@@ -32,9 +32,9 @@
           <td><?= $s->activa ? '<span class="badge bg-success">Activa</span>' : '<span class="badge bg-secondary">Inactiva</span>' ?></td>
           <td class="text-end text-nowrap">
             <?php if ($_SESSION['usuario_rol'] === 'admin'): ?>
-            <a href="/<?= $_ENV['APP_NAME'] ?>/sucursales/editar?id=<?= $s->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+            <a href="<?= $base ?>/sucursales/editar?id=<?= $s->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
             <?php if ($s->activa): ?>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/sucursales/eliminar" class="d-inline ag-confirm-form">
+            <form method="POST" action="<?= $base ?>/sucursales/eliminar" class="d-inline ag-confirm-form">
               <input type="hidden" name="id" value="<?= $s->id ?>">
               <button type="button" class="btn btn-sm btn-outline-danger ag-confirm-btn"
                       data-titulo="¿Desactivar sucursal?" data-nombre="<?= s($s->nombre) ?>">
@@ -42,7 +42,7 @@
               </button>
             </form>
             <?php else: ?>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/sucursales/reactivar" class="d-inline ag-confirm-form">
+            <form method="POST" action="<?= $base ?>/sucursales/reactivar" class="d-inline ag-confirm-form">
               <input type="hidden" name="id" value="<?= $s->id ?>">
               <button type="button" class="btn btn-sm btn-outline-success ag-confirm-btn"
                       data-titulo="¿Reactivar sucursal?" data-nombre="<?= s($s->nombre) ?>">
@@ -65,7 +65,7 @@ async function actualizarInline(id, campo, valor) {
         const bodyData = { id: id };
         bodyData[campo] = valor;
 
-        const response = await fetch('/<?= $_ENV['APP_NAME'] ?>/sucursales/actualizar-inline', {
+        const response = await fetch('<?= $base ?>/sucursales/actualizar-inline', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(bodyData)

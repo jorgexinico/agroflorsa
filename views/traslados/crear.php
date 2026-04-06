@@ -104,7 +104,7 @@
                     </div>
 
                     <div class="mt-4 d-flex justify-content-between">
-                        <a href="/<?= $_ENV['APP_NAME'] ?>/traslados" class="btn btn-outline-secondary">Cancelar</a>
+                        <a href="<?= $base ?>/traslados" class="btn btn-outline-secondary">Cancelar</a>
                         <button type="submit" class="btn btn-success px-4">
                             <i class="bi bi-send me-1"></i>Enviar Traslado
                         </button>
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         try {
-            const res = await fetch(`/<?= $_ENV['APP_NAME'] ?>/inventario/productos-sucursal-ajax?sucursal_id=${sucId}`);
+            const res = await fetch(`<?= $base ?>/inventario/productos-sucursal-ajax?sucursal_id=${sucId}`);
             const data = await res.json();
 
             if (data.ok && data.productos.length > 0) {

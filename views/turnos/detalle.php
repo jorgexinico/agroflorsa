@@ -30,10 +30,10 @@
         </div>
         <?php if ($turno['estado'] === 'abierto'): ?>
         <div class="d-flex gap-2 mt-3">
-          <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/nueva" class="btn btn-sm btn-success flex-fill">
+          <a href="<?= $base ?>/ventas/nueva" class="btn btn-sm btn-success flex-fill">
             <i class="bi bi-cart-plus me-1"></i>Nueva venta
           </a>
-          <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/cerrar?id=<?= $turno['id'] ?>" class="btn btn-sm btn-outline-danger flex-fill">
+          <a href="<?= $base ?>/turnos/cerrar?id=<?= $turno['id'] ?>" class="btn btn-sm btn-outline-danger flex-fill">
             <i class="bi bi-stop-circle me-1"></i>Cerrar turno
           </a>
         </div>
@@ -102,7 +102,7 @@
           </div>
           <div class="mt-3 p-3 bg-light rounded d-flex justify-content-between align-items-center">
             <span class="badge <?= $v['tipo_pago']==='contado'?'bg-success':'bg-warning text-dark' ?>">Pago: <?= ucfirst(s($v['tipo_pago'])) ?></span>
-            <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/detalle?id=<?= $v['id'] ?>" class="btn btn-sm btn-primary">
+            <a href="<?= $base ?>/ventas/detalle?id=<?= $v['id'] ?>" class="btn btn-sm btn-primary">
               <i class="bi bi-eye me-1"></i>Ver Factura Completa
             </a>
           </div>
@@ -121,7 +121,7 @@
 </div>
 
 <div class="mt-3">
-  <a href="/<?= $_ENV['APP_NAME'] ?>/turnos" class="btn btn-outline-secondary btn-sm">
+  <a href="<?= $base ?>/turnos" class="btn btn-outline-secondary btn-sm">
     <i class="bi bi-arrow-left me-1"></i>Volver a Turnos
   </a>
 </div>

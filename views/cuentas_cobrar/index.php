@@ -56,7 +56,7 @@
 <!-- ══ FILTROS ════════════════════════════════════════════════ -->
 <div class="card mb-3">
   <div class="card-body py-3">
-    <form method="GET" action="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar" class="row g-2 align-items-end">
+    <form method="GET" action="<?= $base ?>/cuentas-cobrar" class="row g-2 align-items-end">
       <div class="col-md-5 col-lg-4">
         <label class="form-label form-label-sm mb-1 fw-semibold">Filtrar por cliente</label>
         <select name="cliente_id" id="filtro-cliente" class="form-select form-select-sm" onchange="this.form.submit()">
@@ -70,7 +70,7 @@
       </div>
       <div class="col-auto">
         <?php if ($cliente_id): ?>
-        <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar" class="btn btn-sm btn-outline-secondary">
+        <a href="<?= $base ?>/cuentas-cobrar" class="btn btn-sm btn-outline-secondary">
           <i class="bi bi-x-circle me-1"></i>Limpiar filtro
         </a>
         <?php endif; ?>
@@ -122,7 +122,7 @@
             <span class="badge bg-light text-dark border"><?= $c['id'] ?></span>
           </td>
           <td>
-            <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/detalle?id=<?= $c['venta_id'] ?>"
+            <a href="<?= $base ?>/ventas/detalle?id=<?= $c['venta_id'] ?>"
                class="text-decoration-none fw-semibold">#<?= $c['venta_id'] ?></a>
           </td>
           <td>
@@ -147,7 +147,7 @@
             <small class="text-muted" style="font-size:.68rem"><?= $pct ?>%</small>
           </td>
           <td class="pe-3">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar/detalle?id=<?= $c['id'] ?>"
+            <a href="<?= $base ?>/cuentas-cobrar/detalle?id=<?= $c['id'] ?>"
                class="btn btn-sm btn-outline-primary w-100">
               <i class="bi bi-cash-coin me-1"></i>Abonar
             </a>

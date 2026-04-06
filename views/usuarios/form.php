@@ -60,7 +60,7 @@
           </div>
 
           <div class="d-flex gap-2 justify-content-end">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/usuarios" class="btn btn-outline-secondary">Cancelar</a>
+            <a href="<?= $base ?>/usuarios" class="btn btn-outline-secondary">Cancelar</a>
             <button type="submit" class="btn btn-primary px-4">
               <i class="bi bi-check-circle me-1"></i>
               <?= $accion === 'crear' ? 'Crear usuario' : 'Guardar cambios' ?>

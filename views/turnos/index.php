@@ -17,18 +17,18 @@ $errMap = ['ya_abierto' => 'Ya tienes un turno abierto.'];
     · Abierto: <?= date('d/m H:i', strtotime($turnoActivo['abierto_en'])) ?>
   </div>
   <div class="d-flex gap-2">
-    <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/nueva" class="btn btn-sm btn-success">
+    <a href="<?= $base ?>/ventas/nueva" class="btn btn-sm btn-success">
       <i class="bi bi-cart-plus me-1"></i>Nueva venta
     </a>
-    <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/detalle?id=<?= $turnoActivo['id'] ?>" class="btn btn-sm btn-outline-success">Ver detalle</a>
-    <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/cerrar?id=<?= $turnoActivo['id'] ?>" class="btn btn-sm btn-outline-danger">
+    <a href="<?= $base ?>/turnos/detalle?id=<?= $turnoActivo['id'] ?>" class="btn btn-sm btn-outline-success">Ver detalle</a>
+    <a href="<?= $base ?>/turnos/cerrar?id=<?= $turnoActivo['id'] ?>" class="btn btn-sm btn-outline-danger">
       <i class="bi bi-stop-circle me-1"></i>Cerrar turno
     </a>
   </div>
 </div>
 <?php else: ?>
 <div class="mb-3">
-  <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/abrir" class="btn btn-success">
+  <a href="<?= $base ?>/turnos/abrir" class="btn btn-success">
     <i class="bi bi-play-circle me-1"></i>Abrir nuevo turno
   </a>
 </div>
@@ -66,9 +66,9 @@ $errMap = ['ya_abierto' => 'Ya tienes un turno abierto.'];
           <td class="text-muted small"><?= $t['cerrado_en'] ? date('d/m/Y H:i', strtotime($t['cerrado_en'])) : '—' ?></td>
           <td><span class="badge <?= $t['estado']==='abierto'?'bg-success':'bg-secondary' ?>"><?= s($t['estado']) ?></span></td>
           <td class="text-end">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/detalle?id=<?= $t['id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
+            <a href="<?= $base ?>/turnos/detalle?id=<?= $t['id'] ?>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
             <?php if ($t['estado']==='cerrado'): ?>
-            <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/reporte?id=<?= $t['id'] ?>" class="btn btn-sm btn-outline-info ms-1"><i class="bi bi-file-text"></i></a>
+            <a href="<?= $base ?>/turnos/reporte?id=<?= $t['id'] ?>" class="btn btn-sm btn-outline-info ms-1"><i class="bi bi-file-text"></i></a>
             <?php endif; ?>
           </td>
         </tr>

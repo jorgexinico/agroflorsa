@@ -33,10 +33,10 @@
     <?php endif; ?>
   </div>
   <div class="col-auto ms-auto">
-    <a href="/<?= $_ENV['APP_NAME'] ?>/inventario/ajuste" class="btn btn-outline-primary btn-sm">
+    <a href="<?= $base ?>/inventario/ajuste" class="btn btn-outline-primary btn-sm">
       <i class="bi bi-pencil-square me-1"></i>Ajuste manual
     </a>
-    <a href="/<?= $_ENV['APP_NAME'] ?>/compras/crear" class="btn btn-success btn-sm ms-2">
+    <a href="<?= $base ?>/compras/crear" class="btn btn-success btn-sm ms-2">
       <i class="bi bi-truck me-1"></i>Registrar compra
     </a>
   </div>
@@ -80,7 +80,7 @@
             <td class="text-center text-muted">—</td>
             <td class="text-center text-muted">—</td>
             <td class="text-end">
-              <a href="/<?= $_ENV['APP_NAME'] ?>/inventario/kardex?producto_id=<?= $item['producto_id'] ?>&sucursal_id=<?= $sucursalId ?>" 
+              <a href="<?= $base ?>/inventario/kardex?producto_id=<?= $item['producto_id'] ?>&sucursal_id=<?= $sucursalId ?>" 
                  class="btn btn-outline-dark btn-sm" title="Ver Kardex">
                 <i class="bi bi-journal-text"></i>
               </a>
@@ -193,7 +193,7 @@
       btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
 
       try {
-          const response = await fetch('/<?= $_ENV['APP_NAME'] ?>/inventario/ingreso-rapido-ajax', {
+          const response = await fetch('<?= $base ?>/inventario/ingreso-rapido-ajax', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

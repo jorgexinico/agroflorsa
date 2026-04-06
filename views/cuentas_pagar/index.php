@@ -4,7 +4,7 @@
         <p class="text-muted mb-0"><?= count($cuentas) ?> cuentas por pagar pendientes</p>
     </div>
     <div class="col-md-6 text-md-end mt-2 mt-md-0">
-        <form method="GET" action="/<?= $_ENV['APP_NAME'] ?>/cuentas-pagar" class="d-inline-block">
+        <form method="GET" action="<?= $base ?>/cuentas-pagar" class="d-inline-block">
             <div class="input-group input-group-sm">
                 <select name="proveedor_id" class="form-select" onchange="this.form.submit()">
                     <option value="">-- Todos los Proveedores --</option>
@@ -15,7 +15,7 @@
                     <?php endforeach; ?>
                 </select>
                 <?php if ($proveedor_id > 0): ?>
-                <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-pagar" class="btn btn-outline-secondary"><i class="bi bi-x"></i></a>
+                <a href="<?= $base ?>/cuentas-pagar" class="btn btn-outline-secondary"><i class="bi bi-x"></i></a>
                 <?php endif; ?>
             </div>
         </form>
@@ -57,7 +57,7 @@
                         <?php endif; ?>
                     </td>
                     <td class="text-end">
-                        <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-pagar/detalle?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-primary shadow-sm">
+                        <a href="<?= $base ?>/cuentas-pagar/detalle?id=<?= $c['id'] ?>" class="btn btn-sm btn-outline-primary shadow-sm">
                             <i class="bi bi-cash-coin me-1"></i>Abonar
                         </a>
                     </td>

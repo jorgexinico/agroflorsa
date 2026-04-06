@@ -6,7 +6,7 @@
       — <span class="fw-semibold text-dark"><?= s($sucursal_actual) ?></span>
     <?php endif; ?>
   </p>
-  <a href="/<?= $_ENV['APP_NAME'] ?>/compras/crear" class="btn btn-success btn-sm">
+  <a href="<?= $base ?>/compras/crear" class="btn btn-success btn-sm">
     <i class="bi bi-plus-circle me-1"></i>Nueva compra
   </a>
 </div>
@@ -92,7 +92,7 @@ async function toggleDetalle(id, btnClicked) {
     currentRow.insertAdjacentElement('afterend', detailsRow);
 
     try {
-        const res = await fetch(`/<?= $_ENV['APP_NAME'] ?>/compras/detalle-ajax?id=${id}`);
+        const res = await fetch(`<?= $base ?>/compras/detalle-ajax?id=${id}`);
         const data = await res.json();
         
         if (!data.ok) {
@@ -159,7 +159,7 @@ async function toggleDetalle(id, btnClicked) {
                         <span class="small text-muted">Abonado: <strong>Q${parseFloat(cxp.pagado).toFixed(2)}</strong></span>
                         <span class="small text-muted">Saldo Pendiente: <strong class="text-danger">Q${parseFloat(cxp.saldo).toFixed(2)}</strong></span>
                         ${ (cxp.estado === 'pendiente' || cxp.estado === 'parcial') ? 
-                          `<a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-pagar/detalle?id=${cxp.id}" class="btn btn-sm btn-outline-primary ms-auto"><i class="bi bi-cash-coin me-1"></i>Ver CxP</a>` 
+                          `<a href="<?= $base ?>/cuentas-pagar/detalle?id=${cxp.id}" class="btn btn-sm btn-outline-primary ms-auto"><i class="bi bi-cash-coin me-1"></i>Ver CxP</a>` 
                           : '' }
                     </div>
                 </div>`;

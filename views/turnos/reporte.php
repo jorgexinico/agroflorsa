@@ -80,7 +80,7 @@ $diferencia = (float)($turno['diferencia'] ?? 0);
     </div>
 
     <div class="text-center mt-4">
-      <a href="/<?= $_ENV['APP_NAME'] ?>/turnos" class="btn btn-outline-secondary">
+      <a href="<?= $base ?>/turnos" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left me-1"></i>Volver a turnos
       </a>
     </div>

@@ -80,7 +80,7 @@ $action = $accion === 'crear'
             </div>
           </div>
           <div class="d-flex gap-2 justify-content-end mt-4">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/productos" class="btn btn-outline-secondary">Cancelar</a>
+            <a href="<?= $base ?>/productos" class="btn btn-outline-secondary">Cancelar</a>
             <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i>Guardar</button>
           </div>
         </form>

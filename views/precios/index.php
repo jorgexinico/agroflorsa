@@ -74,7 +74,7 @@
                 <div class="small opacity-75">Productos seleccionados</div>
                 <div class="fw-bold">Listo para vender</div>
             </div>
-            <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/nueva" class="btn btn-success rounded-pill px-3">
+            <a href="<?= $base ?>/ventas/nueva" class="btn btn-success rounded-pill px-3">
                 Finalizar <i class="bi bi-arrow-right-short ms-1"></i>
             </a>
             <button id="clear-cart" class="btn btn-sm btn-outline-light rounded-circle p-1 border-0" title="Vaciar carrito">

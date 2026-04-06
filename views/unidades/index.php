@@ -1,7 +1,7 @@
 <?php // views/unidades/index.php ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
   <p class="text-muted mb-0"><?= count($unidades) ?> unidades</p>
-  <a href="/<?= $_ENV['APP_NAME'] ?>/unidades/crear" class="btn btn-success btn-sm">
+  <a href="<?= $base ?>/unidades/crear" class="btn btn-success btn-sm">
     <i class="bi bi-plus-circle me-1"></i>Nueva unidad
   </a>
 </div>
@@ -26,7 +26,7 @@
             </div>
           </td>
           <td class="text-end text-nowrap">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/unidades/editar?id=<?= $u->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+            <a href="<?= $base ?>/unidades/editar?id=<?= $u->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
           </td>
         </tr>
         <?php endforeach; ?>
@@ -41,7 +41,7 @@ async function actualizarInline(id, campo, valor) {
         const bodyData = { id: id };
         bodyData[campo] = valor;
 
-        const response = await fetch('/<?= $_ENV['APP_NAME'] ?>/unidades/actualizar-inline', {
+        const response = await fetch('<?= $base ?>/unidades/actualizar-inline', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(bodyData)

@@ -2,7 +2,7 @@
 <?php if (empty($_SESSION['turno_id'])): ?>
 <div class="alert alert-danger">
   <i class="bi bi-exclamation-triangle me-2"></i>No hay turno abierto.
-  <a href="/<?= $_ENV['APP_NAME'] ?>/turnos/abrir" class="alert-link">Abre un turno primero.</a>
+  <a href="<?= $base ?>/turnos/abrir" class="alert-link">Abre un turno primero.</a>
 </div>
 <?php return; endif; ?>
 
@@ -126,7 +126,7 @@
       <i class="bi bi-trash3 me-1"></i>Vaciar Carrito
     </button>
     <div class="ms-auto">
-      <a href="/<?= $_ENV['APP_NAME'] ?>/ventas" class="btn btn-outline-secondary me-2">Cancelar</a>
+      <a href="<?= $base ?>/ventas" class="btn btn-outline-secondary me-2">Cancelar</a>
       <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">
         <i class="bi bi-check2-circle me-1"></i>Confirmar Venta
       </button>

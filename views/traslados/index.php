@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="h4 mb-0"><?= $titulo ?></h2>
-    <a href="/<?= $_ENV['APP_NAME'] ?>/traslados/crear" class="btn btn-primary">
+    <a href="<?= $base ?>/traslados/crear" class="btn btn-primary">
         <i class="bi bi-plus-lg me-1"></i>Nuevo Traslado
     </a>
 </div>
@@ -42,7 +42,7 @@
                                     $mi_rol = $_SESSION['usuario_rol'] ?? '';
                                     if ($t['estado'] === 'enviado' && ($mi_rol === 'admin' || $mi_suc === (int)$t['sucursal_destino_id'])): 
                                 ?>
-                                <form action="/<?= $_ENV['APP_NAME'] ?>/traslados/recibir" method="POST" class="form-recibir">
+                                <form action="<?= $base ?>/traslados/recibir" method="POST" class="form-recibir">
                                     <input type="hidden" name="id" value="<?= $t['id'] ?>">
                                     <button type="submit" class="btn btn-success btn-sm" title="Recibir Mercadería">
                                         <i class="bi bi-box-seam me-1"></i>Recibir
@@ -50,7 +50,7 @@
                                 </form>
                                 <?php endif; ?>
 
-                                <a href="/<?= $_ENV['APP_NAME'] ?>/traslados/detalle?id=<?= $t['id'] ?>" class="btn btn-outline-dark btn-sm">
+                                <a href="<?= $base ?>/traslados/detalle?id=<?= $t['id'] ?>" class="btn btn-outline-dark btn-sm">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </div>

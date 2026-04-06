@@ -27,7 +27,7 @@ $monto_esperado = (float)$turno->monto_inicial + $totales['total_efectivo'];
           </div>
         </div>
 
-        <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/turnos/cerrar">
+        <form method="POST" action="<?= $base ?>/turnos/cerrar">
           <input type="hidden" name="id" value="<?= $turno->id ?>">
           <div class="mb-3">
             <label class="form-label fw-semibold">Monto entregado (Q) <span class="text-danger">*</span></label>

@@ -9,7 +9,7 @@ if ($ok && isset($msgs[$ok])): ?>
 <?php endif; ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
   <p class="text-muted mb-0"><?= count($clientes) ?> clientes</p>
-  <a href="/<?= $_ENV['APP_NAME'] ?>/clientes/crear" class="btn btn-success btn-sm">
+  <a href="<?= $base ?>/clientes/crear" class="btn btn-success btn-sm">
     <i class="bi bi-plus-circle me-1"></i>Nuevo cliente
   </a>
 </div>
@@ -40,9 +40,9 @@ if ($ok && isset($msgs[$ok])): ?>
           </td>
           <td><?= $c->activo ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-secondary">Inactivo</span>' ?></td>
           <td class="text-end text-nowrap">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/clientes/editar?id=<?= $c->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
+            <a href="<?= $base ?>/clientes/editar?id=<?= $c->id ?>" class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></a>
             <?php if ($c->activo): ?>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/clientes/eliminar" class="d-inline ag-confirm-form">
+            <form method="POST" action="<?= $base ?>/clientes/eliminar" class="d-inline ag-confirm-form">
               <input type="hidden" name="id" value="<?= $c->id ?>">
               <button type="button" class="btn btn-sm btn-outline-danger ag-confirm-btn"
                       data-titulo="¿Desactivar cliente?" data-nombre="<?= s($c->nombre) ?>">
@@ -50,7 +50,7 @@ if ($ok && isset($msgs[$ok])): ?>
               </button>
             </form>
             <?php else: ?>
-            <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/clientes/activar" class="d-inline ag-confirm-form">
+            <form method="POST" action="<?= $base ?>/clientes/activar" class="d-inline ag-confirm-form">
               <input type="hidden" name="id" value="<?= $c->id ?>">
               <button type="button" class="btn btn-sm btn-outline-success ag-confirm-btn"
                       data-titulo="¿Reactivar cliente?" data-nombre="<?= s($c->nombre) ?>">
@@ -72,7 +72,7 @@ async function actualizarInline(id, campo, valor) {
         const bodyData = { id: id };
         bodyData[campo] = valor;
 
-        const response = await fetch('/<?= $_ENV['APP_NAME'] ?>/clientes/actualizar-inline', {
+        const response = await fetch('<?= $base ?>/clientes/actualizar-inline', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(bodyData)

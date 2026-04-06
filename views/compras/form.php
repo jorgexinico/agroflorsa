@@ -81,7 +81,7 @@
       </div>
 
       <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end mt-4">
-        <a href="/<?= $_ENV['APP_NAME'] ?>/compras" class="btn btn-outline-secondary btn-lg py-2 fs-6">Cancelar</a>
+        <a href="<?= $base ?>/compras" class="btn btn-outline-secondary btn-lg py-2 fs-6">Cancelar</a>
         <button type="submit" class="btn btn-success btn-lg py-2 fs-6 px-sm-5">
           <i class="bi bi-save me-2"></i>Registrar compra
         </button>

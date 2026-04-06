@@ -5,7 +5,7 @@
     <input type="date" name="fecha" class="form-control form-control-sm" value="<?= s($fecha) ?>" onchange="this.form.submit()">
   </form>
   <?php if (!empty($_SESSION['turno_id'])): ?>
-  <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/nueva" class="btn btn-success btn-sm">
+  <a href="<?= $base ?>/ventas/nueva" class="btn btn-success btn-sm">
     <i class="bi bi-cart-plus me-1"></i>Nueva venta
   </a>
   <?php endif; ?>
@@ -70,7 +70,7 @@
             <span class="small text-muted"><i class="bi bi-shop me-1"></i><?= s($v['sucursal_nombre']) ?></span>
             <?php endif; ?>
           </div>
-          <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/detalle?id=<?= $v['id'] ?>" class="btn btn-sm btn-primary">
+          <a href="<?= $base ?>/ventas/detalle?id=<?= $v['id'] ?>" class="btn btn-sm btn-primary">
             <i class="bi bi-eye me-1"></i>Detalles / Factura
           </a>
         </div>

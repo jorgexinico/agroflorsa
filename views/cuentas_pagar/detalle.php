@@ -1,7 +1,7 @@
 <?php // views/cuentas_pagar/detalle.php ?>
 <div class="row align-items-center mb-3">
     <div class="col-6">
-        <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-pagar" class="btn btn-sm btn-outline-secondary">
+        <a href="<?= $base ?>/cuentas-pagar" class="btn btn-sm btn-outline-secondary">
             <i class="bi bi-arrow-left me-1"></i>Atrás
         </a>
     </div>
@@ -21,7 +21,7 @@
 
                     <dt class="col-sm-5 text-muted">Compra #</dt>
                     <dd class="col-sm-7">
-                        <a href="/<?= $_ENV['APP_NAME'] ?>/compras/detalle?id=<?= $cxp['compra_id'] ?>">
+                        <a href="<?= $base ?>/compras/detalle?id=<?= $cxp['compra_id'] ?>">
                             <?= $cxp['compra_id'] ?>
                         </a>
                     </dd>
@@ -66,7 +66,7 @@
                 <i class="bi bi-cash-coin me-1"></i> Registrar Nuevo Abono
             </div>
             <div class="card-body">
-                <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/cuentas-pagar/abonar">
+                <form method="POST" action="<?= $base ?>/cuentas-pagar/abonar">
                     <input type="hidden" name="cxp_id" value="<?= $cxp['id'] ?>">
                     <div class="row g-3">
                         <div class="col-md-6">

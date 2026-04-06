@@ -1,7 +1,7 @@
 <?php // views/inventario/kardex.php ?>
 <div class="row mb-3">
     <div class="col-auto">
-        <a href="/<?= $_ENV['APP_NAME'] ?>/inventario?sucursal_id=<?= $sucursal->id ?>" class="btn btn-outline-secondary btn-sm">
+        <a href="<?= $base ?>/inventario?sucursal_id=<?= $sucursal->id ?>" class="btn btn-outline-secondary btn-sm">
             <i class="bi bi-arrow-left me-1"></i>Regresar al Inventario
         </a>
     </div>

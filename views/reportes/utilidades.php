@@ -119,7 +119,7 @@ async function toggleDetalleVenta(id, row) {
     row.insertAdjacentElement('afterend', detailsRow);
 
     try {
-        const res = await fetch(`/<?= $_ENV['APP_NAME'] ?>/reportes/detalle-venta-ajax?id=${id}`);
+        const res = await fetch(`<?= $base ?>/reportes/detalle-venta-ajax?id=${id}`);
         const data = await res.json();
 
         if (!data.ok) throw new Error(data.error);

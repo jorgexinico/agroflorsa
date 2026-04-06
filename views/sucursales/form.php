@@ -26,7 +26,7 @@ $action = $accion === 'crear'
             <input type="text" name="direccion" class="form-control" value="<?= s($sucursal->direccion ?? '') ?>">
           </div>
           <div class="d-flex gap-2 justify-content-end mt-4">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/sucursales" class="btn btn-outline-secondary">Cancelar</a>
+            <a href="<?= $base ?>/sucursales" class="btn btn-outline-secondary">Cancelar</a>
             <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i>Guardar</button>
           </div>
         </form>

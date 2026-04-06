@@ -77,7 +77,7 @@
             Saldo pendiente: <strong><?= formatMoney((float)$cxc['saldo']) ?></strong>
           </span>
           <?php if (in_array($cxc['estado'], ['pendiente','parcial'])): ?>
-          <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar/detalle?id=<?= $cxc['id'] ?>"
+          <a href="<?= $base ?>/cuentas-cobrar/detalle?id=<?= $cxc['id'] ?>"
              class="btn btn-sm btn-outline-warning ms-auto">
             <i class="bi bi-cash-coin me-1"></i>Registrar Abono
           </a>
@@ -94,7 +94,7 @@
   <div class="card-header d-flex justify-content-between">
     <span><i class="bi bi-list-ul me-2"></i>Detalle de productos</span>
     <div>
-        <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/envio?id=<?= $venta['id'] ?>" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+        <a href="<?= $base ?>/ventas/envio?id=<?= $venta['id'] ?>" target="_blank" class="btn btn-sm btn-outline-primary me-2">
             <i class="bi bi-file-earmark-pdf me-1"></i>Imprimir Envío
         </a>
         <button onclick="window.print()" class="btn btn-sm btn-outline-secondary">
@@ -127,7 +127,7 @@
 </div>
 
 <div class="mt-3 d-flex gap-2">
-  <a href="/<?= $_ENV['APP_NAME'] ?>/ventas" class="btn btn-outline-secondary btn-sm">
+  <a href="<?= $base ?>/ventas" class="btn btn-outline-secondary btn-sm">
     <i class="bi bi-arrow-left me-1"></i>Volver
   </a>
 
@@ -163,7 +163,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/ventas/anular">
+        <form method="POST" action="<?= $base ?>/ventas/anular">
           <input type="hidden" name="id" value="<?= $venta['id'] ?>">
           <button type="submit" class="btn btn-danger">
             <i class="bi bi-x-circle me-1"></i>Confirmar Anulación

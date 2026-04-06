@@ -111,7 +111,7 @@ $badgeClass = match($cuenta['estado']) {
 
           <dt class="col-5 text-muted fw-normal">Venta origen</dt>
           <dd class="col-7">
-            <a href="/<?= $_ENV['APP_NAME'] ?>/ventas/detalle?id=<?= $cuenta['venta_id'] ?>"
+            <a href="<?= $base ?>/ventas/detalle?id=<?= $cuenta['venta_id'] ?>"
                class="btn btn-xs btn-outline-secondary btn-sm py-0 px-2">
               <i class="bi bi-eye me-1"></i>#<?= $cuenta['venta_id'] ?>
             </a>
@@ -147,7 +147,7 @@ $badgeClass = match($cuenta['estado']) {
         <span class="fw-semibold text-success">Registrar Abono</span>
       </div>
       <div class="card-body">
-        <form method="POST" action="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar/abonar" id="form-abono">
+        <form method="POST" action="<?= $base ?>/cuentas-cobrar/abonar" id="form-abono">
           <input type="hidden" name="cxc_id" value="<?= $cuenta['id'] ?>">
 
           <!-- Accesos rápidos de monto -->
@@ -289,7 +289,7 @@ $badgeClass = match($cuenta['estado']) {
 </div>
 
 <div class="mt-3">
-  <a href="/<?= $_ENV['APP_NAME'] ?>/cuentas-cobrar" class="btn btn-outline-secondary btn-sm">
+  <a href="<?= $base ?>/cuentas-cobrar" class="btn btn-outline-secondary btn-sm">
     <i class="bi bi-arrow-left me-1"></i>Volver a Cuentas por Cobrar
   </a>
 </div>
