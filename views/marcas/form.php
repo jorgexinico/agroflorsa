@@ -1,3 +1,4 @@
+<?php // views/marcas/form.php
 $action = $accion === 'crear' 
     ? "$base/marcas/crear" 
     : "$base/marcas/editar?id=" . $marca->id; 

@@ -80,7 +80,7 @@ class SucursalesController {
         isAuth();
         isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/sucursales');
+            redirectTo('/sucursales');
             exit;
         }
         $id = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);
@@ -97,7 +97,7 @@ class SucursalesController {
         isAuth();
         isRole(['admin']);
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /' . $_ENV['APP_NAME'] . '/sucursales');
+            redirectTo('/sucursales');
             exit;
         }
         $id = filter_var($_POST['id'] ?? 0, FILTER_VALIDATE_INT);

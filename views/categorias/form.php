@@ -1,3 +1,4 @@
+<?php // views/categorias/form.php
 $action = $accion === 'crear' 
     ? "$base/categorias/crear" 
     : "$base/categorias/editar?id=" . $categoria->id; 

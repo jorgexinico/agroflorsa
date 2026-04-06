@@ -1,3 +1,4 @@
+<?php // views/proveedores/form.php
 $action = $accion === 'crear'
     ? "$base/proveedores/crear"
     : "$base/proveedores/editar?id=" . $proveedor->id;

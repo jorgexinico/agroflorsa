@@ -1,3 +1,4 @@
+<?php // views/unidades/form.php
 $action = $accion === 'crear'
     ? "$base/unidades/crear"
     : "$base/unidades/editar?id=" . $unidad->id;
