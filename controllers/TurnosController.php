@@ -46,6 +46,14 @@ class TurnosController {
             [':uid' => $_SESSION['usuario_id']]
         );
 
+        // Sincronizar sesión con el resultado de la BD
+        if ($turnoActivo) {
+            $_SESSION['turno_id']    = (int)$turnoActivo['id'];
+            $_SESSION['sucursal_id'] = (int)$turnoActivo['sucursal_id'];
+        } else {
+            unset($_SESSION['turno_id'], $_SESSION['sucursal_id']);
+        }
+
         $router->render('turnos/index', [
             'titulo'      => 'Turnos',
             'turnos'      => $turnos,

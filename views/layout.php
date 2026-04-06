@@ -11,8 +11,23 @@ $base = $_ENV['APP_NAME'] ? '/' . $_ENV['APP_NAME'] : '';
 
 $usuarioNombre = $_SESSION['usuario_nombre'] ?? '';
 $usuarioRol    = $_SESSION['usuario_rol']    ?? '';
-$turnoId       = $_SESSION['turno_id']       ?? null;
-$sucursalId    = $_SESSION['sucursal_id']    ?? null;
+$turnoId    = $_SESSION['turno_id']    ?? null;
+$sucursalId = $_SESSION['sucursal_id'] ?? null;
+
+// ── VALIDACIÓN DE TURNO ACTIVO ────────────────────────
+// Si hay un turno en sesión, verificar que siga abierto en la BD
+if ($turnoId) {
+    $check = Model\ActiveRecord::fetchFirstRaw(
+        "SELECT estado FROM turnos WHERE id = :id", 
+        [':id' => $turnoId]
+    );
+    if (!$check || $check['estado'] !== 'abierto') {
+        unset($_SESSION['turno_id'], $_SESSION['sucursal_id']);
+        $turnoId    = null;
+        $sucursalId = null;
+    }
+}
+
 $sucursalNombre = '';
 
 if ($sucursalId) {
