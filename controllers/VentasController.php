@@ -10,6 +10,7 @@ use Models\Producto;
 use Models\Cliente;
 use Models\Inventario;
 use Models\CuentaPorCobrar;
+use Models\Sucursal;
 use Model\ActiveRecord;
 
 
