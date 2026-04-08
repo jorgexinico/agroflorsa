@@ -29,7 +29,8 @@
           <?php foreach ($productos as $p): ?>
           <option value="<?= $p->id ?>"
                   data-precio-publico="<?= (float)$p->precio_publico ?>"
-                  data-precio-mayorista="<?= (float)$p->precio_mayorista ?>">
+                  data-precio-mayorista="<?= (float)$p->precio_mayorista ?>"
+                  data-maneja-vencimiento="<?= $p->maneja_vencimiento ?? '0' ?>">
             <?= s($p->nombre) ?> (<?= s($p->unidad_abreviatura ?? '') ?>)
           </option>
           <?php endforeach; ?>
@@ -75,6 +76,7 @@
                 <tr>
                   <th style="min-width: 300px;">Producto</th>
                   <th style="width: 140px;" class="text-center">Cantidad</th>
+                  <th style="width: 140px;" class="text-center">Vencimiento</th>
                   <th style="width: 140px;" class="text-center">Costo (Compra)</th>
                   <th style="width: 140px;" class="text-center">Pr. Público</th>
                   <th style="width: 140px;" class="text-center">Pr. Mayorista</th>

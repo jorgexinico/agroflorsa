@@ -112,6 +112,8 @@ $router->get('/inventario/kardex',  [InventarioController::class, 'kardex']);
 $router->get('/inventario/movimientos', [InventarioController::class, 'movimientos']);
 $router->get('/inventario/productos-sucursal-ajax', [InventarioController::class, 'productosPorSucursalAjax']);
 $router->post('/inventario/ingreso-rapido-ajax', [InventarioController::class, 'ingresoRapidoAjax']);
+$router->post('/inventario/asignar-lote-stock-existente', [InventarioController::class, 'asignarVencimientoExistenteAjax']);
+$router->get('/inventario/ver-lotes-ajax', [InventarioController::class, 'verLotesActivosAjax']);
 
 // ── COMPRAS ──────────────────────────────────────────
 $router->get('/compras',        [ComprasController::class, 'index']);

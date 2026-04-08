@@ -106,7 +106,7 @@ class Inventario extends ActiveRecord {
      */
     public static function getStockSucursal(int $sucursal_id): array {
         return self::fetchRaw(
-            "SELECT iep.*, p.nombre AS producto_nombre, p.sku,
+            "SELECT iep.*, p.nombre AS producto_nombre, p.sku, p.maneja_vencimiento,
                     u.nombre AS unidad_nombre, u.abreviatura AS unidad_abreviatura,
                     p.precio_publico, p.precio_mayorista,
                     (SELECT costo_unitario FROM inventario_movimientos m WHERE m.producto_id = p.id AND m.costo_unitario IS NOT NULL AND m.costo_unitario > 0 ORDER BY m.id DESC LIMIT 1) as ultimo_costo

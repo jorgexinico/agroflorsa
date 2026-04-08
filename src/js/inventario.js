@@ -58,7 +58,8 @@ function addRowAjuste(tbody, data = null) {
         const selected = data && data.id == o.value ? 'selected' : '';
         return `<option value="${o.value}" ${selected}
                 data-precio-publico="${o.dataset.precioPublico}" 
-                data-precio-mayorista="${o.dataset.precioMayorista}">
+                data-precio-mayorista="${o.dataset.precioMayorista}"
+                data-maneja-vencimiento="${o.dataset.manejaVencimiento}">
         ${o.text}</option>`;
     }).join('');
 
@@ -66,6 +67,7 @@ function addRowAjuste(tbody, data = null) {
     row.innerHTML = `
         <td><select name="producto_id[]" class="form-select form-select-sm ajuste-select" required>${options}</select></td>
         <td><input type="number" name="cantidad[]" class="form-control form-control-sm" step="0.001" value="${data ? data.cantidad : 0}" required></td>
+        <td><input type="date" name="fecha_vencimiento[]" class="form-control form-control-sm ajuste-fv" ${data && data.maneja_vencimiento == 1 ? 'required' : 'disabled'}></td>
         <td><input type="number" name="precio_compra[]" class="form-control form-control-sm" step="0.01" value="0"></td>
         <td><input type="number" name="precio_publico[]" class="form-control form-control-sm ajuste-publico" step="0.01" value="${data ? data.precio_publico : 0}"></td>
         <td><input type="number" name="precio_mayorista[]" class="form-control form-control-sm ajuste-mayorista" step="0.01" value="${data ? data.precio_mayorista : 0}"></td>
@@ -80,6 +82,16 @@ function addRowAjuste(tbody, data = null) {
             const opt = sel.selectedOptions[0];
             row.querySelector('.ajuste-publico').value = opt.dataset.precioPublico || 0;
             row.querySelector('.ajuste-mayorista').value = opt.dataset.precioMayorista || 0;
+            
+            const fvInput = row.querySelector('.ajuste-fv');
+            if (opt.dataset.manejaVencimiento == '1') {
+                fvInput.disabled = false;
+                fvInput.required = true;
+            } else {
+                fvInput.disabled = true;
+                fvInput.required = false;
+                fvInput.value = '';
+            }
         });
         // Si no es carga masiva, disparamos el cambio para llenar precios
         if (!data) sel.dispatchEvent(new Event('change'));
@@ -97,7 +109,8 @@ function loadAllProducts(tbody) {
             id: opt.value,
             cantidad: 0,
             precio_publico: opt.dataset.precioPublico,
-            precio_mayorista: opt.dataset.precioMayorista
+            precio_mayorista: opt.dataset.precioMayorista,
+            maneja_vencimiento: opt.dataset.manejaVencimiento
         });
     });
 }

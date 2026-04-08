@@ -12,6 +12,9 @@ import * as bootstrap from 'bootstrap';
 import Swal from 'sweetalert2';
 import { Toast } from './funciones.js';
 
+// Exponer globalmente para scripts inline (vistas PHP)
+window.Swal = Swal;
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // ── 1. Sidebar toggle y Backdrop ───────────────────────
