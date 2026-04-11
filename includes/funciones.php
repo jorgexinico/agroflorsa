@@ -31,7 +31,8 @@ function formatMoney(float $valor, string $simbolo = 'Q'): string {
  * cambia esta función a: '/' . $_ENV['APP_NAME'] . '/public/' . ltrim($ruta, '/')
  */
 function asset(string $ruta): string {
-    return '/' . ltrim($ruta, '/');
+    $version = '1.0.2'; // Cambiar esto para forzar recarga en el cliente
+    return url($ruta) . '?v=' . $version;
 }
 
 // ── REDIRECCIÓN ──────────────────────────────────────

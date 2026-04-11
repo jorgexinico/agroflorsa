@@ -52,6 +52,8 @@ if (($layout ?? '') === 'auth') : ?>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= s($titulo ?? 'Agroflorsa') ?> — Agroflorsa</title>
   <link rel="stylesheet" href="<?= asset('build/styles.css') ?>">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="ag-auth-body">
   <?= $contenido ?>
@@ -67,6 +69,8 @@ if (($layout ?? '') === 'auth') : ?>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= s($titulo ?? 'Dashboard') ?> — Agroflorsa</title>
   <link rel="stylesheet" href="<?= asset('build/styles.css') ?>">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="ag-body">
 
