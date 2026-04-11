@@ -12,6 +12,7 @@ try {
     $db = new PDO($dsn, $user, $pass);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    $db->exec("SET time_zone = '-06:00';");
 
 } catch (PDOException $e) {
     echo json_encode([

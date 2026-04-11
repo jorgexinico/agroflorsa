@@ -120,19 +120,18 @@
               </tr>
             </thead>
             <tbody id="venta-items"></tbody>
+            <tfoot>
+              <tr class="bg-light fw-bold">
+                <td colspan="3" class="text-end py-3">TOTAL ESTIMADO</td>
+                <td class="text-end py-3 text-primary fs-4" id="venta-total">Q 0.00</td>
+                <td></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
-    <tfoot>
-      <tr class="bg-light fw-bold">
-        <td colspan="3" class="text-end py-3">TOTAL ESTIMADO</td>
-        <td class="text-end py-3 text-primary fs-4" id="venta-total">Q 0.00</td>
-        <td></td>
-      </tr>
-    </tfoot>
-  </table>
-</div>
+      </div>
 
-<div class="row mt-4">
+      <div class="row mt-4">
   <div class="col-12 text-end d-flex justify-content-between align-items-center">
     <button type="button" id="btn-clear-cart-local" class="btn btn-outline-danger d-none">
       <i class="bi bi-trash3 me-1"></i>Vaciar Carrito

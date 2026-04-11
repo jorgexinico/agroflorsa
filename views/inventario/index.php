@@ -47,6 +47,35 @@
 </div>
 
 <?php if ($sucursalId && !empty($stock)): ?>
+<?php 
+$totalValorCosto = 0;
+$totalValorPublico = 0;
+if ($usuarioRol === 'admin' || $usuarioRol === 'supervisor') {
+    foreach ($stock as $i) {
+        if ((float)$i['cantidad'] > 0) {
+            $totalValorCosto += ((float)$i['cantidad'] * (float)($i['ultimo_costo'] ?? 0));
+            $totalValorPublico += ((float)$i['cantidad'] * (float)($i['precio_publico'] ?? 0));
+        }
+    }
+}
+?>
+<?php if ($usuarioRol === 'admin' || $usuarioRol === 'supervisor'): ?>
+<div class="row mb-3">
+  <div class="col-12">
+    <div class="d-flex flex-wrap gap-3 justify-content-end animate__animated animate__fadeIn">
+      <div class="bg-white p-2 px-4 rounded shadow-sm border-start border-warning border-4 text-center">
+        <span class="d-block small text-muted fw-bold text-uppercase">Valor Estimado al Costo</span>
+        <span class="fs-5 text-dark fw-bold"><?= formatMoney($totalValorCosto) ?></span>
+      </div>
+      <div class="bg-white p-2 px-4 rounded shadow-sm border-start border-success border-4 text-center">
+        <span class="d-block small text-muted fw-bold text-uppercase">Valor Estimado al Público</span>
+        <span class="fs-5 text-success fw-bold"><?= formatMoney($totalValorPublico) ?></span>
+      </div>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
 <div class="card">
     <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
       <div class="d-flex align-items-center me-3">
