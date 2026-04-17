@@ -13,7 +13,7 @@
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>SKU</th><th>Nombre</th><th>Tipo</th><th>Unidad</th><th>Categoría</th><th>P. Público</th><th>P. Mayorista</th><th>Vencim.</th><th></th></tr></thead>
+      <thead><tr><th>SKU</th><th>Nombre</th><th>Tipo</th><th>Unidad</th><th>Categoría</th><th class="text-warning">Costo</th><th>P. Público</th><th>P. Mayorista</th><th>Vencim.</th><th></th></tr></thead>
       <tbody>
         <?php foreach ($productos as $p): ?>
         <tr data-id="<?= $p->id ?>">
@@ -34,6 +34,17 @@
                     </option>
                 <?php endforeach; ?>
             </select>
+          </td>
+          
+          <!-- Edit Precio Compra (Costo) -->
+          <td>
+            <div class="input-group input-group-sm flex-nowrap" style="width: 100px;">
+                <span class="input-group-text border-0 bg-transparent text-warning fw-bold px-1">Q</span>
+                <input type="number" step="0.01" min="0" 
+                       class="form-control form-control-sm border-0 bg-transparent text-warning fw-bold p-0" 
+                       value="<?= number_format($p->precio_compra ?? 0, 2, '.', '') ?>"
+                       onchange="actualizarInline(<?= $p->id ?>, 'precio_compra', this.value)">
+            </div>
           </td>
 
           <!-- Edit Precio Público -->

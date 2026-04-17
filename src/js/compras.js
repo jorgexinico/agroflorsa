@@ -79,9 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const selectedOpt = select.options[select.selectedIndex];
             if (selectedOpt && selectedOpt.value) {
+                const costo = parseFloat(selectedOpt.dataset.costo || 0).toFixed(2);
                 const pub = parseFloat(selectedOpt.dataset.pub || 0).toFixed(2);
                 const may = parseFloat(selectedOpt.dataset.may || 0).toFixed(2);
                 
+                tr.querySelector('.compra-costo').value = costo;
                 tr.querySelector('.compra-pub').value = pub;
                 tr.querySelector('.compra-may').value = may;
                 
@@ -154,7 +156,7 @@ function addRowCompra(tbody, initialProductId = null) {
     const options = Array.from(select.options)
         .map(o => {
             const selected = (initialProductId && String(o.value) === String(initialProductId)) ? 'selected' : '';
-            return `<option value="${o.value}" data-sku="${o.dataset.sku || ''}" data-maneja-vencimiento="${o.dataset.manejaVencimiento || 0}" data-pub="${o.dataset.pub || 0}" data-may="${o.dataset.may || 0}" ${selected}>${o.text}</option>`;
+            return `<option value="${o.value}" data-sku="${o.dataset.sku || ''}" data-maneja-vencimiento="${o.dataset.manejaVencimiento || 0}" data-costo="${o.dataset.costo || 0}" data-pub="${o.dataset.pub || 0}" data-may="${o.dataset.may || 0}" ${selected}>${o.text}</option>`;
         })
         .join('');
 

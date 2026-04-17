@@ -35,6 +35,7 @@ class ProductosController {
             $producto->sku                 = trim($_POST['sku'] ?? '') ?: null;
             $producto->precio_publico      = (float)($_POST['precio_publico'] ?? 0);
             $producto->precio_mayorista    = (float)($_POST['precio_mayorista'] ?? 0);
+            $producto->precio_compra       = (float)($_POST['precio_compra'] ?? 0);
             $producto->marca_id            = (int)($_POST['marca_id'] ?? 0) ?: null;
             $producto->categoria_id        = (int)($_POST['categoria_id'] ?? 0) ?: null;
             $producto->unidad_id           = (int)($_POST['unidad_id'] ?? 0);
@@ -78,6 +79,7 @@ class ProductosController {
             $producto->sku                = trim($_POST['sku'] ?? '') ?: null;
             $producto->precio_publico     = (float)($_POST['precio_publico'] ?? 0);
             $producto->precio_mayorista   = (float)($_POST['precio_mayorista'] ?? 0);
+            $producto->precio_compra      = (float)($_POST['precio_compra'] ?? 0);
             $producto->marca_id           = (int)($_POST['marca_id'] ?? 0) ?: null;
             $producto->categoria_id       = (int)($_POST['categoria_id'] ?? 0) ?: null;
             $producto->unidad_id          = (int)($_POST['unidad_id'] ?? 0);
@@ -144,6 +146,9 @@ class ProductosController {
         }
         if (isset($datos['precio_mayorista'])) {
             $producto->precio_mayorista = (float)$datos['precio_mayorista'];
+        }
+        if (isset($datos['precio_compra'])) {
+            $producto->precio_compra = (float)$datos['precio_compra'];
         }
         
         $skuRegenerado = false;
@@ -290,6 +295,7 @@ class ProductosController {
             // de lo contrario intentaremos extraerlos de índices posicionales si están.
             $precioPub = (float)($fila['precio_publico'] ?? $fila[3] ?? 0);
             $precioMay = (float)($fila['precio_mayorista'] ?? $fila[4] ?? 0);
+            $precioCom = (float)($fila['precio_compra'] ?? $fila[5] ?? 0);
             
             // Tipo y Vencimiento (por defecto si no vienen)
             $tipoRaw   = strtolower($fila['tipo'] ?? 'mercaderia');
@@ -383,6 +389,7 @@ class ProductosController {
                 // Actualizar precios solo si son mayores a 0 en el Excel
                 if ($precioPub > 0) $p->precio_publico = $precioPub;
                 if ($precioMay > 0) $p->precio_mayorista = $precioMay;
+                if ($precioCom > 0) $p->precio_compra = $precioCom;
                 
                 $alertas = $p->validar();
                 if (!empty($alertas['danger'])) {
@@ -432,6 +439,7 @@ class ProductosController {
                 $p->categoria_id       = $categoriaId;
                 $p->precio_publico     = $precioPub;
                 $p->precio_mayorista   = $precioMay;
+                $p->precio_compra      = $precioCom;
                 $p->tipo               = $tipo;
                 $p->unidad_id          = $unidadId;
                 $p->maneja_vencimiento = $venc;

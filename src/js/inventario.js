@@ -59,6 +59,7 @@ function addRowAjuste(tbody, data = null) {
         return `<option value="${o.value}" ${selected}
                 data-precio-publico="${o.dataset.precioPublico}" 
                 data-precio-mayorista="${o.dataset.precioMayorista}"
+                data-precio-compra="${o.dataset.precioCompra}"
                 data-maneja-vencimiento="${o.dataset.manejaVencimiento}">
         ${o.text}</option>`;
     }).join('');
@@ -68,7 +69,7 @@ function addRowAjuste(tbody, data = null) {
         <td><select name="producto_id[]" class="form-select form-select-sm ajuste-select" required>${options}</select></td>
         <td><input type="number" name="cantidad[]" class="form-control form-control-sm" step="0.001" value="${data ? data.cantidad : 0}" required></td>
         <td><input type="date" name="fecha_vencimiento[]" class="form-control form-control-sm ajuste-fv" ${data && data.maneja_vencimiento == 1 ? 'required' : 'disabled'}></td>
-        <td><input type="number" name="precio_compra[]" class="form-control form-control-sm" step="0.01" value="0"></td>
+        <td><input type="number" name="precio_compra[]" class="form-control form-control-sm ajuste-compra" step="0.01" value="${data ? data.precio_compra : 0}"></td>
         <td><input type="number" name="precio_publico[]" class="form-control form-control-sm ajuste-publico" step="0.01" value="${data ? data.precio_publico : 0}"></td>
         <td><input type="number" name="precio_mayorista[]" class="form-control form-control-sm ajuste-mayorista" step="0.01" value="${data ? data.precio_mayorista : 0}"></td>
         <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-row"><i class="bi bi-trash"></i></button></td>
@@ -82,6 +83,7 @@ function addRowAjuste(tbody, data = null) {
             const opt = sel.selectedOptions[0];
             row.querySelector('.ajuste-publico').value = opt.dataset.precioPublico || 0;
             row.querySelector('.ajuste-mayorista').value = opt.dataset.precioMayorista || 0;
+            row.querySelector('.ajuste-compra').value = opt.dataset.precioCompra || 0;
             
             const fvInput = row.querySelector('.ajuste-fv');
             if (opt.dataset.manejaVencimiento == '1') {
@@ -110,6 +112,7 @@ function loadAllProducts(tbody) {
             cantidad: 0,
             precio_publico: opt.dataset.precioPublico,
             precio_mayorista: opt.dataset.precioMayorista,
+            precio_compra: opt.dataset.precioCompra,
             maneja_vencimiento: opt.dataset.manejaVencimiento
         });
     });

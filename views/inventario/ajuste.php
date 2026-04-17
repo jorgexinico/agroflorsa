@@ -30,6 +30,7 @@
           <option value="<?= $p->id ?>"
                   data-precio-publico="<?= (float)$p->precio_publico ?>"
                   data-precio-mayorista="<?= (float)$p->precio_mayorista ?>"
+                  data-precio-compra="<?= (float)$p->precio_compra ?>"
                   data-maneja-vencimiento="<?= $p->maneja_vencimiento ?? '0' ?>">
             <?= s($p->nombre) ?> (<?= s($p->unidad_abreviatura ?? '') ?>)
           </option>

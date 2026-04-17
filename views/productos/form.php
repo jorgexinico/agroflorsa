@@ -19,11 +19,15 @@ $action = $accion === 'crear'
               <label class="form-label fw-semibold">SKU</label>
               <input type="text" id="sku_producto" name="sku" class="form-control" value="<?= s($producto->sku ?? '') ?>" readonly>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Precio Compra (Costo) <span class="text-danger">*</span></label>
+              <input type="number" step="0.01" min="0" name="precio_compra" class="form-control border-warning" value="<?= s($producto->precio_compra) ?>" required>
+            </div>
+            <div class="col-md-4">
               <label class="form-label fw-semibold">Precio Público (Q) <span class="text-danger">*</span></label>
               <input type="number" step="0.01" min="0" name="precio_publico" class="form-control" value="<?= s($producto->precio_publico) ?>" required>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label fw-semibold">Precio Mayorista (Q) <span class="text-danger">*</span></label>
               <input type="number" step="0.01" min="0" name="precio_mayorista" class="form-control" value="<?= s($producto->precio_mayorista) ?>" required>
             </div>

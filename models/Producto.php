@@ -11,7 +11,7 @@ class Producto extends ActiveRecord {
     protected static $tabla      = 'productos';
     protected static $idTabla    = 'id';
     protected static $columnasDB = [
-        'id','nombre','sku','precio_publico','precio_mayorista','marca_id','categoria_id','unidad_id','tipo','maneja_vencimiento','activo','creado_en'
+        'id','nombre','sku','precio_publico','precio_mayorista','precio_compra','marca_id','categoria_id','unidad_id','tipo','maneja_vencimiento','activo','creado_en'
     ];
 
     public ?int    $id                 = null;
@@ -19,6 +19,7 @@ class Producto extends ActiveRecord {
     public ?string $sku                = null;
     public float   $precio_publico     = 0;
     public float   $precio_mayorista   = 0;
+    public float   $precio_compra      = 0;
     public ?int    $marca_id           = null;
     public ?int    $categoria_id       = null;
     public ?int    $unidad_id          = null;

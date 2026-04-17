@@ -10,6 +10,7 @@
       <option value="<?= $p->id ?>"
               data-sku="<?= s($p->sku ?? '') ?>"
               data-maneja-vencimiento="<?= (int)$p->maneja_vencimiento ?>"
+              data-costo="<?= (float)$p->precio_compra ?>"
               data-pub="<?= (float)$p->precio_publico ?>"
               data-may="<?= (float)$p->precio_mayorista ?>">
         <?= s($p->nombre) ?> (<?= s($p->unidad_abreviatura ?? '') ?>)

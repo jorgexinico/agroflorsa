@@ -25,20 +25,23 @@ function formatMoney(float $valor, string $simbolo = 'Q'): string {
 // ── ASSETS ───────────────────────────────────────────
 /**
  * Devuelve la URL pública de un asset compilado.
- * El document root de Docker es /var/www/html/public/,
- * así que los assets en public/build/ se sirven en /build/.
- * En local con XAMPP donde el proyecto está en htdocs/agroflorsa/,
- * cambia esta función a: '/' . $_ENV['APP_NAME'] . '/public/' . ltrim($ruta, '/')
  */
 function asset(string $ruta): string {
-    $version = '1.0.2'; // Cambiar esto para forzar recarga en el cliente
+    $version = '1.0.4'; // forzar recarga
+    $appName = trim($_ENV['APP_NAME'] ?? '', '/');
+    
+    // Si estamos en entorno XAMPP local (con APP_NAME seteado), inyectamos /public/
+    if (!empty($appName)) {
+        return '/' . $appName . '/public/' . ltrim($ruta, '/') . '?v=' . $version;
+    }
+    
+    // Producción: APP_NAME viene vacío, url() ya funciona perfecto.
     return url($ruta) . '?v=' . $version;
 }
 
 // ── REDIRECCIÓN ──────────────────────────────────────
 /**
- * Genera una URL absoluta al recurso indicado,
- * respetando el prefijo de APP_NAME si existe.
+ * Genera una URL absoluta al recurso indicado.
  */
 function url(string $path = ''): string {
     $base = trim($_ENV['APP_NAME'] ?? '', '/');
