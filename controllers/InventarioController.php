@@ -300,9 +300,23 @@ class InventarioController {
             // 5. Actualizar precios del producto
             $producto = Producto::find($producto_id);
             if ($producto) {
-                if ($p_publico > 0) $producto->precio_publico = $p_publico;
-                if ($p_mayorista > 0) $producto->precio_mayorista = $p_mayorista;
-                $producto->actualizar();
+                $hubo_cambio = false;
+                if ($p_publico > 0) {
+                    $producto->precio_publico = $p_publico;
+                    $hubo_cambio = true;
+                }
+                if ($p_mayorista > 0) {
+                    $producto->precio_mayorista = $p_mayorista;
+                    $hubo_cambio = true;
+                }
+                // Conservadurismo contable: Solo sobreescribir precio_compra si el nuevo ingreso es más caro
+                if ($costo > 0 && $costo > (float)$producto->precio_compra) {
+                    $producto->precio_compra = $costo;
+                    $hubo_cambio = true;
+                }
+                if ($hubo_cambio) {
+                    $producto->actualizar();
+                }
             }
 
             $db->commit();

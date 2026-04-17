@@ -28,6 +28,7 @@
                 data-nombre="<?= s($p->nombre) ?>"
                 data-pub="<?= (float)$p->precio_publico ?>" 
                 data-may="<?= (float)$p->precio_mayorista ?>"
+                data-compra="<?= (float)$p->precio_compra ?>"
                 data-maneja="<?= $p->maneja_vencimiento ?? '0' ?>">
         <?php endforeach; ?>
       </datalist>
@@ -240,10 +241,10 @@ if ($usuarioRol === 'admin' || $usuarioRol === 'supervisor') {
           <td class="text-center">
             <input type="number" step="0.001" class="form-control form-control-sm input-inline qty-input" value="0">
             <div class="x-small text-muted mt-1">Cantidad</div>
-            ${opt.dataset.maneja === '1' ? '<input type="date" class="form-control form-control-sm mt-1 fv-input" required><div class="x-small text-danger mt-1">Vence</div>' : ''}
+            ${opt.dataset.maneja === '1' ? '<input type="date" class="form-control form-control-sm mt-1 fv-input"><div class="x-small text-muted mt-1">Vence (Opcional)</div>' : ''}
           </td>
           <td class="text-center">
-            <input type="number" step="0.01" class="form-control form-control-sm input-inline cost-input" value="0">
+            <input type="number" step="0.01" class="form-control form-control-sm input-inline cost-input" value="${opt.dataset.compra}">
             <div class="x-small text-muted mt-1">Costo</div>
           </td>
           <td class="text-center">
@@ -283,10 +284,7 @@ if ($usuarioRol === 'admin' || $usuarioRol === 'supervisor') {
           return;
       }
       
-      if (fvInput && !fv) {
-          Swal.fire('Atención', 'Ingresa la fecha de vencimiento', 'warning');
-          return;
-      }
+
 
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';

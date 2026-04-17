@@ -109,7 +109,7 @@ class Inventario extends ActiveRecord {
             "SELECT iep.*, p.nombre AS producto_nombre, p.sku, p.maneja_vencimiento,
                     u.nombre AS unidad_nombre, u.abreviatura AS unidad_abreviatura,
                     p.precio_publico, p.precio_mayorista,
-                    (SELECT costo_unitario FROM inventario_movimientos m WHERE m.producto_id = p.id AND m.costo_unitario IS NOT NULL AND m.costo_unitario > 0 ORDER BY m.id DESC LIMIT 1) as ultimo_costo
+                    p.precio_compra as ultimo_costo
              FROM inventario_existencias_producto iep
              JOIN productos p ON p.id = iep.producto_id
              JOIN unidades_medida u ON u.id = p.unidad_id
@@ -119,21 +119,15 @@ class Inventario extends ActiveRecord {
         );
     }
 
-    /**
-     * Obtiene el último costo unitario registrado en inventario_movimientos
-     * para un producto dado (basado en compras o ajustes con costo positivo).
-     * Retorna 0.0 si no existe historial.
-     */
     public static function getCostoUnitario(int $producto_id): float {
         $row = self::fetchFirstRaw(
-            "SELECT costo_unitario
-             FROM inventario_movimientos
-             WHERE producto_id = :prod AND costo_unitario IS NOT NULL AND costo_unitario > 0
-             ORDER BY id DESC
+            "SELECT precio_compra
+             FROM productos
+             WHERE id = :prod
              LIMIT 1",
             [':prod' => $producto_id]
         );
-        return (float)($row['costo_unitario'] ?? 0);
+        return (float)($row['precio_compra'] ?? 0);
     }
 
     /**

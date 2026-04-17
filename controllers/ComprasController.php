@@ -130,10 +130,26 @@ class ComprasController {
                         if ($p_publico > 0 || $p_mayorista > 0 || $costo > 0) {
                             $producto_update = Producto::find($prod_id);
                             if ($producto_update) {
-                                if ($p_publico > 0) $producto_update->precio_publico = $p_publico;
-                                if ($p_mayorista > 0) $producto_update->precio_mayorista = $p_mayorista;
-                                if ($costo > 0) $producto_update->precio_compra = $costo;
-                                $producto_update->actualizar();
+                                $hubo_cambio = false;
+                                
+                                if ($p_publico > 0) {
+                                    $producto_update->precio_publico = $p_publico;
+                                    $hubo_cambio = true;
+                                }
+                                if ($p_mayorista > 0) {
+                                    $producto_update->precio_mayorista = $p_mayorista;
+                                    $hubo_cambio = true;
+                                }
+                                
+                                // Regla: Solo actualizar precio_compra si el nuevo costo es MAYOR al precio actual.
+                                if ($costo > 0 && $costo > (float)$producto_update->precio_compra) {
+                                    $producto_update->precio_compra = $costo;
+                                    $hubo_cambio = true;
+                                }
+                                
+                                if ($hubo_cambio) {
+                                    $producto_update->actualizar();
+                                }
                             }
                         }
                     }

@@ -96,31 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Validación extra antes de enviar: todos los productos con vencimiento deben tener fecha
-    if (form) {
         form.addEventListener('submit', (e) => {
-            let valido = true;
-            tbody.querySelectorAll('tr').forEach(tr => {
-                const sel      = tr.querySelector('select[name="producto_id[]"]');
-                const fechaInp = tr.querySelector('input[name="fecha_vencimiento[]"][type="date"]');
-                if (!sel || !fechaInp) return;
-                const opt = sel.options[sel.selectedIndex];
-                const req = parseInt(opt?.dataset.manejaVencimiento || '0', 10);
-                if (req && !fechaInp.value) {
-                    fechaInp.classList.add('is-invalid');
-                    valido = false;
-                } else if (fechaInp) {
-                    fechaInp.classList.remove('is-invalid');
-                }
-            });
-            if (!valido) {
-                e.preventDefault();
-                // Scroll al primer campo inválido
-                const first = tbody.querySelector('.is-invalid');
-                if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            // Ya no hay validación estricta de fecha de vencimiento
         });
-    }
 
     // Primera fila por defecto - Comentada para iniciar vacío como en ventas
     // addRowCompra(tbody);
@@ -139,9 +117,8 @@ function actualizarFechaVenc(select) {
           <div style="position:relative">
             <input type="date" name="fecha_vencimiento[]"
                    class="form-control form-control-sm"
-                   required
-                   title="Fecha de vencimiento requerida para este producto">
-            <div class="invalid-feedback" style="font-size:.72rem">Ingresa la fecha de venc.</div>
+                   title="Fecha de vencimiento (Opcional)">
+            <div class="invalid-feedback" style="font-size:.72rem">Opcional</div>
           </div>`;
     } else {
         celda.innerHTML = `<input type="hidden" name="fecha_vencimiento[]" value=""><span class="text-muted small">N/A</span>`;
