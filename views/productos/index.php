@@ -1,11 +1,15 @@
 <?php // views/productos/index.php ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
   <p class="text-muted mb-0"><?= count($productos) ?> productos activos</p>
-  <div class="d-flex gap-2">
-    <a href="<?= $base ?>/productos/importar" class="btn btn-outline-success btn-sm">
+  <div class="d-flex gap-2 align-items-center">
+    <div class="input-group input-group-sm" style="width: 250px;">
+      <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+      <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Buscar por nombre o SKU..." onkeyup="filtrarTabla()">
+    </div>
+    <a href="<?= $base ?>/productos/importar" class="btn btn-outline-success btn-sm text-nowrap">
       <i class="bi bi-file-earmark-excel me-1"></i>Importar Excel
     </a>
-    <a href="<?= $base ?>/productos/crear" class="btn btn-success btn-sm">
+    <a href="<?= $base ?>/productos/crear" class="btn btn-success btn-sm text-nowrap">
       <i class="bi bi-plus-circle me-1"></i>Nuevo producto
     </a>
   </div>
@@ -133,6 +137,27 @@ async function actualizarInline(id, campo, valor) {
     } catch (error) {
         console.error("Error al actualizar: ", error);
         Swal.fire('Error de Red', 'Hubo un problema de conexión al guardar.', 'error');
+    }
+}
+
+function filtrarTabla() {
+    let input = document.getElementById("searchInput");
+    let filter = input.value.toLowerCase();
+    let table = document.querySelector(".table");
+    let tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+        let tdSku = tr[i].getElementsByTagName("td")[0];
+        let tdNombre = tr[i].getElementsByTagName("td")[1];
+        if (tdSku || tdNombre) {
+            let txtSku = tdSku.textContent || tdSku.innerText;
+            let txtNombre = tdNombre.textContent || tdNombre.innerText;
+            if (txtSku.toLowerCase().indexOf(filter) > -1 || txtNombre.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }       
     }
 }
 </script>
