@@ -20,10 +20,15 @@ class TrasladosController {
              JOIN sucursales sd ON sd.id = t.sucursal_destino_id
              ORDER BY t.fecha DESC"
         );
+        
+        $usuarioRol = $_SESSION['usuario_rol'] ?? '';
+        $sucursalId = (int)($_SESSION['sucursal_id'] ?? 0);
 
         $router->render('traslados/index', [
-            'titulo'    => 'Traslados de Mercadería',
-            'traslados' => $traslados
+            'titulo'     => 'Traslados de Mercadería',
+            'traslados'  => $traslados,
+            'usuarioRol' => $usuarioRol,
+            'sucursalId' => $sucursalId
         ]);
     }
 
@@ -195,9 +200,82 @@ class TrasladosController {
         }
     }
 
-    public static function detalle(Router $router): void {
+    public static function rechazar(Router $router): void {
         isAuth();
-        $id = (int)$_GET['id'];
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirectTo('/traslados');
+            exit;
+        }
+
+        $id = (int)($_POST['id'] ?? 0);
+        $traslado = Traslado::find($id);
+
+        if (!$traslado || $traslado->estado !== 'enviado') {
+            redirectTo('/traslados?err=invalid');
+            exit;
+        }
+
+        // Validación: Solo el personal de la sucursal de destino o admin puede rechazar
+        $mi_sucursal = (int)($_SESSION['sucursal_id'] ?? 0);
+        $mi_rol = $_SESSION['usuario_rol'] ?? '';
+        if ($mi_rol !== 'admin' && $mi_sucursal !== (int)$traslado->sucursal_destino_id) {
+             redirectTo('/traslados?err=not_authorized');
+             exit;
+        }
+
+        $db = ActiveRecord::getDB();
+        $db->beginTransaction();
+
+        try {
+            $detalles = TrasladoDetalle::getByTraslado($id);
+
+            foreach ($detalles as $item) {
+                $pid   = (int)$item['producto_id'];
+                $cant  = (float)$item['cantidad'];
+                $costo = (float)$item['costo_unitario'];
+
+                // Como fue rechazado, DEVOLVEMOS el stock a la sucursal de ORIGEN
+                Inventario::ajustarStock($traslado->sucursal_origen_id, $pid, $cant);
+                
+                // Registrar movimiento de retorno a origen
+                Inventario::registrarMovimiento([
+                    'sucursal_id'    => $traslado->sucursal_origen_id,
+                    'producto_id'    => $pid,
+                    'tipo'           => 'traslado_entrada', // Revertimos usando traslado_entrada
+                    'referencia_tipo'=> 'traslados',
+                    'referencia_id'  => $id,
+                    'signo'          => 1,
+                    'cantidad'       => $cant,
+                    'costo_unitario' => $costo
+                ]);
+            }
+
+            // Actualizar estado a rechazado
+            $traslado->estado = 'rechazado';
+            $traslado->actualizar();
+
+            $db->commit();
+            redirectTo('/traslados?ok=2&type=traslado_rechazado');
+            exit;
+
+        } catch (\Exception $e) {
+            $db->rollBack();
+            file_put_contents('c:/proyectos/agroflorsa/error_rechazo.log', $e->getMessage() . PHP_EOL, FILE_APPEND);
+            redirectTo('/traslados?err=db');
+            exit;
+        }
+    }
+
+    public static function detalleAjax(Router $router): void {
+        isAuth();
+        header('Content-Type: application/json');
+
+        $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
+        if (!$id) {
+            echo json_encode(['ok' => false, 'error' => 'ID inválido']);
+            return;
+        }
+
         $traslado = Traslado::fetchFirstRaw(
             "SELECT t.*, so.nombre AS origen, sd.nombre AS destino 
              FROM traslados t
@@ -208,16 +286,25 @@ class TrasladosController {
         );
 
         if (!$traslado) {
-            redirectTo('/traslados');
-            exit;
+            echo json_encode(['ok' => false, 'error' => 'Traslado no encontrado']);
+            return;
         }
 
-        $detalle = TrasladoDetalle::getByTraslado($id);
+        // Obtener detalles con el nombre y unidad del producto
+        $detalle = TrasladoDetalle::fetchRaw(
+            "SELECT d.*, p.nombre AS producto_nombre, u.abreviatura AS unidad_abreviatura
+             FROM traslado_detalle d
+             JOIN productos p ON p.id = d.producto_id
+             LEFT JOIN unidades_medida u ON u.id = p.unidad_id
+             WHERE d.traslado_id = :id",
+            [':id' => $id]
+        );
 
-        $router->render('traslados/detalle', [
-            'titulo'   => 'Detalle de Traslado #' . $id,
+        echo json_encode([
+            'ok'       => true,
             'traslado' => $traslado,
             'detalle'  => $detalle
         ]);
+        exit;
     }
 }

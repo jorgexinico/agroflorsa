@@ -25,6 +25,10 @@ $action = $accion === 'crear'
             <label class="form-label fw-semibold">Dirección</label>
             <input type="text" name="direccion" class="form-control" value="<?= s($sucursal->direccion ?? '') ?>">
           </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Teléfono</label>
+            <input type="text" name="telefono" class="form-control" value="<?= s($sucursal->telefono ?? '') ?>">
+          </div>
           <div class="d-flex gap-2 justify-content-end mt-4">
             <a href="<?= $base ?>/sucursales" class="btn btn-outline-secondary">Cancelar</a>
             <button type="submit" class="btn btn-success"><i class="bi bi-save me-1"></i>Guardar</button>

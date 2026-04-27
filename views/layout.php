@@ -129,6 +129,11 @@ if (($layout ?? '') === 'auth') : ?>
       <i class="bi bi-truck"></i>
       <span>Compras</span>
     </a>
+
+    <a href="<?= $base ?>/producciones" class="ag-nav-item <?= isActive($base . '/producciones') ?>">
+      <i class="bi bi-box-seam-fill text-warning"></i>
+      <span>Producciones</span>
+    </a>
     <?php endif; ?>
 
     <a href="<?= $base ?>/traslados" class="ag-nav-item <?= isActive($base . '/traslados') ?>">

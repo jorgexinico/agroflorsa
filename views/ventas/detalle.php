@@ -95,11 +95,11 @@
     <span><i class="bi bi-list-ul me-2"></i>Detalle de productos</span>
     <div>
         <a href="<?= $base ?>/ventas/envio?id=<?= $venta['id'] ?>" target="_blank" class="btn btn-sm btn-outline-primary me-2">
-            <i class="bi bi-file-earmark-pdf me-1"></i>Imprimir Envío
+            <i class="bi bi-truck me-1"></i>Nota de Envío
         </a>
-        <button onclick="window.print()" class="btn btn-sm btn-outline-secondary">
-            <i class="bi bi-printer me-1"></i>Imprimir
-        </button>
+        <a href="<?= $base ?>/ventas/comprobante?id=<?= $venta['id'] ?>" target="_blank" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-receipt me-1"></i>Factura / Comprobante
+        </a>
     </div>
   </div>
   <div class="table-responsive">

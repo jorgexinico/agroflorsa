@@ -11,7 +11,7 @@
 <div class="card">
   <div class="table-responsive">
     <table class="table table-hover align-middle mb-0">
-      <thead><tr><th>#</th><th>Nombre</th><th>Tipo</th><th>Dirección</th><th>Estado</th><th></th></tr></thead>
+      <thead><tr><th>#</th><th>Nombre</th><th>Tipo</th><th>Dirección</th><th>Teléfono</th><th>Estado</th><th></th></tr></thead>
       <tbody>
         <?php foreach ($sucursales as $s): ?>
         <tr data-id="<?= $s->id ?>">
@@ -27,6 +27,12 @@
             <input type="text" class="form-control form-control-sm border-0 bg-transparent text-muted p-0 w-100" 
                    value="<?= s($s->direccion ?? '') ?>" placeholder="—"
                    onchange="actualizarInline(<?= $s->id ?>, 'direccion', this.value)"
+                   <?= $_SESSION['usuario_rol'] !== 'admin' ? 'disabled' : '' ?>>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm border-0 bg-transparent text-muted p-0 w-100" 
+                   value="<?= s($s->telefono ?? '') ?>" placeholder="Sin teléfono"
+                   onchange="actualizarInline(<?= $s->id ?>, 'telefono', this.value)"
                    <?= $_SESSION['usuario_rol'] !== 'admin' ? 'disabled' : '' ?>>
           </td>
           <td><?= $s->activa ? '<span class="badge bg-success">Activa</span>' : '<span class="badge bg-secondary">Inactiva</span>' ?></td>

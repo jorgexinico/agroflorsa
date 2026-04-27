@@ -121,6 +121,12 @@ $router->get('/compras/crear',  [ComprasController::class, 'crear']);
 $router->post('/compras/crear', [ComprasController::class, 'crear']);
 $router->get('/compras/detalle-ajax', [ComprasController::class, 'detalleAjax']);
 
+// ── PRODUCCIONES ─────────────────────────────────────
+$router->get('/producciones',        [\Controllers\ProduccionesController::class, 'index']);
+$router->get('/producciones/crear',  [\Controllers\ProduccionesController::class, 'crear']);
+$router->post('/producciones/crear', [\Controllers\ProduccionesController::class, 'crear']);
+$router->get('/producciones/detalle-ajax', [\Controllers\ProduccionesController::class, 'detalleAjax']);
+
 // ── TURNOS ───────────────────────────────────────────
 $router->get('/turnos',          [TurnosController::class, 'index']);
 $router->get('/turnos/abrir',    [TurnosController::class, 'abrir']);
@@ -136,6 +142,7 @@ $router->get('/ventas/nueva',    [VentasController::class, 'nueva']);
 $router->post('/ventas/nueva',   [VentasController::class, 'nueva']);
 $router->get('/ventas/detalle',  [VentasController::class, 'detalle']);
 $router->get('/ventas/envio',    [VentasController::class, 'envio']);
+$router->get('/ventas/comprobante', [VentasController::class, 'comprobante']);
 $router->post('/ventas/anular',  [VentasController::class, 'anular']);
 
 // ── CUENTAS POR COBRAR ─────────────────────────────
@@ -152,8 +159,9 @@ $router->post('/cuentas-pagar/abonar',   [\Controllers\CuentasPorPagarController
 $router->get('/traslados',         [TrasladosController::class, 'index']);
 $router->get('/traslados/crear',   [TrasladosController::class, 'crear']);
 $router->post('/traslados/crear',  [TrasladosController::class, 'crear']);
-$router->get('/traslados/detalle', [TrasladosController::class, 'detalle']);
 $router->post('/traslados/recibir', [TrasladosController::class, 'recibir']);
+$router->post('/traslados/rechazar', [TrasladosController::class, 'rechazar']);
+$router->get('/traslados/detalle-ajax', [TrasladosController::class, 'detalleAjax']);
 
 // ── REPORTES ─────────────────────────────────────────
 $router->get('/reportes/utilidades',   [ReportesController::class, 'utilidades']);

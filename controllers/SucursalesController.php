@@ -131,6 +131,7 @@ class SucursalesController {
 
         if (isset($datos['nombre'])) $sucursal->nombre = trim($datos['nombre']);
         if (isset($datos['direccion'])) $sucursal->direccion = trim($datos['direccion']);
+        if (isset($datos['telefono'])) $sucursal->telefono = trim($datos['telefono']);
 
         $alertas = $sucursal->validar();
         if (empty($alertas['danger'])) {

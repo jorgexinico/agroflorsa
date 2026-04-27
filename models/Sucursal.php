@@ -11,13 +11,14 @@ class Sucursal extends ActiveRecord {
     protected static $tabla      = 'sucursales';
     protected static $idTabla    = 'id';
     protected static $columnasDB = [
-        'id','nombre','tipo','direccion','activa','creado_en'
+        'id','nombre','tipo','direccion','telefono','activa','creado_en'
     ];
 
     public ?int    $id         = null;
     public string  $nombre     = '';
     public string  $tipo       = 'agroservicio';
     public ?string $direccion  = null;
+    public ?string $telefono   = null;
     public int     $activa     = 1;
     public ?string $creado_en  = null;
 

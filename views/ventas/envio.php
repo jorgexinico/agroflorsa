@@ -167,7 +167,7 @@ $appName = $_ENV['APP_NAME'] ?? 'agroflorsa';
             <h1 style="color:#2e7d32; margin:0;">FLOR DE MAYO</h1>
         </div>
         <div class="h-info">
-            <p>Tel: 3257-5660</p>
+            <p>Tel: <?= htmlspecialchars($venta['sucursal_telefono'] ?: 'Sin asignar') ?></p>
             <p>Venta de Agroquímicos y Fertilizantes</p>
         </div>
     </div>
