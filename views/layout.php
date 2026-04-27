@@ -271,7 +271,7 @@ if (($layout ?? '') === 'auth') : ?>
 
   <!-- Topbar -->
   <header class="ag-topbar">
-    <button class="ag-topbar__toggle" id="sidebarToggle">
+    <button type="button" class="ag-topbar__toggle" id="sidebarToggle">
       <i class="bi bi-list fs-4"></i>
     </button>
     <h1 class="ag-topbar__title"><?= s($titulo ?? '') ?></h1>

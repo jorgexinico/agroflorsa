@@ -108,42 +108,60 @@
           <div class="form-text mt-2"><i class="bi bi-info-circle me-1"></i>Al seleccionar un producto, se añadirá automáticamente a la lista de abajo.</div>
         </div>
 
-        <div class="table-responsive">
-          <table class="table table-sm mb-0">
-            <thead class="table-light">
-              <tr>
-                <th style="min-width:200px">Producto</th>
-                <th style="min-width:100px">Cantidad</th>
-                <th style="min-width:110px">Precio U.</th>
-                <th class="text-end" style="min-width:110px">Subtotal</th>
-                <th style="width:40px"></th>
-              </tr>
-            </thead>
-            <tbody id="venta-items"></tbody>
-            <tfoot>
-              <tr class="bg-light fw-bold">
-                <td colspan="3" class="text-end py-3">TOTAL ESTIMADO</td>
-                <td class="text-end py-3 text-primary fs-4" id="venta-total">Q 0.00</td>
-                <td></td>
-              </tr>
-            </tfoot>
-          </table>
+        <!-- Estilos para la vista móvil híbrida -->
+        <style>
+          @media (max-width: 768px) {
+            .sticky-mobile-bar {
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              background: #fff;
+              z-index: 1030;
+              box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
+              padding: 15px;
+            }
+            .padding-bottom-mobile {
+              padding-bottom: 140px; /* Para que no se oculte detrás del sticky bar */
+            }
+          }
+          .venta-item-row { transition: all 0.2s ease; }
+          .venta-item-row:hover { background-color: #f8f9fa; }
+        </style>
+
+        <div class="padding-bottom-mobile">
+          <!-- Encabezados de PC -->
+          <div class="d-none d-md-flex row fw-bold bg-light p-2 border-bottom align-items-center">
+            <div class="col-md-5">Producto</div>
+            <div class="col-md-2 text-center">Cantidad</div>
+            <div class="col-md-2">Precio U.</div>
+            <div class="col-md-2 text-end">Subtotal</div>
+            <div class="col-md-1"></div>
+          </div>
+
+          <!-- Contenedor dinámico -->
+          <div id="venta-items" class="d-flex flex-column gap-2 mt-2"></div>
         </div>
       </div>
 
-      <div class="row mt-4">
-  <div class="col-12 text-end d-flex justify-content-between align-items-center">
-    <button type="button" id="btn-clear-cart-local" class="btn btn-outline-danger d-none">
-      <i class="bi bi-trash3 me-1"></i>Vaciar Carrito
-    </button>
-    <div class="ms-auto">
-      <a href="<?= $base ?>/ventas" class="btn btn-outline-secondary me-2">Cancelar</a>
-      <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm">
-        <i class="bi bi-check2-circle me-1"></i>Confirmar Venta
-      </button>
-    </div>
-  </div>
-</div>
+      <!-- Barra flotante de cobro (sticky en móvil) -->
+      <div class="sticky-mobile-bar bg-light p-3 border-top rounded mt-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+          <div class="w-100 text-center text-md-start">
+              <span class="text-muted fw-bold d-block d-md-inline me-md-2">TOTAL ESTIMADO</span>
+              <h2 class="mb-0 text-primary fw-bold d-inline" id="venta-total">Q 0.00</h2>
+          </div>
+          <div class="d-flex w-100 gap-2 justify-content-center justify-content-md-end">
+            <button type="button" id="btn-clear-cart-local" class="btn btn-outline-danger d-none flex-grow-1 flex-md-grow-0">
+              <i class="bi bi-trash3"></i> Vaciar
+            </button>
+            <a href="<?= $base ?>/ventas" class="btn btn-outline-secondary flex-grow-1 flex-md-grow-0">Cancelar</a>
+            <button type="submit" class="btn btn-primary btn-lg shadow-sm flex-grow-1 flex-md-grow-0 text-nowrap">
+              <i class="bi bi-check2-circle me-1"></i>Confirmar Venta
+            </button>
+          </div>
+        </div>
+      </div>
     </form>
   </div>
 </div>

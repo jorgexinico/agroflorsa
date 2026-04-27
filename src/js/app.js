@@ -30,8 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(backdrop);
   }
 
-  function toggleSidebar() {
-    if (window.innerWidth <= 768) {
+  function toggleSidebar(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (isMobile) {
       const isShowing = sidebar.classList.contains('show');
       if (isShowing) {
         sidebar.classList.remove('show');
@@ -51,8 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── 2. Cerrar sidebar al hacer clic en el backdrop ─────
-  backdrop.addEventListener('click', () => {
-    if (window.innerWidth <= 768 && sidebar.classList.contains('show')) {
+  backdrop.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (isMobile && sidebar.classList.contains('show')) {
       sidebar.classList.remove('show');
       backdrop.classList.remove('show');
     }

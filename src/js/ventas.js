@@ -56,14 +56,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tbody.addEventListener('click', (e) => {
         if (e.target.closest('.btn-remove-row')) {
-            e.target.closest('tr').remove();
+            e.target.closest('.venta-item-row').remove();
             recalcTotalVenta();
+        }
+        
+        // Manejar botones + y - para móviles
+        if (e.target.closest('.btn-plus') || e.target.closest('.btn-minus')) {
+            const row = e.target.closest('.venta-item-row');
+            const input = row.querySelector('.venta-cantidad');
+            let val = parseFloat(input.value) || 0;
+            if (e.target.closest('.btn-plus')) {
+                input.value = val + 1;
+            } else if (e.target.closest('.btn-minus') && val > 1) {
+                input.value = val - 1;
+            }
+            // Disparar input event para que recalcule
+            input.dispatchEvent(new Event('input', { bubbles: true }));
         }
     });
 
     tbody.addEventListener('input', (e) => {
         if (e.target.matches('.venta-cantidad, .venta-precio')) {
-            const row = e.target.closest('tr');
+            const row = e.target.closest('.venta-item-row');
             validateStockRow(row);
             recalcRowVenta(row);
             recalcTotalVenta();
@@ -121,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const selects = tbody.querySelectorAll('.venta-select');
             
             selects.forEach(sel => {
-                const row = sel.closest('tr');
+                const row = sel.closest('.venta-item-row');
                 const opt = sel.selectedOptions[0];
                 if (opt) {
                     const precio = currentTipo === 'mayorista' 
@@ -157,23 +171,38 @@ function addRowVenta(tbody, initialProductId = null) {
         }).join('');
 
     const rowHtml = `
-    <tr>
-      <td>
+    <div class="row align-items-center border-bottom py-2 venta-item-row bg-white">
+      <div class="col-12 col-md-5 mb-2 mb-md-0">
+        <label class="d-md-none fw-bold small text-muted">Producto</label>
         <select name="producto_id[]" class="form-select form-select-sm venta-select" required>
           <option value="" disabled selected>-- Elija Producto --</option>
           ${options}
         </select>
         <div class="mt-1"><small class="text-muted stock-label">Stock: --</small></div>
-      </td>
-      <td>
-        <input type="number" name="cantidad[]" class="form-control form-control-sm venta-cantidad" min="0.001" step="any" value="1" required>
-      </td>
-      <td>
-        <input type="number" name="precio_unitario[]" class="form-control form-control-sm venta-precio" min="0" step="0.01" value="0" required>
-      </td>
-      <td class="text-end fw-semibold subtotal-cell">Q 0.00</td>
-      <td><button type="button" class="btn btn-sm btn-outline-danger btn-remove-row"><i class="bi bi-trash"></i></button></td>
-    </tr>`;
+      </div>
+      <div class="col-12 col-md-2 mb-2 mb-md-0">
+        <label class="d-md-none fw-bold small text-muted">Cantidad</label>
+        <div class="input-group input-group-sm">
+          <button type="button" class="btn btn-outline-secondary btn-minus px-3 fw-bold">-</button>
+          <input type="number" name="cantidad[]" class="form-control text-center venta-cantidad" min="0.001" step="any" value="1" required>
+          <button type="button" class="btn btn-outline-secondary btn-plus px-3 fw-bold">+</button>
+        </div>
+      </div>
+      <div class="col-12 col-md-2 mb-2 mb-md-0">
+        <label class="d-md-none fw-bold small text-muted">Precio U.</label>
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-light text-muted fw-bold">Q</span>
+          <input type="number" name="precio_unitario[]" class="form-control venta-precio" min="0" step="0.01" value="0" required>
+        </div>
+      </div>
+      <div class="col-8 col-md-2 mb-2 mb-md-0 text-md-end text-start">
+        <label class="d-md-none fw-bold small text-muted d-block">Subtotal</label>
+        <span class="fw-bold text-success fs-5 subtotal-cell">Q 0.00</span>
+      </div>
+      <div class="col-4 col-md-1 text-end">
+        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-row w-100 w-md-auto py-2"><i class="bi bi-trash fs-5"></i></button>
+      </div>
+    </div>`;
 
     tbody.insertAdjacentHTML('beforeend', rowHtml);
 
