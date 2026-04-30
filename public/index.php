@@ -23,6 +23,7 @@ use Controllers\MarcasController;
 use Controllers\CategoriasController;
 use Controllers\TrasladosController;
 use Controllers\ReportesController;
+use Controllers\GastosController;
 
 $router = new Router();
 $router->setBaseURL($_ENV['APP_NAME'] ? '/' . $_ENV['APP_NAME'] : '');
@@ -162,6 +163,12 @@ $router->post('/traslados/crear',  [TrasladosController::class, 'crear']);
 $router->post('/traslados/recibir', [TrasladosController::class, 'recibir']);
 $router->post('/traslados/rechazar', [TrasladosController::class, 'rechazar']);
 $router->get('/traslados/detalle-ajax', [TrasladosController::class, 'detalleAjax']);
+
+// ── GASTOS OPERATIVOS ────────────────────────────────
+$router->get('/gastos',            [GastosController::class, 'index']);
+$router->get('/gastos/crear',      [GastosController::class, 'crear']);
+$router->post('/gastos/crear',     [GastosController::class, 'crear']);
+$router->post('/gastos/eliminar',  [GastosController::class, 'eliminar']);
 
 // ── REPORTES ─────────────────────────────────────────
 $router->get('/reportes/utilidades',   [ReportesController::class, 'utilidades']);

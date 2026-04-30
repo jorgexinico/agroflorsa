@@ -130,6 +130,13 @@ if (($layout ?? '') === 'auth') : ?>
       <span>Compras</span>
     </a>
 
+    <?php if (in_array($usuarioRol, ['admin', 'supervisor'])): ?>
+    <a href="<?= $base ?>/gastos" class="ag-nav-item <?= isActive($base . '/gastos') ?>">
+      <i class="bi bi-wallet2 text-danger"></i>
+      <span>Gastos (Egresos)</span>
+    </a>
+    <?php endif; ?>
+
     <a href="<?= $base ?>/producciones" class="ag-nav-item <?= isActive($base . '/producciones') ?>">
       <i class="bi bi-box-seam-fill text-warning"></i>
       <span>Producciones</span>

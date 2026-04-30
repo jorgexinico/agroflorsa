@@ -14,27 +14,40 @@ class ReportesController {
 
         $fecha_inicio = $_GET['fecha_inicio'] ?? date('Y-m-01');
         $fecha_fin    = $_GET['fecha_fin']    ?? date('Y-m-d');
+        $sucursal_id  = (int)($_GET['sucursal_id'] ?? 0);
+
+        $params = [':f1' => $fecha_inicio, ':f2' => $fecha_fin];
+        $whereSucursal = '';
+        if ($sucursal_id > 0) {
+            $whereSucursal = " AND v.sucursal_id = :sid";
+            $params[':sid'] = $sucursal_id;
+        }
 
         // Consulta de utilidades por venta
         $utilidades = ActiveRecord::fetchRaw(
-            "SELECT v.id AS venta_id, v.fecha, c.nombre AS cliente, 
+            "SELECT v.id AS venta_id, v.fecha, c.nombre AS cliente, s.nombre AS sucursal_nombre,
                     SUM(vd.subtotal) AS total_venta,
                     SUM(vd.costo_unitario * vd.cantidad) AS total_costo,
                     SUM(vd.subtotal - (vd.costo_unitario * vd.cantidad)) AS utilidad
              FROM ventas v
              JOIN venta_detalle vd ON vd.venta_id = v.id
              LEFT JOIN clientes c ON c.id = v.cliente_id
-             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada'
+             LEFT JOIN sucursales s ON s.id = v.sucursal_id
+             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' {$whereSucursal}
              GROUP BY v.id
              ORDER BY v.fecha DESC",
-            [':f1' => $fecha_inicio, ':f2' => $fecha_fin]
+            $params
         );
+
+        $sucursales = \Models\Sucursal::getActivas();
 
         $router->render('reportes/utilidades', [
             'titulo'       => 'Reporte de Utilidades',
             'utilidades'   => $utilidades,
             'fecha_inicio' => $fecha_inicio,
-            'fecha_fin'    => $fecha_fin
+            'fecha_fin'    => $fecha_fin,
+            'sucursal_id'  => $sucursal_id,
+            'sucursales'   => $sucursales
         ]);
     }
 

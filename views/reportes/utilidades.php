@@ -1,22 +1,61 @@
 <div class="card mb-4 shadow-sm border-0">
     <div class="card-body">
         <form method="GET" class="row g-3 align-items-end">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label small fw-bold">Fecha Inicio</label>
                 <input type="date" name="fecha_inicio" class="form-control" value="<?= $fecha_inicio ?>">
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label small fw-bold">Fecha Fin</label>
                 <input type="date" name="fecha_fin" class="form-control" value="<?= $fecha_fin ?>">
             </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold">Sucursal</label>
+                <select name="sucursal_id" class="form-select">
+                    <option value="0">Todas las sucursales</option>
+                    <?php foreach ($sucursales as $s): ?>
+                    <option value="<?= $s->id ?>" <?= $sucursal_id === $s->id ? 'selected' : '' ?>><?= s($s->nombre) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">
+                <button type="submit" class="btn btn-primary w-100 fw-bold">
                     <i class="bi bi-filter"></i> Filtrar
                 </button>
+            </div>
+            <div class="col-md-4">
+                <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setFechas('hoy')">Hoy</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setFechas('ayer')">Ayer</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setFechas('mes')">Este Mes</button>
+                </div>
             </div>
         </form>
     </div>
 </div>
+<script>
+function setFechas(tipo) {
+    const d = new Date();
+    // Ajustar por zona horaria local
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    
+    let f1 = new Date(Date.now() - tzOffset);
+    let f2 = new Date(Date.now() - tzOffset);
+    
+    if (tipo === 'hoy') {
+        // Mantiene la fecha de hoy
+    } else if (tipo === 'ayer') {
+        f1.setDate(f1.getDate() - 1);
+        f2.setDate(f2.getDate() - 1);
+    } else if (tipo === 'mes') {
+        f1.setDate(1);
+    }
+    
+    document.querySelector('input[name="fecha_inicio"]').value = f1.toISOString().split('T')[0];
+    document.querySelector('input[name="fecha_fin"]').value = f2.toISOString().split('T')[0];
+    document.querySelector('form').submit();
+}
+</script>
 
 <div class="card shadow-sm">
     <div class="card-header bg-white py-3">
@@ -28,6 +67,7 @@
                 <tr>
                     <th>ID Venta</th>
                     <th>Fecha</th>
+                    <th>Sucursal</th>
                     <th>Cliente</th>
                     <th class="text-end">Venta Total</th>
                     <th class="text-end">Costo Total</th>
@@ -40,7 +80,7 @@
                 $sumVentas = 0; $sumCostos = 0; $sumUtilidad = 0;
                 if (empty($utilidades)): 
                 ?>
-                    <tr><td colspan="7" class="text-center py-4 text-muted">No hay registros para este período.</td></tr>
+                    <tr><td colspan="8" class="text-center py-4 text-muted">No hay registros para este período.</td></tr>
                 <?php else: ?>
                     <?php foreach ($utilidades as $u): 
                         $sumVentas += $u['total_venta'];
@@ -51,6 +91,7 @@
                     <tr class="tr-clickable" data-venta-id="<?= $u['venta_id'] ?>" onclick="toggleDetalleVenta(<?= $u['venta_id'] ?>, this)">
                         <td>#<?= $u['venta_id'] ?></td>
                         <td class="small"><?= date('d/m/Y', strtotime($u['fecha'])) ?></td>
+                        <td><span class="badge bg-secondary"><?= s($u['sucursal_nombre'] ?: 'Desconocida') ?></span></td>
                         <td><?= s($u['cliente'] ?: 'Consumidor Final') ?></td>
                         <td class="text-end fw-bold">Q<?= number_format($u['total_venta'], 2) ?></td>
                         <td class="text-end text-muted">Q<?= number_format($u['total_costo'], 2) ?></td>
@@ -66,7 +107,7 @@
             </tbody>
             <tfoot class="table-light">
                 <tr class="fw-bold">
-                    <td colspan="3" class="text-end">TOTALES:</td>
+                    <td colspan="4" class="text-end">TOTALES:</td>
                     <td class="text-end text-primary">Q<?= number_format($sumVentas, 2) ?></td>
                     <td class="text-end text-muted">Q<?= number_format($sumCostos, 2) ?></td>
                     <td class="text-end text-success">Q<?= number_format($sumUtilidad, 2) ?></td>
@@ -115,7 +156,7 @@ async function toggleDetalleVenta(id, row) {
     detailsRow = document.createElement('tr');
     detailsRow.id = detailsId;
     detailsRow.className = 'detalle-row';
-    detailsRow.innerHTML = `<td colspan="7"><div class="detalle-container text-center"><span class="spinner-border spinner-border-sm text-success me-2"></span>Cargando detalle...</div></td>`;
+    detailsRow.innerHTML = `<td colspan="8"><div class="detalle-container text-center"><span class="spinner-border spinner-border-sm text-success me-2"></span>Cargando detalle...</div></td>`;
     row.insertAdjacentElement('afterend', detailsRow);
 
     try {
