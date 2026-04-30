@@ -145,15 +145,17 @@ class TrasladosController {
         $id = (int)($_POST['id'] ?? 0);
         $traslado = Traslado::find($id);
 
-        if (!$traslado || $traslado->estado !== 'enviado') {
+        if (!$traslado || !in_array($traslado->estado, ['enviado', 'pendiente'])) {
             redirectTo('/traslados?err=invalid');
             exit;
         }
 
-        // Validación: Solo el personal de la sucursal de destino o admin puede recibir
+        // Validación: Solo el personal de la sucursal de destino, admin o supervisor puede recibir
         $mi_sucursal = (int)($_SESSION['sucursal_id'] ?? 0);
         $mi_rol = $_SESSION['usuario_rol'] ?? '';
-        if ($mi_rol !== 'admin' && $mi_sucursal !== (int)$traslado->sucursal_destino_id) {
+        $esAdminOSupervisor = in_array($mi_rol, ['admin', 'supervisor']);
+        
+        if (!$esAdminOSupervisor && $mi_sucursal !== (int)$traslado->sucursal_destino_id) {
              redirectTo('/traslados?err=not_authorized');
              exit;
         }
@@ -210,15 +212,17 @@ class TrasladosController {
         $id = (int)($_POST['id'] ?? 0);
         $traslado = Traslado::find($id);
 
-        if (!$traslado || $traslado->estado !== 'enviado') {
+        if (!$traslado || !in_array($traslado->estado, ['enviado', 'pendiente'])) {
             redirectTo('/traslados?err=invalid');
             exit;
         }
 
-        // Validación: Solo el personal de la sucursal de destino o admin puede rechazar
+        // Validación: Solo el personal de la sucursal de destino, admin o supervisor puede rechazar
         $mi_sucursal = (int)($_SESSION['sucursal_id'] ?? 0);
         $mi_rol = $_SESSION['usuario_rol'] ?? '';
-        if ($mi_rol !== 'admin' && $mi_sucursal !== (int)$traslado->sucursal_destino_id) {
+        $esAdminOSupervisor = in_array($mi_rol, ['admin', 'supervisor']);
+        
+        if (!$esAdminOSupervisor && $mi_sucursal !== (int)$traslado->sucursal_destino_id) {
              redirectTo('/traslados?err=not_authorized');
              exit;
         }

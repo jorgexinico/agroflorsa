@@ -140,7 +140,9 @@ async function toggleDetalle(id, btnClicked) {
         }
 
         // Evaluar permisos para botones
-        const puedeAccionar = traslado.estado === 'enviado' && (USR_ROL === 'admin' || USR_SUCURSAL === parseInt(traslado.sucursal_destino_id));
+        const estadoValido = (traslado.estado === 'enviado' || traslado.estado === 'pendiente');
+        const esAdminOSupervisor = (USR_ROL === 'admin' || USR_ROL === 'supervisor');
+        const puedeAccionar = estadoValido && (esAdminOSupervisor || USR_SUCURSAL === parseInt(traslado.sucursal_destino_id));
         
         let actionsHTML = '';
         if (puedeAccionar) {
