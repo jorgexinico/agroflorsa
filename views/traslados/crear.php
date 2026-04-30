@@ -41,21 +41,17 @@
                         <h6 class="mb-3 text-muted">Productos a Trasladar</h6>
                         
                         <div class="row g-2 mb-3 align-items-end">
-                            <div class="col-md-7">
-                                <label class="small text-muted">Seleccionar Producto</label>
-                                <select id="selProducto" class="form-select select2" disabled>
-                                    <option value="">Primero selecciona origen...</option>
-                                </select>
-                                <div id="stockInfo" class="small text-primary mt-1" style="height: 20px;"></div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="small text-muted">Cantidad <span id="maxStock"></span></label>
-                                <input type="number" id="inpCantidad" class="form-control" step="0.001" min="0.001">
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" id="btnAgregar" class="btn btn-dark w-100">
-                                    <i class="bi bi-plus-lg"></i>
-                                </button>
+                            <div class="col-md-12">
+                                <label class="small text-muted fw-bold mb-1">Buscar y agregar producto</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="bi bi-search text-primary"></i></span>
+                                    <input type="text" id="selProducto" class="form-control form-control-lg border-start-0" 
+                                           placeholder="Primero selecciona sucursal origen..." list="lista-productos-origen" disabled>
+                                    <datalist id="lista-productos-origen"></datalist>
+                                </div>
+                                <div id="stockInfo" class="small text-muted mt-1" style="min-height: 20px;">
+                                    Escribe el nombre o SKU y selecciona de la lista para agregarlo al traslado.
+                                </div>
                             </div>
                         </div>
 
@@ -64,7 +60,8 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th>Producto</th>
-                                        <th class="text-end" style="width: 150px;">Cantidad</th>
+                                        <th class="text-center" style="width: 150px;">Disp. Origen</th>
+                                        <th class="text-end" style="width: 150px;">Cantidad a Enviar</th>
                                         <th class="text-center" style="width: 50px;"></th>
                                     </tr>
                                 </thead>
@@ -85,8 +82,11 @@
                                                 <?= s($prodNombre) ?>
                                                 <input type="hidden" name="producto_id[]" value="<?= $pid ?>">
                                             </td>
+                                            <td class="text-center text-muted small">
+                                                —
+                                            </td>
                                             <td>
-                                                <input type="number" name="cantidad[]" class="form-control form-control-sm text-end" value="<?= $datos['cantidad'][$i] ?>" step="0.001" readonly>
+                                                <input type="number" name="cantidad[]" class="form-control form-control-sm text-end fw-bold" value="<?= $datos['cantidad'][$i] ?>" step="0.001" min="0.001" required>
                                             </td>
                                             <td class="text-center">
                                                 <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()">
@@ -138,85 +138,145 @@ document.addEventListener('DOMContentLoaded', function() {
         stockInfo.textContent = '';
 
         if (!sucId) {
-            selProd.innerHTML = '<option value="">Primero selecciona origen...</option>';
+            selProd.placeholder = 'Primero selecciona origen...';
             return;
         }
 
+        selProd.placeholder = 'Cargando productos...';
+        
         try {
             const res = await fetch(`<?= $base ?>/inventario/productos-sucursal-ajax?sucursal_id=${sucId}`);
             const data = await res.json();
+            
+            const datalist = document.getElementById('lista-productos-origen');
+            datalist.innerHTML = '';
 
             if (data.ok && data.productos.length > 0) {
-                selProd.innerHTML = '<option value="">Buscar producto con stock...</option>';
+                selProd.placeholder = 'Buscar por nombre o SKU...';
                 data.productos.forEach(p => {
-                    selProd.innerHTML += `<option value="${p.id}" data-nombre="${p.nombre}" data-stock="${p.stock}" data-unidad="${p.unidad}">${p.nombre} [${p.sku}] - Stock: ${parseFloat(p.stock).toFixed(2)} ${p.unidad}</option>`;
+                    const desc = `${p.nombre} [${p.sku || 'S/S'}] - Stock: ${parseFloat(p.stock).toFixed(2)} ${p.unidad}`;
+                    const opt = document.createElement('option');
+                    opt.value = desc;
+                    opt.dataset.id = p.id;
+                    opt.dataset.nombre = p.nombre;
+                    opt.dataset.stock = p.stock;
+                    opt.dataset.unidad = p.unidad;
+                    datalist.appendChild(opt);
                 });
                 selProd.disabled = false;
             } else {
-                selProd.innerHTML = '<option value="">No hay productos con stock en esta sucursal</option>';
+                selProd.placeholder = 'No hay stock en esta sucursal';
             }
         } catch (err) {
             console.error(err);
-            selProd.innerHTML = '<option value="">Error al cargar productos</option>';
+            selProd.placeholder = 'Error al cargar productos';
         }
     });
 
-    // Mostrar stock disponible al elegir producto
-    selProd.addEventListener('change', function() {
-        const opt = this.options[this.selectedIndex];
-        if (opt.value) {
-            stockInfo.textContent = `Stock disponible: ${parseFloat(opt.dataset.stock).toFixed(2)} ${opt.dataset.unidad}`;
-            inpCant.max = opt.dataset.stock;
-        } else {
-            stockInfo.textContent = '';
+    // Escuchar selección del datalist
+    function procesarBusqueda(e) {
+        const val = selProd.value.trim().toLowerCase();
+        if (!val) return;
+        
+        const datalist = document.getElementById('lista-productos-origen');
+        const options = datalist.options;
+        
+        let seleccion = null;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].value.toLowerCase() === val) {
+                seleccion = options[i];
+                break;
+            }
+        }
+        
+        if (seleccion) {
+            agregarATabla(seleccion);
+            selProd.value = '';
+            selProd.blur();
+            setTimeout(() => selProd.focus(), 50);
+        }
+    }
+
+    selProd.addEventListener('input', procesarBusqueda);
+    selProd.addEventListener('change', procesarBusqueda);
+    selProd.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            procesarBusqueda(e);
         }
     });
 
-    btnAgregar.addEventListener('click', function() {
-        const opt = selProd.options[selProd.selectedIndex];
-        const id   = opt.value;
+    function agregarATabla(opt) {
+        const id   = opt.dataset.id;
         const nombre = opt.dataset.nombre;
         const stock  = parseFloat(opt.dataset.stock);
-        const cant   = parseFloat(inpCant.value);
-
-        if (!id || isNaN(cant) || cant <= 0) return;
-
-        if (cant > stock) {
-            alert('No puedes trasladar más de lo disponible en origen');
-            return;
-        }
+        const unidad = opt.dataset.unidad;
 
         if (document.getElementById('filaVacia')) document.getElementById('filaVacia').remove();
 
         // Evitar duplicados
         const existe = document.querySelector(`input[name="producto_id[]"][value="${id}"]`);
         if (existe) {
-            alert('Este producto ya está en la lista');
+            // Si ya existe, enfocar su input de cantidad e incrementar visualmente?
+            const tr = existe.closest('tr');
+            const inp = tr.querySelector('input[name="cantidad[]"]');
+            inp.focus();
+            inp.select();
+            Swal.fire({
+                toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, 
+                icon: 'info', title: 'El producto ya está en la lista'
+            });
             return;
         }
 
         const tr = document.createElement('tr');
+        tr.className = 'animate__animated animate__fadeIn bg-light';
+        setTimeout(() => tr.classList.remove('bg-light'), 800); // Efecto visual
+
         tr.innerHTML = `
             <td>
-                ${nombre}
+                <div class="fw-bold text-primary"><i class="bi bi-box-seam me-1"></i> ${nombre}</div>
                 <input type="hidden" name="producto_id[]" value="${id}">
             </td>
+            <td class="text-center">
+                <span class="badge bg-secondary">${stock.toFixed(2)} ${unidad}</span>
+            </td>
             <td>
-                <input type="number" name="cantidad[]" class="form-control form-control-sm text-end" value="${cant}" step="0.001" readonly>
+                <input type="number" name="cantidad[]" class="form-control form-control-sm text-end fw-bold" 
+                       value="1" step="0.001" min="0.001" max="${stock}" required
+                       oninput="validarCant(this, ${stock})">
+                <div class="invalid-feedback" style="font-size: 0.7rem; display: none;">Excede disponible</div>
             </td>
             <td class="text-center">
                 <button type="button" class="btn btn-link text-danger p-0" onclick="this.closest('tr').remove()">
-                    <i class="bi bi-trash"></i>
+                    <i class="bi bi-trash fs-5"></i>
                 </button>
             </td>
         `;
-        tabla.appendChild(tr);
-
-        // Limpiar
-        selProd.value = '';
-        inpCant.value = '';
-        stockInfo.textContent = '';
-    });
+        tabla.prepend(tr); // Agregar arriba de la lista
+        
+        // Enfocar el input de cantidad recien agregado
+        const newInp = tr.querySelector('input[name="cantidad[]"]');
+        newInp.focus();
+        newInp.select();
+    }
+    
+    // Validar cantidad dinámicamente
+    window.validarCant = function(input, maxStock) {
+        const val = parseFloat(input.value);
+        if (val > maxStock) {
+            input.classList.add('is-invalid');
+            input.nextElementSibling.style.display = 'block';
+            input.value = maxStock; // Auto-corregir al máximo permitido
+            setTimeout(() => {
+                input.classList.remove('is-invalid');
+                input.nextElementSibling.style.display = 'none';
+            }, 2000);
+        } else {
+            input.classList.remove('is-invalid');
+            input.nextElementSibling.style.display = 'none';
+        }
+    };
 
     // Si ya hay un origen seleccionado (re-poblado por error), cargar sus productos
     if (selOrigen.value) {
