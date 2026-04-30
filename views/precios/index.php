@@ -7,11 +7,11 @@
     </div>
 </div>
 
-<div class="row g-3 align-items-center mb-4">
+<div class="row g-3 align-items-center mb-3">
     <div class="col-md-8">
-        <div class="input-group input-group-lg shadow-sm">
+        <div class="input-group shadow-sm">
             <span class="input-group-text bg-white border-0"><i class="bi bi-filter text-muted"></i></span>
-            <input type="text" id="buscador-precios" class="form-control border-0 py-3" placeholder="Filtrar por nombre, marca o SKU..." autofocus>
+            <input type="text" id="buscador-precios" class="form-control border-0 py-2 py-md-3" placeholder="Filtrar por nombre, marca o SKU..." autofocus>
         </div>
     </div>
     <div class="col-md-4 text-md-end">
@@ -21,17 +21,17 @@
     </div>
 </div>
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4" id="contenedor-precios">
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 g-md-4" id="contenedor-precios">
     <?php foreach ($productos as $p): ?>
     <div class="col p-card" data-search="<?= s(strtolower($p['nombre'] . ' ' . $p['sku'] . ' ' . $p['marca'])) ?>">
         <div class="card h-100 border-0 shadow-sm hover-up transition-all overflow-hidden">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="card-body p-3 p-md-4">
+                <div class="d-flex justify-content-between align-items-start mb-2">
                     <span class="badge bg-light text-muted fw-normal px-2 py-1"><i class="bi bi-upc-scan me-1"></i><?= s($p['sku'] ?: 'SIN SKU') ?></span>
                     <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1"><?= s($p['unidad']) ?></span>
                 </div>
-                <h5 class="card-title fw-bold mb-1 text-dark text-truncate"><?= s($p['nombre']) ?></h5>
-                <p class="text-muted small mb-4"><i class="bi bi-tag-fill me-1"></i><?= s($p['marca'] ?: 'Sin Marca') ?></p>
+                <h6 class="card-title fw-bold mb-1 text-dark text-truncate" style="font-size: 1.1rem;"><?= s($p['nombre']) ?></h6>
+                <p class="text-muted small mb-3"><i class="bi bi-tag-fill me-1"></i><?= s($p['marca'] ?: 'Sin Marca') ?></p>
                 
                 <div class="row g-2 mt-auto">
                     <div class="col-12 mb-2">
@@ -61,25 +61,29 @@
 </div>
 
 <!-- Flotante del Carrito -->
-<div id="cart-float" class="position-fixed bottom-0 end-0 m-4 shadow-lg d-none" style="z-index: 1050;">
-    <div class="card border-0 bg-dark text-white rounded-pill px-4 py-3 shadow">
-        <div class="d-flex align-items-center gap-3">
-            <div class="position-relative">
-                <i class="bi bi-cart4 fs-3"></i>
-                <span id="cart-count-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                    0
-                </span>
+<div id="cart-float" class="position-fixed bottom-0 start-50 translate-middle-x w-100 px-3 pb-3 shadow-lg d-none" style="z-index: 1050; max-width: 500px;">
+    <div class="card border-0 bg-dark text-white rounded-pill px-3 py-2 shadow">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <div class="position-relative">
+                    <i class="bi bi-cart4 fs-4"></i>
+                    <span id="cart-count-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                        0
+                    </span>
+                </div>
+                <div class="d-none d-sm-block ms-2">
+                    <div class="fw-bold" style="font-size: 0.9rem; line-height: 1;">Vender</div>
+                </div>
             </div>
-            <div>
-                <div class="small opacity-75">Productos seleccionados</div>
-                <div class="fw-bold">Listo para vender</div>
+            
+            <div class="d-flex gap-2">
+                <a href="<?= $base ?>/ventas/nueva" class="btn btn-sm btn-success rounded-pill px-3 fw-bold">
+                    Cobrar <i class="bi bi-arrow-right-short ms-1"></i>
+                </a>
+                <button id="clear-cart" class="btn btn-sm btn-outline-light rounded-circle p-1 border-0 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;" title="Vaciar carrito">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
-            <a href="<?= $base ?>/ventas/nueva" class="btn btn-success rounded-pill px-3">
-                Finalizar <i class="bi bi-arrow-right-short ms-1"></i>
-            </a>
-            <button id="clear-cart" class="btn btn-sm btn-outline-light rounded-circle p-1 border-0" title="Vaciar carrito">
-                <i class="bi bi-x-circle"></i>
-            </button>
         </div>
     </div>
 </div>

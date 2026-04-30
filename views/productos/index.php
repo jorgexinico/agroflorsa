@@ -1,16 +1,16 @@
 <?php // views/productos/index.php ?>
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <p class="text-muted mb-0"><?= count($productos) ?> productos activos</p>
-  <div class="d-flex gap-2 align-items-center">
-    <div class="input-group input-group-sm" style="width: 250px;">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+  <p class="text-muted mb-0 fw-semibold"><?= count($productos) ?> productos activos</p>
+  <div class="d-flex flex-wrap gap-2 align-items-center">
+    <div class="input-group input-group-sm flex-grow-1" style="min-width: 200px;">
       <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
       <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Buscar por nombre o SKU..." onkeyup="filtrarTabla()">
     </div>
-    <a href="<?= $base ?>/productos/importar" class="btn btn-outline-success btn-sm text-nowrap">
-      <i class="bi bi-file-earmark-excel me-1"></i>Importar Excel
+    <a href="<?= $base ?>/productos/importar" class="btn btn-outline-success btn-sm text-nowrap flex-grow-1 flex-md-grow-0 text-center">
+      <i class="bi bi-file-earmark-excel me-1"></i>Importar
     </a>
-    <a href="<?= $base ?>/productos/crear" class="btn btn-success btn-sm text-nowrap">
-      <i class="bi bi-plus-circle me-1"></i>Nuevo producto
+    <a href="<?= $base ?>/productos/crear" class="btn btn-success btn-sm text-nowrap flex-grow-1 flex-md-grow-0 text-center">
+      <i class="bi bi-plus-circle me-1"></i>Nuevo
     </a>
   </div>
 </div>
