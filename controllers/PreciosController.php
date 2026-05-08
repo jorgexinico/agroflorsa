@@ -8,7 +8,8 @@ use Models\Sucursal;
 class PreciosController {
 
     public static function index(Router $router): void {
-        isAuth();
+        // Permitir acceso sin logueo a esta vista
+        // isAuth(); 
         
         $productos = Producto::fetchRaw(
             "SELECT p.id, p.nombre, p.sku, p.precio_publico, p.precio_mayorista, 
@@ -32,11 +33,18 @@ class PreciosController {
             $stockMap[$s['producto_id']][$s['sucursal_id']] = (float)$s['cantidad'];
         }
 
-        $router->render('precios/index', [
+        $datosView = [
             'titulo'     => 'Consulta de Precios',
             'productos'  => $productos,
             'sucursales' => $sucursales,
             'stockMap'   => $stockMap
-        ]);
+        ];
+
+        // Si no está logueado, usar el layout limpio (sin sidebar)
+        if (!isset($_SESSION['usuario_id'])) {
+            $datosView['layout'] = 'auth';
+        }
+
+        $router->render('precios/index', $datosView);
     }
 }

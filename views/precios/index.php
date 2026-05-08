@@ -182,13 +182,19 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCartUI();
     });
 
+    // Función auxiliar para quitar acentos
+    const removeAccents = (str) => {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    };
+
     // ── FILTRO ──
     buscador?.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
+        const query = removeAccents(this.value.toLowerCase().trim());
         let count = 0;
 
         cards.forEach(card => {
-            if (card.dataset.search.includes(query)) {
+            const searchText = removeAccents(card.dataset.search);
+            if (searchText.includes(query)) {
                 card.style.display = '';
                 count++;
             } else {
