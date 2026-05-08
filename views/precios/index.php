@@ -12,6 +12,9 @@
         <div class="input-group shadow-sm">
             <span class="input-group-text bg-white border-0"><i class="bi bi-filter text-muted"></i></span>
             <input type="text" id="buscador-precios" class="form-control border-0 py-2 py-md-3" placeholder="Filtrar por nombre, marca o SKU..." autofocus>
+            <button class="btn btn-white bg-white border-0 text-primary fs-5" type="button" id="btn-voice-search" title="Búsqueda por voz">
+                <i class="bi bi-mic-fill"></i>
+            </button>
         </div>
     </div>
     <div class="col-md-4 text-md-end">
@@ -33,6 +36,18 @@
                 <h6 class="card-title fw-bold mb-1 text-dark text-truncate" style="font-size: 1.1rem;"><?= s($p['nombre']) ?></h6>
                 <p class="text-muted small mb-3"><i class="bi bi-tag-fill me-1"></i><?= s($p['marca'] ?: 'Sin Marca') ?></p>
                 
+                <div class="mb-3">
+                    <p class="small text-muted fw-bold mb-2 border-bottom pb-1">Existencias por Sucursal:</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <?php foreach($sucursales as $suc): ?>
+                            <?php $qty = $stockMap[$p['id']][$suc->id] ?? 0; ?>
+                            <div class="badge <?= $qty > 0 ? 'bg-primary' : 'bg-secondary' ?> bg-opacity-10 <?= $qty > 0 ? 'text-primary' : 'text-secondary' ?> border <?= $qty > 0 ? 'border-primary' : 'border-secondary' ?> border-opacity-25 px-2 py-1">
+                                <i class="bi bi-shop me-1"></i><?= s($suc->nombre) ?>: <span class="fw-bold"><?= $qty ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
                 <div class="row g-2 mt-auto">
                     <div class="col-12 mb-2">
                         <button class="btn btn-outline-primary btn-sm w-100 add-to-cart" 
@@ -102,6 +117,14 @@
     transition: all 0.3s ease;
 }
 .smaller { font-size: 0.7rem; }
+@keyframes pulse-mic {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+.pulse-anim {
+    animation: pulse-mic 1s infinite;
+}
 </style>
 
 <script>
@@ -184,5 +207,45 @@ document.addEventListener('DOMContentLoaded', () => {
             noResults.classList.add('d-none');
         }
     });
+
+    // ── BÚSQUEDA POR VOZ ──
+    const btnVoice = document.getElementById('btn-voice-search');
+    if (btnVoice && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'es-ES';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onstart = function() {
+            btnVoice.innerHTML = '<i class="bi bi-mic-fill text-danger pulse-anim"></i>';
+            buscador.placeholder = 'Escuchando...';
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            buscador.value = transcript;
+            // Disparar evento input para filtrar
+            buscador.dispatchEvent(new Event('input'));
+        };
+
+        recognition.onerror = function(event) {
+            console.error("Error de reconocimiento de voz:", event.error);
+            buscador.placeholder = 'Filtrar por nombre, marca o SKU...';
+        };
+
+        recognition.onend = function() {
+            btnVoice.innerHTML = '<i class="bi bi-mic-fill"></i>';
+            if (!buscador.value) {
+                buscador.placeholder = 'Filtrar por nombre, marca o SKU...';
+            }
+        };
+
+        btnVoice.addEventListener('click', () => {
+            recognition.start();
+        });
+    } else if (btnVoice) {
+        btnVoice.style.display = 'none';
+    }
 });
 </script>

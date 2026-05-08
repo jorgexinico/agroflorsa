@@ -3,6 +3,7 @@ namespace Controllers;
 
 use MVC\Router;
 use Models\Producto;
+use Models\Sucursal;
 
 class PreciosController {
 
@@ -19,9 +20,23 @@ class PreciosController {
              ORDER BY p.nombre ASC"
         );
 
+        $sucursales = Sucursal::getActivas();
+
+        $stocks = Producto::fetchRaw(
+            "SELECT producto_id, sucursal_id, cantidad 
+             FROM inventario_existencias_producto"
+        );
+        
+        $stockMap = [];
+        foreach($stocks as $s) {
+            $stockMap[$s['producto_id']][$s['sucursal_id']] = (float)$s['cantidad'];
+        }
+
         $router->render('precios/index', [
-            'titulo'    => 'Consulta de Precios',
-            'productos' => $productos
+            'titulo'     => 'Consulta de Precios',
+            'productos'  => $productos,
+            'sucursales' => $sucursales,
+            'stockMap'   => $stockMap
         ]);
     }
 }
