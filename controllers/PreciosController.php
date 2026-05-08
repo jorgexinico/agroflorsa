@@ -42,7 +42,7 @@ class PreciosController {
 
         // Si no está logueado, usar el layout limpio (sin sidebar)
         if (!isset($_SESSION['usuario_id'])) {
-            $datosView['layout'] = 'auth';
+            $datosView['layout'] = 'clean';
         }
 
         $router->render('precios/index', $datosView);

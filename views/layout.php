@@ -62,6 +62,28 @@ if (($layout ?? '') === 'auth') : ?>
 </html>
 <?php return; endif; ?>
 
+<?php
+// Si el layout es 'clean', mostrar pantalla completa sin flex centrado
+if (($layout ?? '') === 'clean') : ?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?= s($titulo ?? 'Agroflorsa') ?> — Agroflorsa</title>
+  <link rel="stylesheet" href="<?= asset('build/styles.css') ?>">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-light">
+  <div class="container-fluid py-4">
+    <?= $contenido ?>
+  </div>
+  <script src="<?= asset('build/js/app.js') ?>"></script>
+</body>
+</html>
+<?php return; endif; ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
