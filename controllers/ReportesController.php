@@ -51,6 +51,175 @@ class ReportesController {
         ]);
     }
 
+    public static function financiero(Router $router): void {
+        isAuth();
+        isRole(['admin']);
+
+        $fecha_inicio = $_GET['fecha_inicio'] ?? date('Y-m-01');
+        $fecha_fin    = $_GET['fecha_fin']    ?? date('Y-m-d');
+        $sucursal_id  = (int)($_GET['sucursal_id'] ?? 0);
+
+        $params = [':f1' => $fecha_inicio, ':f2' => $fecha_fin];
+        $whereSucursalVentas = '';
+        $whereSucursalGastos = '';
+        
+        if ($sucursal_id > 0) {
+            $whereSucursalVentas = " AND v.sucursal_id = :sid";
+            $whereSucursalGastos = " AND g.sucursal_id = :sid";
+            $params[':sid'] = $sucursal_id;
+        }
+
+        // Ventas: calcular total ventas y costo de ventas
+        $ventas = ActiveRecord::fetchFirstRaw(
+            "SELECT 
+                IFNULL(SUM(vd.subtotal), 0) AS total_venta,
+                IFNULL(SUM(vd.costo_unitario * vd.cantidad), 0) AS total_costo
+             FROM ventas v
+             JOIN venta_detalle vd ON vd.venta_id = v.id
+             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' {$whereSucursalVentas}",
+            $params
+        );
+
+        $total_ingresos = (float)$ventas['total_venta'];
+        $total_costos   = (float)$ventas['total_costo'];
+        $utilidad_bruta = $total_ingresos - $total_costos;
+
+        // Gastos Operativos: agrupados por categoría
+        $gastos = ActiveRecord::fetchRaw(
+            "SELECT cg.nombre as categoria, IFNULL(SUM(g.monto), 0) as total_gasto
+             FROM gastos g
+             JOIN categorias_gastos cg ON cg.id = g.categoria_id
+             WHERE DATE(g.fecha) BETWEEN :f1 AND :f2 {$whereSucursalGastos} AND g.estado != 'anulado'
+             GROUP BY cg.id, cg.nombre
+             ORDER BY total_gasto DESC",
+            $params
+        );
+
+        $total_gastos = 0;
+        $categorias_gastos = [];
+        $montos_gastos = [];
+
+        foreach ($gastos as $g) {
+            $total_gastos += (float)$g['total_gasto'];
+            $categorias_gastos[] = $g['categoria'];
+            $montos_gastos[] = (float)$g['total_gasto'];
+        }
+
+        $utilidad_neta = $utilidad_bruta - $total_gastos;
+
+        $sucursales = \Models\Sucursal::getActivas();
+
+        $router->render('reportes/financiero', [
+            'titulo'            => 'Estado de Resultados',
+            'fecha_inicio'      => $fecha_inicio,
+            'fecha_fin'         => $fecha_fin,
+            'sucursal_id'       => $sucursal_id,
+            'sucursales'        => $sucursales,
+            'total_ingresos'    => $total_ingresos,
+            'total_costos'      => $total_costos,
+            'utilidad_bruta'    => $utilidad_bruta,
+            'total_gastos'      => $total_gastos,
+            'utilidad_neta'     => $utilidad_neta,
+            'categorias_gastos' => json_encode($categorias_gastos),
+            'montos_gastos'     => json_encode($montos_gastos)
+        ]);
+    }
+
+    public static function productos(Router $router): void {
+        isAuth();
+        isRole(['admin']);
+
+        $fecha_inicio = $_GET['fecha_inicio'] ?? date('Y-m-01');
+        $fecha_fin    = $_GET['fecha_fin']    ?? date('Y-m-d');
+        $sucursal_id  = (int)($_GET['sucursal_id'] ?? 0);
+
+        $params = [':f1' => $fecha_inicio, ':f2' => $fecha_fin];
+        $whereSucursal = '';
+        
+        if ($sucursal_id > 0) {
+            $whereSucursal = " AND v.sucursal_id = :sid";
+            $params[':sid'] = $sucursal_id;
+        }
+
+        // 1. Top Productos por Cantidad Vendida
+        $top_vendidos = ActiveRecord::fetchRaw(
+            "SELECT p.id, p.nombre, p.sku, u.abreviatura as unidad,
+                    SUM(vd.cantidad) AS cantidad_total,
+                    SUM(vd.subtotal) AS ingresos_totales
+             FROM venta_detalle vd
+             JOIN ventas v ON v.id = vd.venta_id
+             JOIN productos p ON p.id = vd.producto_id
+             JOIN unidades_medida u ON u.id = p.unidad_id
+             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' {$whereSucursal}
+             GROUP BY p.id
+             ORDER BY cantidad_total DESC
+             LIMIT 10",
+            $params
+        );
+
+        // 2. Top Productos por Ganancia Generada
+        $top_ganancias = ActiveRecord::fetchRaw(
+            "SELECT p.id, p.nombre, p.sku,
+                    SUM(vd.subtotal - (vd.costo_unitario * vd.cantidad)) AS utilidad_total,
+                    SUM(vd.subtotal) as ingresos_totales
+             FROM venta_detalle vd
+             JOIN ventas v ON v.id = vd.venta_id
+             JOIN productos p ON p.id = vd.producto_id
+             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' {$whereSucursal}
+             GROUP BY p.id
+             ORDER BY utilidad_total DESC
+             LIMIT 10",
+            $params
+        );
+
+        // 3. Productos sin rotación (En inventario pero 0 ventas)
+        $whereInventario = $sucursal_id > 0 ? " AND i.sucursal_id = {$sucursal_id}" : "";
+        $productos_sin_rotacion = ActiveRecord::fetchRaw(
+            "SELECT p.id, p.nombre, p.sku, SUM(i.cantidad) AS stock_total, u.abreviatura as unidad
+             FROM productos p
+             JOIN inventario_existencias_producto i ON i.producto_id = p.id
+             JOIN unidades_medida u ON u.id = p.unidad_id
+             WHERE p.activo = 1 {$whereInventario}
+             GROUP BY p.id
+             HAVING stock_total > 0
+             AND p.id NOT IN (
+                 SELECT DISTINCT vd.producto_id
+                 FROM venta_detalle vd
+                 JOIN ventas v ON v.id = vd.venta_id
+                 WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' {$whereSucursal}
+             )
+             ORDER BY stock_total DESC
+             LIMIT 20",
+            $params
+        );
+
+        // 4. Ventas por Sucursal
+        $paramsSuc = [':f1' => $fecha_inicio, ':f2' => $fecha_fin];
+        $ventas_sucursal = ActiveRecord::fetchRaw(
+            "SELECT s.nombre, SUM(v.total) as total_ventas
+             FROM ventas v
+             JOIN sucursales s ON s.id = v.sucursal_id
+             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada'
+             GROUP BY s.id
+             ORDER BY total_ventas DESC",
+            $paramsSuc
+        );
+
+        $sucursales = \Models\Sucursal::getActivas();
+
+        $router->render('reportes/productos', [
+            'titulo'                 => 'Rendimiento de Productos',
+            'fecha_inicio'           => $fecha_inicio,
+            'fecha_fin'              => $fecha_fin,
+            'sucursal_id'            => $sucursal_id,
+            'sucursales'             => $sucursales,
+            'top_vendidos'           => $top_vendidos,
+            'top_ganancias'          => $top_ganancias,
+            'productos_sin_rotacion' => $productos_sin_rotacion,
+            'ventas_sucursal'        => $ventas_sucursal
+        ]);
+    }
+
     public static function vencimientos(Router $router): void {
         isAuth();
         

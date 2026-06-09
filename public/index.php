@@ -172,6 +172,8 @@ $router->post('/gastos/eliminar',  [GastosController::class, 'eliminar']);
 
 // ── REPORTES ─────────────────────────────────────────
 $router->get('/reportes/utilidades',   [ReportesController::class, 'utilidades']);
+$router->get('/reportes/financiero',   [ReportesController::class, 'financiero']);
+$router->get('/reportes/productos',    [ReportesController::class, 'productos']);
 $router->get('/reportes/vencimientos', [ReportesController::class, 'vencimientos']);
 $router->get('/reportes/detalle-venta-ajax', [ReportesController::class, 'detalleVentaAjax']);
 

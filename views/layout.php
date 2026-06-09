@@ -250,9 +250,19 @@ if (($layout ?? '') === 'clean') : ?>
     <div class="ag-nav-section">Reportes</div>
 
     <?php if ($usuarioRol === 'admin'): ?>
+    <a href="<?= $base ?>/reportes/financiero" class="ag-nav-item <?= isActive($base . '/reportes/financiero') ?>">
+      <i class="bi bi-bar-chart-fill text-primary"></i>
+      <span>Estado de Resultados</span>
+    </a>
+
+    <a href="<?= $base ?>/reportes/productos" class="ag-nav-item <?= isActive($base . '/reportes/productos') ?>">
+      <i class="bi bi-box-seam-fill text-warning"></i>
+      <span>Rendimiento Productos</span>
+    </a>
+
     <a href="<?= $base ?>/reportes/utilidades" class="ag-nav-item <?= isActive($base . '/reportes/utilidades') ?>">
       <i class="bi bi-graph-up-arrow text-success"></i>
-      <span>Ganancias</span>
+      <span>Ganancias x Venta</span>
     </a>
     <?php endif; ?>
 
