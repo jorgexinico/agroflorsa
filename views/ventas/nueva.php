@@ -96,9 +96,9 @@
             <i class="bi bi-plus-circle me-1"></i>Agregar producto
           </button>
         </div>
-        <div class="mb-4 bg-light p-3 rounded border">
+        <div class="mb-4 bg-light p-3 rounded border sticky-top shadow-sm z-3" style="top: 15px;">
           <label class="form-label fw-bold text-success"><i class="bi bi-search me-1"></i>Buscador de Productos (Nombre o SKU)</label>
-          <input type="text" id="buscar-producto-venta" class="form-control form-control-lg border-success border-2" 
+          <input type="text" id="buscar-producto-venta" class="form-control form-control-lg border-success border-2 shadow-sm" 
                  placeholder="Escribe el nombre o escanea el SKU del producto..." list="lista-productos-venta" autofocus>
           <datalist id="lista-productos-venta">
             <?php foreach ($productos as $p): ?>
@@ -126,7 +126,9 @@
             }
           }
           .venta-item-row { transition: all 0.2s ease; }
-          .venta-item-row:hover { background-color: #f8f9fa; }
+          .venta-item-row:nth-child(odd) { background-color: #ffffff !important; }
+          .venta-item-row:nth-child(even) { background-color: #eef2f7 !important; }
+          .venta-item-row:hover { filter: brightness(0.97); }
         </style>
 
         <div class="padding-bottom-mobile">

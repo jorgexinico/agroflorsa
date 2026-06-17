@@ -171,36 +171,36 @@ function addRowVenta(tbody, initialProductId = null) {
         }).join('');
 
     const rowHtml = `
-    <div class="row align-items-center border-bottom py-2 venta-item-row bg-white">
-      <div class="col-12 col-md-5 mb-2 mb-md-0">
+    <div class="row align-items-center border rounded py-3 px-2 mb-3 venta-item-row bg-white shadow-sm">
+      <div class="col-12 col-md-5 mb-3 mb-md-0">
         <label class="d-md-none fw-bold small text-muted">Producto</label>
-        <select name="producto_id[]" class="form-select form-select-sm venta-select" required>
+        <select name="producto_id[]" class="form-select venta-select border-primary fw-bold" required>
           <option value="" disabled selected>-- Elija Producto --</option>
           ${options}
         </select>
-        <div class="mt-1"><small class="text-muted stock-label">Stock: --</small></div>
+        <div class="mt-2"><span class="badge bg-success text-white stock-label px-3 py-2 border border-success">Stock: --</span></div>
       </div>
-      <div class="col-12 col-md-2 mb-2 mb-md-0">
+      <div class="col-12 col-md-2 mb-3 mb-md-0">
         <label class="d-md-none fw-bold small text-muted">Cantidad</label>
-        <div class="input-group input-group-sm">
-          <button type="button" class="btn btn-outline-secondary btn-minus px-3 fw-bold">-</button>
-          <input type="number" name="cantidad[]" class="form-control text-center venta-cantidad" min="0.001" step="any" value="1" required>
-          <button type="button" class="btn btn-outline-secondary btn-plus px-3 fw-bold">+</button>
+        <div class="input-group">
+          <button type="button" class="btn btn-outline-secondary btn-minus px-3 fw-bold fs-5">-</button>
+          <input type="number" name="cantidad[]" class="form-control text-center fw-bold venta-cantidad" min="0.001" step="any" value="1" required>
+          <button type="button" class="btn btn-outline-secondary btn-plus px-3 fw-bold fs-5">+</button>
         </div>
       </div>
-      <div class="col-12 col-md-2 mb-2 mb-md-0">
+      <div class="col-12 col-md-2 mb-3 mb-md-0">
         <label class="d-md-none fw-bold small text-muted">Precio U.</label>
-        <div class="input-group input-group-sm">
+        <div class="input-group">
           <span class="input-group-text bg-light text-muted fw-bold">Q</span>
-          <input type="number" name="precio_unitario[]" class="form-control venta-precio" min="0" step="0.01" value="0" required>
+          <input type="number" name="precio_unitario[]" class="form-control venta-precio fw-bold" min="0" step="0.01" value="0" required>
         </div>
       </div>
       <div class="col-8 col-md-2 mb-2 mb-md-0 text-md-end text-start">
         <label class="d-md-none fw-bold small text-muted d-block">Subtotal</label>
-        <span class="fw-bold text-success fs-5 subtotal-cell">Q 0.00</span>
+        <span class="fw-bold text-success fs-4 subtotal-cell">Q 0.00</span>
       </div>
       <div class="col-4 col-md-1 text-end">
-        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-row w-100 w-md-auto py-2"><i class="bi bi-trash fs-5"></i></button>
+        <button type="button" class="btn btn-outline-danger btn-remove-row w-100 w-md-auto py-2"><i class="bi bi-trash fs-5"></i></button>
       </div>
     </div>`;
 
@@ -250,6 +250,27 @@ function validateStockRow(tr) {
     } else {
         qtyInput.classList.remove('is-invalid');
         qtyInput.classList.add('is-valid');
+    }
+
+    const stockLabel = tr.querySelector('.stock-label');
+    if (stockLabel) {
+        if (tr.dataset.maxStock === undefined || tr.dataset.maxStock === '') {
+             stockLabel.textContent = 'Stock: --';
+             stockLabel.className = 'badge bg-secondary text-white stock-label px-3 py-2 border';
+             return;
+        }
+
+        const remaining = max - qty;
+        let decimalPlaces = (max % 1 === 0 && qty % 1 === 0) ? 0 : 2;
+        stockLabel.textContent = `Stock restante: ${remaining.toFixed(decimalPlaces)}`;
+        
+        if (remaining < 0) {
+            stockLabel.className = 'badge bg-danger text-white stock-label px-3 py-2 border';
+        } else if (remaining === 0) {
+            stockLabel.className = 'badge bg-warning text-dark stock-label px-3 py-2 border';
+        } else {
+            stockLabel.className = 'badge bg-success text-white stock-label px-3 py-2 border border-success';
+        }
     }
 }
 
