@@ -116,6 +116,14 @@ $router->post('/inventario/ingreso-rapido-ajax', [InventarioController::class, '
 $router->post('/inventario/asignar-lote-stock-existente', [InventarioController::class, 'asignarVencimientoExistenteAjax']);
 $router->get('/inventario/ver-lotes-ajax', [InventarioController::class, 'verLotesActivosAjax']);
 
+// ── TOMAS DE INVENTARIO ──────────────────────────────
+$router->get('/inventario/tomas', [\Controllers\TomasInventarioController::class, 'index']);
+$router->post('/inventario/tomas/crear', [\Controllers\TomasInventarioController::class, 'crear']);
+$router->get('/inventario/tomas/conteo', [\Controllers\TomasInventarioController::class, 'conteo']);
+$router->post('/inventario/tomas/guardar-detalle', [\Controllers\TomasInventarioController::class, 'guardarDetalle']);
+$router->post('/inventario/tomas/crear-producto-rapido', [\Controllers\TomasInventarioController::class, 'crearProductoRapido']);
+$router->post('/inventario/tomas/finalizar', [\Controllers\TomasInventarioController::class, 'finalizar']);
+
 // ── COMPRAS ──────────────────────────────────────────
 $router->get('/compras',        [ComprasController::class, 'index']);
 $router->get('/compras/crear',  [ComprasController::class, 'crear']);
@@ -173,8 +181,10 @@ $router->post('/gastos/eliminar',  [GastosController::class, 'eliminar']);
 // ── REPORTES ─────────────────────────────────────────
 $router->get('/reportes/utilidades',   [ReportesController::class, 'utilidades']);
 $router->get('/reportes/financiero',   [ReportesController::class, 'financiero']);
+$router->get('/reportes/credito',      [ReportesController::class, 'credito']);
 $router->get('/reportes/productos',    [ReportesController::class, 'productos']);
 $router->get('/reportes/vencimientos', [ReportesController::class, 'vencimientos']);
+$router->get('/reportes/capital-estancado', [ReportesController::class, 'capitalEstancado']);
 $router->get('/reportes/detalle-venta-ajax', [ReportesController::class, 'detalleVentaAjax']);
 
 // ── USUARIOS ─────────────────────────────────────────

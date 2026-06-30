@@ -202,6 +202,11 @@ if (($layout ?? '') === 'clean') : ?>
       <span>Historial de Movimientos</span>
     </a>
 
+    <a href="<?= $base ?>/inventario/tomas" class="ag-nav-item <?= isActive($base . '/inventario/tomas') ?>">
+      <i class="bi bi-clipboard2-check-fill text-success"></i>
+      <span>Toma de Inventario</span>
+    </a>
+
     <!-- CONSULTA RÁPIDA -->
     <div class="ag-nav-section">Consultas</div>
     <a href="<?= $base ?>/precios" class="ag-nav-item <?= isActive($base . '/precios') ?>">
@@ -255,9 +260,19 @@ if (($layout ?? '') === 'clean') : ?>
       <span>Estado de Resultados</span>
     </a>
 
+    <a href="<?= $base ?>/reportes/credito" class="ag-nav-item <?= isActive($base . '/reportes/credito') ?>">
+      <i class="bi bi-file-earmark-spreadsheet text-info"></i>
+      <span>Ventas al Crédito</span>
+    </a>
+
     <a href="<?= $base ?>/reportes/productos" class="ag-nav-item <?= isActive($base . '/reportes/productos') ?>">
       <i class="bi bi-box-seam-fill text-warning"></i>
       <span>Rendimiento Productos</span>
+    </a>
+
+    <a href="<?= $base ?>/reportes/capital-estancado" class="ag-nav-item <?= isActive($base . '/reportes/capital-estancado') ?>">
+      <i class="bi bi-box-seam text-danger"></i>
+      <span>Capital Estancado</span>
     </a>
 
     <a href="<?= $base ?>/reportes/utilidades" class="ag-nav-item <?= isActive($base . '/reportes/utilidades') ?>">

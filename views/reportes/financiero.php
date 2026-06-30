@@ -42,13 +42,16 @@
         <div class="card border-0 shadow-sm h-100 border-start border-success border-4">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="text-muted fw-bold mb-0">Ingresos Totales</h6>
+                    <h6 class="text-muted fw-bold mb-0">Ingresos (Flujo de Efectivo)</h6>
                     <div class="bg-success bg-opacity-10 text-success rounded p-2">
                         <i class="bi bi-cash-coin fs-5"></i>
                     </div>
                 </div>
                 <h3 class="fw-bold mb-0 text-success">$<?= number_format($total_ingresos, 2) ?></h3>
-                <small class="text-muted">Ventas netas del periodo</small>
+                <small class="text-muted d-block mt-1">
+                    Ventas al Contado: $<?= number_format($total_ingresos_contado, 2) ?><br>
+                    Abonos (Créditos): $<?= number_format($total_abonos, 2) ?>
+                </small>
             </div>
         </div>
     </div>

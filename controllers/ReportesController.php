@@ -23,7 +23,7 @@ class ReportesController {
             $params[':sid'] = $sucursal_id;
         }
 
-        // Consulta de utilidades por venta
+        // Consulta de utilidades por venta (Solo Contado, si quieres que refleje lo mismo, o la dejamos con todo? Le pondremos solo contado para ser coherente)
         $utilidades = ActiveRecord::fetchRaw(
             "SELECT v.id AS venta_id, v.fecha, c.nombre AS cliente, s.nombre AS sucursal_nombre,
                     SUM(vd.subtotal) AS total_venta,
@@ -33,7 +33,7 @@ class ReportesController {
              JOIN venta_detalle vd ON vd.venta_id = v.id
              LEFT JOIN clientes c ON c.id = v.cliente_id
              LEFT JOIN sucursales s ON s.id = v.sucursal_id
-             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' {$whereSucursal}
+             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' AND v.tipo_pago = 'contado' {$whereSucursal}
              GROUP BY v.id
              ORDER BY v.fecha DESC",
             $params
@@ -69,19 +69,31 @@ class ReportesController {
             $params[':sid'] = $sucursal_id;
         }
 
-        // Ventas: calcular total ventas y costo de ventas
+        // Ventas: calcular total ventas y costo de ventas (Solo Contado)
         $ventas = ActiveRecord::fetchFirstRaw(
             "SELECT 
                 IFNULL(SUM(vd.subtotal), 0) AS total_venta,
                 IFNULL(SUM(vd.costo_unitario * vd.cantidad), 0) AS total_costo
              FROM ventas v
              JOIN venta_detalle vd ON vd.venta_id = v.id
-             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' {$whereSucursalVentas}",
+             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' AND v.tipo_pago = 'contado' {$whereSucursalVentas}",
             $params
         );
 
-        $total_ingresos = (float)$ventas['total_venta'];
-        $total_costos   = (float)$ventas['total_costo'];
+        // Abonos (Pagos a Cuentas por Cobrar)
+        $abonos = ActiveRecord::fetchFirstRaw(
+            "SELECT IFNULL(SUM(p.monto), 0) AS total_abonos
+             FROM pagos_cxc p
+             JOIN cuentas_por_cobrar cxc ON cxc.id = p.cxc_id
+             JOIN ventas v ON v.id = cxc.venta_id
+             WHERE DATE(p.fecha) BETWEEN :f1 AND :f2 {$whereSucursalVentas}",
+            $params
+        );
+
+        $total_ingresos_contado = (float)$ventas['total_venta'];
+        $total_abonos   = (float)$abonos['total_abonos'];
+        $total_ingresos = $total_ingresos_contado + $total_abonos;
+        $total_costos   = (float)$ventas['total_costo']; // Costo solo de lo vendido al contado
         $utilidad_bruta = $total_ingresos - $total_costos;
 
         // Gastos Operativos: agrupados por categoría
@@ -115,6 +127,8 @@ class ReportesController {
             'fecha_fin'         => $fecha_fin,
             'sucursal_id'       => $sucursal_id,
             'sucursales'        => $sucursales,
+            'total_ingresos_contado'=> $total_ingresos_contado,
+            'total_abonos'      => $total_abonos,
             'total_ingresos'    => $total_ingresos,
             'total_costos'      => $total_costos,
             'utilidad_bruta'    => $utilidad_bruta,
@@ -122,6 +136,47 @@ class ReportesController {
             'utilidad_neta'     => $utilidad_neta,
             'categorias_gastos' => json_encode($categorias_gastos),
             'montos_gastos'     => json_encode($montos_gastos)
+        ]);
+    }
+
+    public static function credito(Router $router): void {
+        isAuth();
+        isRole(['admin']);
+
+        $fecha_inicio = $_GET['fecha_inicio'] ?? date('Y-m-01');
+        $fecha_fin    = $_GET['fecha_fin']    ?? date('Y-m-d');
+        $sucursal_id  = (int)($_GET['sucursal_id'] ?? 0);
+
+        $params = [':f1' => $fecha_inicio, ':f2' => $fecha_fin];
+        $whereSucursal = '';
+        if ($sucursal_id > 0) {
+            $whereSucursal = " AND v.sucursal_id = :sid";
+            $params[':sid'] = $sucursal_id;
+        }
+
+        // Consulta de ventas al crédito
+        $ventas = ActiveRecord::fetchRaw(
+            "SELECT v.id AS venta_id, v.fecha, c.nombre AS cliente, s.nombre AS sucursal_nombre,
+                    v.total AS total_venta,
+                    cxc.pagado, cxc.saldo, cxc.estado
+             FROM ventas v
+             LEFT JOIN clientes c ON c.id = v.cliente_id
+             LEFT JOIN sucursales s ON s.id = v.sucursal_id
+             JOIN cuentas_por_cobrar cxc ON cxc.venta_id = v.id
+             WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' AND v.tipo_pago = 'credito' {$whereSucursal}
+             ORDER BY v.fecha DESC",
+            $params
+        );
+
+        $sucursales = \Models\Sucursal::getActivas();
+
+        $router->render('reportes/credito', [
+            'titulo'       => 'Reporte de Ventas al Crédito',
+            'ventas'       => $ventas,
+            'fecha_inicio' => $fecha_inicio,
+            'fecha_fin'    => $fecha_fin,
+            'sucursal_id'  => $sucursal_id,
+            'sucursales'   => $sucursales
         ]);
     }
 
@@ -307,5 +362,61 @@ class ReportesController {
             echo json_encode(['ok' => false, 'error' => 'Error de base de datos: ' . $e->getMessage()]);
             exit;
         }
+    }
+
+    public static function capitalEstancado(Router $router): void {
+        isAuth();
+        isRole(['admin']);
+
+        $sucursal_id  = (int)($_GET['sucursal_id'] ?? 0);
+        $dias_estancado = (int)($_GET['dias'] ?? 90);
+
+        $params = [];
+        $whereInventario = "";
+        
+        if ($sucursal_id > 0) {
+            $whereInventario = " AND iep.sucursal_id = :sid";
+            $params[':sid'] = $sucursal_id;
+        }
+
+        $params[':dias'] = $dias_estancado;
+
+        // Se busca: productos con stock en la sucursal indicada y cuya última fecha de venta 
+        // (específica para esa sucursal si se seleccionó) sea más antigua que $dias_estancado o nunca se haya vendido.
+        $sql = "
+            SELECT p.id, p.nombre, p.sku, 
+                   SUM(iep.cantidad) AS stock_total, 
+                   p.precio_compra,
+                   (SUM(iep.cantidad) * p.precio_compra) AS valor_estancado,
+                   s.nombre AS sucursal_nombre,
+                   (
+                       SELECT MAX(v.fecha)
+                       FROM venta_detalle vd
+                       JOIN ventas v ON v.id = vd.venta_id
+                       WHERE vd.producto_id = p.id
+                       " . ($sucursal_id > 0 ? " AND v.sucursal_id = {$sucursal_id} " : "") . "
+                   ) AS ultima_venta
+            FROM productos p
+            JOIN inventario_existencias_producto iep ON iep.producto_id = p.id
+            JOIN sucursales s ON s.id = iep.sucursal_id
+            WHERE p.activo = 1 
+              AND iep.cantidad > 0 
+              {$whereInventario}
+            GROUP BY p.id, s.id
+            HAVING (ultima_venta IS NULL OR ultima_venta <= DATE_SUB(CURDATE(), INTERVAL :dias DAY))
+            ORDER BY valor_estancado DESC
+        ";
+
+        $productos_estancados = ActiveRecord::fetchRaw($sql, $params);
+
+        $sucursales = \Models\Sucursal::getActivas();
+
+        $router->render('reportes/capital_estancado', [
+            'titulo'               => 'Capital Estancado (Lento Movimiento)',
+            'sucursal_id'          => $sucursal_id,
+            'dias_estancado'       => $dias_estancado,
+            'sucursales'           => $sucursales,
+            'productos_estancados' => $productos_estancados
+        ]);
     }
 }
