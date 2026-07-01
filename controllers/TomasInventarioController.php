@@ -213,13 +213,16 @@ class TomasInventarioController {
                     $abreviaturaReal = strtoupper($unidadAbr);
 
                     $baseSku = "{$marcaPart}-{$catPart}-{$nombrePart}-{$abreviaturaReal}";
-                    $skuFinal = $baseSku;
-                    $contadorSku = 1;
-                    
-                    while (!empty(Producto::where('sku', $skuFinal))) {
-                        $contadorSku++;
-                        $skuFinal = "{$baseSku}-{$contadorSku}";
-                    }
+                } else {
+                    $baseSku = $skuFinal;
+                }
+
+                $skuFinal = $baseSku;
+                $contadorSku = 1;
+                
+                while (!empty(Producto::where('sku', $skuFinal))) {
+                    $contadorSku++;
+                    $skuFinal = "{$baseSku}-{$contadorSku}";
                 }
 
                 $producto = new Producto();
@@ -310,6 +313,27 @@ class TomasInventarioController {
                 
                 $resAjuste = $ajuste->crear();
                 $ajuste_id = (int)$resAjuste['id'];
+
+                // LÓGICA NUEVA: Procesar productos que NO fueron contados ('pendiente')
+                // Se asume que su conteo físico es 0. Si hay stock en el sistema, la diferencia es negativa.
+                $sql_pendientes = "SELECT id, producto_id FROM tomas_inventario_detalle WHERE toma_id = :tid AND estado = 'pendiente'";
+                $pendientes = ActiveRecord::fetchArray($sql_pendientes, [':tid' => $toma_id]);
+                
+                foreach ($pendientes as $p) {
+                    $existencia = ActiveRecord::fetchFirstRaw(
+                        "SELECT cantidad FROM inventario_existencias_producto WHERE producto_id = :pid AND sucursal_id = :sid",
+                        [':pid' => $p['producto_id'], ':sid' => $toma->sucursal_id]
+                    );
+                    $stockRealTime = $existencia ? (float)$existencia['cantidad'] : 0;
+                    
+                    if ($stockRealTime != 0) {
+                        $diferencia = 0 - $stockRealTime;
+                        ActiveRecord::fetchRaw(
+                            "UPDATE tomas_inventario_detalle SET stock_sistema = :stock, conteo_fisico = 0, diferencia = :dif, estado = 'no_contado' WHERE id = :id",
+                            [':stock' => $stockRealTime, ':dif' => $diferencia, ':id' => $p['id']]
+                        );
+                    }
+                }
 
                 $detalles = TomaInventarioDetalle::getByToma($toma_id);
                 

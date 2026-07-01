@@ -341,7 +341,17 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
             method: 'POST',
             body: formData
         });
-        const data = await res.json();
+        
+        const rawText = await res.text();
+        let data;
+        try {
+            data = JSON.parse(rawText);
+        } catch (e) {
+            console.error("Backend response is not valid JSON:", rawText);
+            Swal.fire('Error', 'Fallo en el servidor. Revisa la consola.', 'error');
+            btn.disabled = false;
+            return;
+        }
         
         if(data.ok) {
             // Añadir a la lista de pendientes local
@@ -366,9 +376,10 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
             document.getElementById('lista-pendientes').insertAdjacentHTML('afterbegin', html);
             actualizarContadores();
 
-            // Cerrar modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevoProducto'));
-            modal.hide();
+            // Cerrar modal de forma segura sin depender de la variable global 'bootstrap'
+            const closeBtn = document.querySelector('#modalNuevoProducto .btn-close');
+            if(closeBtn) closeBtn.click();
+            
             this.reset();
             
             Swal.fire({ toast:true, position:'top-end', icon:'success', title:'Añadido', showConfirmButton:false, timer:1500 });
@@ -376,7 +387,8 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
             Swal.fire('Error', data.error, 'error');
         }
     } catch (err) {
-        Swal.fire('Error', 'Fallo de conexión', 'error');
+        console.error("Error en JS:", err);
+        Swal.fire('Error', 'Error inesperado. Revisa la consola.', 'error');
     }
     btn.disabled = false;
 });
@@ -387,11 +399,12 @@ function finalizarToma() {
     if(pend > 0) {
         Swal.fire({
             title: '¿Estás seguro?',
-            text: `Aún tienes ${pend} productos sin contar. Si finalizas, su stock en el sistema no se ajustará (se asume que su stock está correcto o no se contó).`,
+            text: `Aún tienes ${pend} productos sin contar. Estos productos no los contaste y su existencia se colocará a 0 (se asume que se perdieron o ya no hay stock).`,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#198754',
-            confirmButtonText: 'Sí, finalizar de todos modos'
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, poner a cero y finalizar'
         }).then((result) => {
             if (result.isConfirmed) procesarFinalizacion();
         });
