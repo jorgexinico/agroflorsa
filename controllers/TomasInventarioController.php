@@ -317,7 +317,7 @@ class TomasInventarioController {
                 // LÓGICA NUEVA: Procesar productos que NO fueron contados ('pendiente')
                 // Se asume que su conteo físico es 0. Si hay stock en el sistema, la diferencia es negativa.
                 $sql_pendientes = "SELECT id, producto_id FROM tomas_inventario_detalle WHERE toma_id = :tid AND estado = 'pendiente'";
-                $pendientes = ActiveRecord::fetchArray($sql_pendientes, [':tid' => $toma_id]);
+                $pendientes = ActiveRecord::fetchRaw($sql_pendientes, [':tid' => $toma_id]);
                 
                 foreach ($pendientes as $p) {
                     $existencia = ActiveRecord::fetchFirstRaw(

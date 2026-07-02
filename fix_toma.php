@@ -28,7 +28,7 @@ try {
     echo "Toma a corregir: ID $toma_id (Sucursal: $sucursal_id)\n";
 
     // Buscar productos pendientes
-    $pendientes = ActiveRecord::fetchArray("SELECT id, producto_id FROM tomas_inventario_detalle WHERE toma_id = :tid AND estado = 'pendiente'", [':tid' => $toma_id]);
+    $pendientes = ActiveRecord::fetchRaw("SELECT id, producto_id FROM tomas_inventario_detalle WHERE toma_id = :tid AND estado = 'pendiente'", [':tid' => $toma_id]);
     
     if (empty($pendientes)) {
         echo "No hay productos en estado 'pendiente' en esta toma. Ya se procesó todo.\n";
