@@ -35,7 +35,7 @@ class ReportesController {
              LEFT JOIN sucursales s ON s.id = v.sucursal_id
              WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' AND v.tipo_pago = 'contado' {$whereSucursal}
              GROUP BY v.id
-             ORDER BY v.fecha DESC",
+             ORDER BY total_venta DESC, v.fecha DESC",
             $params
         );
 
@@ -207,8 +207,7 @@ class ReportesController {
              JOIN unidades_medida u ON u.id = p.unidad_id
              WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' {$whereSucursal}
              GROUP BY p.id
-             ORDER BY cantidad_total DESC
-             LIMIT 10",
+             ORDER BY cantidad_total DESC",
             $params
         );
 
@@ -222,8 +221,7 @@ class ReportesController {
              JOIN productos p ON p.id = vd.producto_id
              WHERE DATE(v.fecha) BETWEEN :f1 AND :f2 AND v.estado != 'anulada' {$whereSucursal}
              GROUP BY p.id
-             ORDER BY utilidad_total DESC
-             LIMIT 10",
+             ORDER BY utilidad_total DESC",
             $params
         );
 

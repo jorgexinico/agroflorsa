@@ -91,8 +91,24 @@ if (($layout ?? '') === 'clean') : ?>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= s($titulo ?? 'Dashboard') ?> — Agroflorsa</title>
   <link rel="stylesheet" href="<?= asset('build/styles.css') ?>">
+  <!-- AG Grid Styles -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- ApexCharts -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <!-- AG Grid -->
+  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      corePlugins: {
+        preflight: false, // Evitar conflictos con Bootstrap
+      }
+    }
+  </script>
 </head>
 <body class="ag-body">
 

@@ -57,6 +57,11 @@ class GastosController {
         $alertas = [];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Evitar TypeError: Cannot assign string to property ?int (PHP 7.4+)
+            if (empty($_POST['sucursal_id'])) $_POST['sucursal_id'] = null;
+            if (empty($_POST['categoria_id'])) $_POST['categoria_id'] = null;
+            if (isset($_POST['monto'])) $_POST['monto'] = (float)$_POST['monto'];
+
             $gasto->sincronizar($_POST);
             $gasto->usuario_id = $_SESSION['usuario_id'] ?? 1;
             

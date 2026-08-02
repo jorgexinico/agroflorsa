@@ -128,3 +128,73 @@
     <?php endif; ?>
   </div>
 </div>
+
+<div class="card mt-4 border-warning shadow-sm">
+  <div class="card-header bg-warning bg-opacity-10 d-flex justify-content-between align-items-center">
+    <span class="text-warning-emphasis fw-bold">
+      <i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i>Productos Próximos a Agotarse (<= 10)
+    </span>
+    <a href="<?= $base ?>/reportes/inventario" class="btn btn-sm btn-outline-warning">Ver Inventario</a>
+  </div>
+  <div class="card-body p-0">
+    <?php if (empty($lowStock)): ?>
+      <div class="text-center py-4">
+        <i class="bi bi-check-circle text-success fs-2 d-block mb-2"></i>
+        <p class="text-muted mb-0">No hay productos con bajo inventario.</p>
+      </div>
+    <?php else: 
+      // Agrupar por sucursal
+      $lowStockGrouped = [];
+      foreach ($lowStock as $ls) {
+          $suc = $ls['sucursal_nombre'] ?: 'Desconocida';
+          if (!isset($lowStockGrouped[$suc])) {
+              $lowStockGrouped[$suc] = [];
+          }
+          $lowStockGrouped[$suc][] = $ls;
+      }
+    ?>
+    <div class="table-responsive">
+      <?php foreach ($lowStockGrouped as $sucursal => $items): ?>
+        <?php if ($esAdmin): ?>
+        <div class="bg-light px-3 py-2 border-bottom border-top fw-bold text-secondary d-flex align-items-center">
+            <i class="bi bi-shop me-2"></i>Sucursal: <?= s($sucursal) ?>
+        </div>
+        <?php endif; ?>
+        
+        <table class="table table-hover table-sm mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 25%">SKU</th>
+              <th style="width: 45%">Producto</th>
+              <th class="text-center" style="width: 15%">Existencia</th>
+              <th style="width: 15%">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($items as $ls): 
+              $cant = (float)$ls['cantidad'];
+              if ($cant <= 0) {
+                  $badgeClass = 'bg-danger';
+                  $badgeText = 'Agotado';
+              } elseif ($cant <= 5) {
+                  $badgeClass = 'bg-warning text-dark';
+                  $badgeText = 'Crítico';
+              } else {
+                  $badgeClass = 'bg-info text-dark';
+                  $badgeText = 'Bajo';
+              }
+            ?>
+            <tr>
+              <td class="text-muted small"><?= s($ls['sku'] ?: 'N/A') ?></td>
+              <td class="fw-semibold text-truncate" style="max-width: 250px;"><?= s($ls['nombre']) ?></td>
+              <td class="text-center fw-bold text-danger"><?= $cant ?></td>
+              <td><span class="badge <?= $badgeClass ?>"><?= $badgeText ?></span></td>
+            </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+  </div>
+</div>

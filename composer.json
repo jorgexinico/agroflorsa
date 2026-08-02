@@ -3,7 +3,10 @@
     "description": "Sistema ERP administrativo de Agroflorsa",
     "type": "project",
     "config": {
-        "platform-check": false
+        "platform-check": false,
+        "audit": {
+            "block-insecure": false
+        }
     },
     "autoload": {
         "psr-4": {

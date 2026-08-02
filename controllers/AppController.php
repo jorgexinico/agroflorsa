@@ -101,6 +101,42 @@ class AppController {
             "SELECT COALESCE(SUM(saldo),0) AS saldo FROM cuentas_por_pagar WHERE estado IN ('pendiente','parcial')"
         )['saldo'] ?? 0);
 
+        // ── Productos por Agotarse (Low Stock) pero con actividad reciente ─────────────
+        $limite_bajo_stock = 10;
+        $dias_actividad = 60; // Mostrar alerta SOLO si el producto se ha vendido en los últimos 60 días
+        if ($rol !== 'admin' || $sucursal_id > 0) {
+            $suc_id = $sucursal_id > 0 ? $sucursal_id : $_SESSION['sucursal_id'];
+            $lowStock = ActiveRecord::fetchRaw(
+                "SELECT iep.cantidad, p.nombre, p.sku, s.nombre AS sucursal_nombre
+                 FROM inventario_existencias_producto iep
+                 JOIN productos p ON p.id = iep.producto_id
+                 JOIN sucursales s ON s.id = iep.sucursal_id
+                 WHERE iep.sucursal_id = :suc AND p.activo = 1 AND iep.cantidad <= :limite
+                   AND p.id IN (
+                       SELECT vd.producto_id FROM venta_detalle vd 
+                       JOIN ventas v ON vd.venta_id = v.id 
+                       WHERE v.fecha >= DATE_SUB(CURDATE(), INTERVAL :dias_actividad DAY) AND v.sucursal_id = :suc
+                   )
+                 ORDER BY iep.cantidad ASC LIMIT 15",
+                [':suc' => $suc_id, ':limite' => $limite_bajo_stock, ':dias_actividad' => $dias_actividad]
+            );
+        } else {
+            $lowStock = ActiveRecord::fetchRaw(
+                "SELECT iep.cantidad, p.nombre, p.sku, s.nombre AS sucursal_nombre
+                 FROM inventario_existencias_producto iep
+                 JOIN productos p ON p.id = iep.producto_id
+                 JOIN sucursales s ON s.id = iep.sucursal_id
+                 WHERE p.activo = 1 AND iep.cantidad <= :limite
+                   AND p.id IN (
+                       SELECT vd.producto_id FROM venta_detalle vd 
+                       JOIN ventas v ON vd.venta_id = v.id 
+                       WHERE v.fecha >= DATE_SUB(CURDATE(), INTERVAL :dias_actividad DAY)
+                   )
+                 ORDER BY iep.cantidad ASC LIMIT 20",
+                [':limite' => $limite_bajo_stock, ':dias_actividad' => $dias_actividad]
+            );
+        }
+
         $router->render('pages/index', [
             'titulo'         => 'Dashboard',
             'ventasHoy'      => $ventasHoy,
@@ -109,6 +145,7 @@ class AppController {
             'cxcPendiente'   => $cxcPendiente,
             'cxpPendiente'   => $cxpPendiente,
             'ultimasVentas'  => $ultimasVentas,
+            'lowStock'       => $lowStock,
             'esAdmin'        => ($rol === 'admin' && $sucursal_id === 0),
         ]);
     }
