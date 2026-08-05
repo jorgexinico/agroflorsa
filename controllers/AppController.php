@@ -107,20 +107,34 @@ class AppController {
         $dias_actividad = 60; // Mostrar alerta SOLO si el producto se ha vendido en los últimos 60 días
         if ($rol !== 'admin' || $sucursal_id > 0) {
             $suc_id = $sucursal_id;
-            $lowStock = ActiveRecord::fetchRaw(
-                "SELECT iep.cantidad, p.nombre, p.sku, s.nombre AS sucursal_nombre
-                 FROM inventario_existencias_producto iep
-                 JOIN productos p ON p.id = iep.producto_id
-                 JOIN sucursales s ON s.id = iep.sucursal_id
-                 WHERE iep.sucursal_id = :suc AND p.activo = 1 AND iep.cantidad <= :limite
-                   AND p.id IN (
-                       SELECT vd.producto_id FROM venta_detalle vd 
-                       JOIN ventas v ON vd.venta_id = v.id 
-                       WHERE v.fecha >= DATE_SUB(CURDATE(), INTERVAL :dias_actividad DAY) AND v.sucursal_id = :suc
-                   )
-                 ORDER BY iep.cantidad ASC LIMIT 15",
-                [':suc' => $suc_id, ':limite' => $limite_bajo_stock, ':dias_actividad' => $dias_actividad]
-            );
+            
+            // Si es vendedor y no tiene turno activo, buscamos la sucursal de su último turno
+            if ($suc_id === 0 && $rol !== 'admin') {
+                $ultimoTurno = Turno::fetchFirstRaw(
+                    "SELECT sucursal_id FROM turnos WHERE usuario_id = :uid ORDER BY id DESC LIMIT 1",
+                    [':uid' => $usuario_id]
+                );
+                $suc_id = (int)($ultimoTurno['sucursal_id'] ?? 0);
+            }
+
+            if ($suc_id > 0) {
+                $lowStock = ActiveRecord::fetchRaw(
+                    "SELECT iep.cantidad, p.nombre, p.sku, s.nombre AS sucursal_nombre
+                     FROM inventario_existencias_producto iep
+                     JOIN productos p ON p.id = iep.producto_id
+                     JOIN sucursales s ON s.id = iep.sucursal_id
+                     WHERE iep.sucursal_id = :suc AND p.activo = 1 AND iep.cantidad <= :limite
+                       AND p.id IN (
+                           SELECT vd.producto_id FROM venta_detalle vd 
+                           JOIN ventas v ON vd.venta_id = v.id 
+                           WHERE v.fecha >= DATE_SUB(CURDATE(), INTERVAL :dias_actividad DAY) AND v.sucursal_id = :suc
+                       )
+                     ORDER BY iep.cantidad ASC LIMIT 15",
+                    [':suc' => $suc_id, ':limite' => $limite_bajo_stock, ':dias_actividad' => $dias_actividad]
+                );
+            } else {
+                $lowStock = [];
+            }
         } else {
             $lowStock = ActiveRecord::fetchRaw(
                 "SELECT iep.cantidad, p.nombre, p.sku, s.nombre AS sucursal_nombre
