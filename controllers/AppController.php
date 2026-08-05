@@ -15,6 +15,7 @@ class AppController {
 
         $sucursal_id = (int)($_SESSION['sucursal_id'] ?? 0);
         $rol         = $_SESSION['usuario_rol'] ?? '';
+        $usuario_id  = (int)($_SESSION['usuario_id'] ?? 0);
         $hoy         = date('Y-m-d');
 
         // ── Turno activo del usuario ────────────────────────────────
@@ -22,7 +23,7 @@ class AppController {
             "SELECT t.*, s.nombre AS sucursal_nombre
              FROM turnos t JOIN sucursales s ON s.id = t.sucursal_id
              WHERE t.usuario_id = :uid AND t.estado = 'abierto' LIMIT 1",
-            [':uid' => $_SESSION['usuario_id']]
+            [':uid' => $usuario_id]
         );
 
         // ── KPIs de ventas ──────────────────────────────────────────
@@ -32,7 +33,7 @@ class AppController {
                 "SELECT COALESCE(SUM(v.total),0) AS monto, COUNT(v.id) AS cantidad
                  FROM ventas v JOIN turnos t ON t.id = v.turno_id
                  WHERE DATE(v.fecha) = :hoy AND v.estado = 'emitida' AND t.usuario_id = :uid",
-                [':hoy' => $hoy, ':uid' => $_SESSION['usuario_id']]
+                [':hoy' => $hoy, ':uid' => $usuario_id]
             );
         } else {
             // Admin: global de hoy (opcionalmente filtrado por sucursal si tiene una asignada)
@@ -71,7 +72,7 @@ class AppController {
                  LEFT JOIN clientes c ON c.id = v.cliente_id
                  WHERE v.estado = 'emitida' AND t.usuario_id = :uid
                  ORDER BY v.fecha DESC LIMIT 8",
-                [':uid' => $_SESSION['usuario_id']]
+                [':uid' => $usuario_id]
             );
         } else {
             // Admin: global de hoy
@@ -105,7 +106,7 @@ class AppController {
         $limite_bajo_stock = 10;
         $dias_actividad = 60; // Mostrar alerta SOLO si el producto se ha vendido en los últimos 60 días
         if ($rol !== 'admin' || $sucursal_id > 0) {
-            $suc_id = $sucursal_id > 0 ? $sucursal_id : ($_SESSION['sucursal_id'] ?? 0);
+            $suc_id = $sucursal_id;
             $lowStock = ActiveRecord::fetchRaw(
                 "SELECT iep.cantidad, p.nombre, p.sku, s.nombre AS sucursal_nombre
                  FROM inventario_existencias_producto iep
