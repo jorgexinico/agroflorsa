@@ -105,7 +105,7 @@ class AppController {
         $limite_bajo_stock = 10;
         $dias_actividad = 60; // Mostrar alerta SOLO si el producto se ha vendido en los últimos 60 días
         if ($rol !== 'admin' || $sucursal_id > 0) {
-            $suc_id = $sucursal_id > 0 ? $sucursal_id : $_SESSION['sucursal_id'];
+            $suc_id = $sucursal_id > 0 ? $sucursal_id : ($_SESSION['sucursal_id'] ?? 0);
             $lowStock = ActiveRecord::fetchRaw(
                 "SELECT iep.cantidad, p.nombre, p.sku, s.nombre AS sucursal_nombre
                  FROM inventario_existencias_producto iep
