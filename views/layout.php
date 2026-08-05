@@ -50,7 +50,10 @@ if (($layout ?? '') === 'auth') : ?>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema de Control Administrativo y Ventas de Agroflorsa">
+  <meta name="robots" content="noindex, nofollow">
   <title><?= s($titulo ?? 'Agroflorsa') ?> — Agroflorsa</title>
+  <link rel="icon" type="image/jpeg" href="<?= $base ?>/images/flor%20de%20mayo.jpg">
   <link rel="stylesheet" href="<?= asset('build/styles.css') ?>">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -70,7 +73,10 @@ if (($layout ?? '') === 'clean') : ?>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema de Control Administrativo y Ventas de Agroflorsa">
+  <meta name="robots" content="noindex, nofollow">
   <title><?= s($titulo ?? 'Agroflorsa') ?> — Agroflorsa</title>
+  <link rel="icon" type="image/jpeg" href="<?= $base ?>/images/flor%20de%20mayo.jpg">
   <link rel="stylesheet" href="<?= asset('build/styles.css') ?>">
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -89,7 +95,10 @@ if (($layout ?? '') === 'clean') : ?>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema de Control Administrativo y Ventas de Agroflorsa">
+  <meta name="robots" content="noindex, nofollow">
   <title><?= s($titulo ?? 'Dashboard') ?> — Agroflorsa</title>
+  <link rel="icon" type="image/jpeg" href="<?= $base ?>/images/flor%20de%20mayo.jpg">
   <link rel="stylesheet" href="<?= asset('build/styles.css') ?>">
   <!-- AG Grid Styles -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css">
@@ -118,7 +127,7 @@ if (($layout ?? '') === 'clean') : ?>
 <aside class="ag-sidebar" id="sidebar">
   <!-- Logo -->
   <div class="ag-sidebar__brand">
-    <i class="bi bi-flower3 text-success"></i>
+    <img src="<?= $base ?>/images/flor%20de%20mayo.jpg" alt="Agroflorsa" style="width: 32px; height: 32px; object-fit: cover; border-radius: 50%; margin-right: 10px; border: 2px solid #22c55e;">
     <span>Agroflorsa</span>
   </div>
 
