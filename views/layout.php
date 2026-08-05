@@ -118,6 +118,12 @@ if (($layout ?? '') === 'clean') : ?>
       }
     }
   </script>
+  <style>
+    /* Fix para conflicto entre Bootstrap Collapse y Tailwind .collapse */
+    .collapse.show {
+        visibility: visible !important;
+    }
+  </style>
 </head>
 <body class="ag-body">
 
