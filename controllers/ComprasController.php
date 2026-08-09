@@ -43,6 +43,7 @@ class ComprasController {
             $proveedor_id = !empty($_POST['proveedor_id']) ? (int)$_POST['proveedor_id'] : null;
             $tipo_pago    = $_POST['tipo_pago'] ?? 'contado';
             $observacion  = htmlspecialchars(trim($_POST['observacion'] ?? ''));
+            $factura      = htmlspecialchars(trim($_POST['factura'] ?? ''));
 
             // Items del detalle enviados como arrays
             $items_producto   = $_POST['producto_id']      ?? [];
@@ -63,6 +64,7 @@ class ComprasController {
                     $compra->sucursal_id  = $sucursal_id;
                     $compra->proveedor_id = $proveedor_id;
                     $compra->observacion  = $observacion;
+                    $compra->factura      = $factura ?: null;
                     $compra->estado       = 'recibida';
                     $compra->fecha        = date('Y-m-d');
                     $compra->total        = 0;

@@ -20,7 +20,7 @@
 
     <form method="POST" action="">
       <div class="row g-3 mb-4">
-        <div class="col-12 col-md-5">
+        <div class="col-12 col-md-3">
           <label class="form-label fw-semibold">Sucursal de destino <span class="text-danger">*</span></label>
           <select name="sucursal_id" class="form-select" required>
             <option value="">Seleccione...</option>
@@ -29,7 +29,7 @@
             <?php endforeach; ?>
           </select>
         </div>
-        <div class="col-12 col-md-5">
+        <div class="col-12 col-md-3">
           <label class="form-label fw-semibold">Proveedor</label>
           <select name="proveedor_id" class="form-select">
             <option value="">Sin proveedor</option>
@@ -38,6 +38,10 @@
             <?php endforeach; ?>
           </select>
         </div>
+        <div class="col-12 col-md-2">
+          <label class="form-label fw-semibold">Factura</label>
+          <input type="text" name="factura" class="form-control" placeholder="No. Factura">
+        </div>
         <div class="col-12 col-md-4">
           <label class="form-label fw-semibold">Tipo de pago</label>
           <select name="tipo_pago" class="form-select">
@@ -45,7 +49,7 @@
             <option value="credito">Al Crédito (Generar CxP)</option>
           </select>
         </div>
-        <div class="col-12 col-md-8">
+        <div class="col-12 col-md-12">
           <label class="form-label fw-semibold">Observación</label>
           <input type="text" name="observacion" class="form-control" placeholder="Opcional">
         </div>

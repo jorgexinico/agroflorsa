@@ -11,7 +11,7 @@ class Compra extends ActiveRecord {
     protected static $tabla      = 'compras';
     protected static $idTabla    = 'id';
     protected static $columnasDB = [
-        'id','sucursal_id','proveedor_id','fecha','total','estado','observacion'
+        'id','sucursal_id','proveedor_id','fecha','total','estado','observacion','factura'
     ];
 
     public ?int    $id           = null;
@@ -21,6 +21,7 @@ class Compra extends ActiveRecord {
     public float   $total        = 0;
     public string  $estado       = 'recibida';
     public ?string $observacion  = null;
+    public ?string $factura      = null;
 
     // Joins
     public ?string $proveedor_nombre = null;
