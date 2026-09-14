@@ -26,7 +26,7 @@ class Router
     {
 
 
-        $currentUrl = $_SERVER['REQUEST_URI'] ? str_replace("?" . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']) : $this->base .'/';
+        $currentUrl = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: $this->base . '/';
         $method = $_SERVER['REQUEST_METHOD'];
         // debuguear($currentUrl);
         if ($method === 'GET') {
