@@ -14,8 +14,9 @@ class AuthController {
         if (filter_var($_ENV['SSO_ENABLED'] ?? false,FILTER_VALIDATE_BOOLEAN)) {
             \Classes\SsoClient::start();
         }
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            header('Location: ' . ($_ENV['PORTAL_URL'] ?? 'http://localhost:9004'));
+        $portalUrl = trim($_ENV['PORTAL_URL'] ?? '');
+        if ($_SERVER['REQUEST_METHOD'] === 'GET' && $portalUrl !== '') {
+            header('Location: ' . $portalUrl);
             exit;
         }
         // Si ya está logueado, redirigir al dashboard

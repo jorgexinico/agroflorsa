@@ -30,6 +30,7 @@ $router->setBaseURL($_ENV['APP_NAME'] ? '/' . $_ENV['APP_NAME'] : '');
 
 // ── AUTH ─────────────────────────────────────────────
 $router->get('/login',   [AuthController::class, 'login']);
+$router->post('/login',  [AuthController::class, 'login']);
 $router->get('/usuarios/identidad', [\Controllers\IdentityController::class, 'index']);
 $router->post('/usuarios/identidad', [\Controllers\IdentityController::class, 'index']);
 if (filter_var($_ENV['SSO_ENABLED'] ?? false,FILTER_VALIDATE_BOOLEAN)) {
