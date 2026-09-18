@@ -20,6 +20,7 @@ storage/*
 
 # Backups
 *.sql
+!database/sso_identity_unique_review.sql
 
 # IDE
 .vscode/

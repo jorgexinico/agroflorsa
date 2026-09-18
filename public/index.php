@@ -35,7 +35,6 @@ $router->get('/usuarios/identidad', [\Controllers\IdentityController::class, 'in
 $router->post('/usuarios/identidad', [\Controllers\IdentityController::class, 'index']);
 if (filter_var($_ENV['SSO_ENABLED'] ?? false,FILTER_VALIDATE_BOOLEAN)) {
     $router->get('/sso/start', [\Controllers\PortalController::class, 'start']);
-    $router->post('/sso/activity', [\Controllers\PortalController::class, 'activity']);
     $router->get('/sso', [\Controllers\PortalController::class, 'callback']);
 } else {
     $router->get('/sso', [AuthController::class, 'sso']);

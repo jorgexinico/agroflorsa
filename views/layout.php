@@ -389,9 +389,6 @@ if (($layout ?? '') === 'clean') : ?>
 </div><!-- /.ag-main -->
 
 <script src="<?= asset('build/js/app.js') ?>"></script>
-<?php if(!empty($_SESSION['portal_refresh'])): ?>
-<?php $_SESSION['activity_token']=$_SESSION['activity_token']??bin2hex(random_bytes(32)); ?>
-<script src="<?= s(url('/js/session-activity.js')) ?>" data-activity-url="<?= s(url('/sso/activity')) ?>" data-activity-token="<?= s($_SESSION['activity_token']) ?>" defer></script>
-<?php endif; ?>
+
 </body>
 </html>

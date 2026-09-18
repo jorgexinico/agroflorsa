@@ -14,11 +14,6 @@ class AuthController {
         if (filter_var($_ENV['SSO_ENABLED'] ?? false,FILTER_VALIDATE_BOOLEAN)) {
             \Classes\SsoClient::start();
         }
-        $portalUrl = trim($_ENV['PORTAL_URL'] ?? '');
-        if ($_SERVER['REQUEST_METHOD'] === 'GET' && $portalUrl !== '') {
-            header('Location: ' . $portalUrl);
-            exit;
-        }
         // Si ya está logueado, redirigir al dashboard
         if (isset($_SESSION['usuario_id'])) {
             redirectTo('/dashboard');
@@ -115,6 +110,14 @@ class AuthController {
 
     public static function logout(Router $router): void {
         $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $params=session_get_cookie_params();
+            setcookie(session_name(), '', [
+                'expires'=>time()-42000, 'path'=>$params['path'], 'domain'=>$params['domain'],
+                'secure'=>$params['secure'], 'httponly'=>$params['httponly'],
+                'samesite'=>$params['samesite'] ?? 'Lax',
+            ]);
+        }
         session_destroy();
         if (filter_var($_ENV['SSO_ENABLED'] ?? false,FILTER_VALIDATE_BOOLEAN)) {
             header('Location: '.rtrim($_ENV['SSO_PORTAL_URL'],'/'));

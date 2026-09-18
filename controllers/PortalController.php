@@ -5,16 +5,6 @@ use Classes\SsoClient;
 final class PortalController
 {
     public static function start(): void { SsoClient::start(); }
-    public static function activity():void {
-        header('Cache-Control: no-store');
-        $token=$_SERVER['HTTP_X_ACTIVITY_TOKEN']??'';
-        if(!isset($_SESSION['usuario_id'],$_SESSION['activity_token']) || !is_string($token) || !hash_equals($_SESSION['activity_token'],$token)){http_response_code(403);return;}
-        try {
-            SsoClient::renew();
-            http_response_code(($_SESSION['portal_expires']??0)>time()?204:401);
-        }catch(\Throwable $e){http_response_code(503);}
-    }
-
     public static function callback(): void
     {
         global $db;
@@ -27,9 +17,9 @@ final class PortalController
             $user=(new \Classes\PortalIdentity($db))->find($claims->iss,$claims->sub);
             if (!$user) throw new \RuntimeException('Identidad no vinculada.');
             // Eliminar permisos/turnos de cualquier sesión anterior.
+            session_regenerate_id(true);
             $_SESSION=[
-                'portal_refresh'=>$_SESSION['portal_refresh']??null,'portal_checked'=>time(),
-                'portal_subject'=>$claims->sub, 'portal_issuer'=>$claims->iss, 'portal_expires'=>$claims->exp,
+                'portal_subject'=>$claims->sub, 'portal_issuer'=>$claims->iss,
                 'usuario_id'=>(int)$user['id'], 'usuario_nombre'=>$user['nombre'],
                 'usuario_rol'=>$user['rol'],
             ];
@@ -42,6 +32,7 @@ final class PortalController
             }
             redirectTo('/dashboard');
         } catch (\Throwable $e) {
+            session_regenerate_id(true);
             $_SESSION=[];
             error_log('SSO Agroflorsa etapa='.$stage.' tipo='.get_class($e).' codigo='.$e->getCode());
             http_response_code(403);
