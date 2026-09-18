@@ -7,6 +7,7 @@ $handle = null;
 $db = null;
 $original = null;
 $written = false;
+$stage = 'leer_configuracion';
 try {
     $options = getopt('', ['apply', 'login-dir:']);
     $root = dirname(__DIR__);
@@ -18,9 +19,15 @@ try {
     if (!$handle || !flock($handle, LOCK_EX)) throw new RuntimeException('No se pudo abrir/bloquear includes/.env.');
     $original = stream_get_contents($handle);
     $app = Dotenv\Dotenv::parse($original);
+    foreach (['DB_HOST','DB_NAME','DB_USER','DB_PASS'] as $setting) {
+        if (!array_key_exists($setting,$portal)) throw new RuntimeException('Falta '.$setting.' en el .env de Login.');
+    }
+    $stage = 'conectar_login';
     $db = new PDO('mysql:host='.$portal['DB_HOST'].';port='.($portal['DB_PORT'] ?? '3306').';dbname='.$portal['DB_NAME'].';charset=utf8mb4',
         $portal['DB_USER'], $portal['DB_PASS'], [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES=>false]);
+    $stage = 'iniciar_transaccion';
     $db->beginTransaction();
+    $stage = 'leer_aplicacion';
     $q = $db->prepare('SELECT id,client_secret_hash FROM aplicaciones WHERE slug=? FOR UPDATE');
     $q->execute(['agroflorsa']);
     $row = $q->fetch(PDO::FETCH_ASSOC);
@@ -52,11 +59,13 @@ try {
             umask($previousMask);
             if ($saved !== strlen($original)) throw new RuntimeException('No se pudo guardar el respaldo privado.');
             $hash = password_hash($secret, PASSWORD_DEFAULT);
+            $stage = 'actualizar_hash';
             $q = $db->prepare('UPDATE aplicaciones SET client_secret_hash=? WHERE id=?');
             $q->execute([$hash, $row['id']]);
             rewind($handle);
             $written = true;
             if (fwrite($handle, $updated)!==strlen($updated) || !ftruncate($handle,strlen($updated)) || !fflush($handle)) throw new RuntimeException('No se pudo guardar includes/.env.');
+            $stage = 'confirmar_transaccion';
             $db->commit();
             $written = false;
             echo "OK: secreto guardado en Agroflorsa y hash registrado en Login.\nRespaldo privado: $backup\n";
@@ -69,7 +78,23 @@ try {
         $restored = fwrite($handle,$original)===strlen($original) && ftruncate($handle,strlen($original)) && fflush($handle);
         if (!$restored) fwrite(STDERR,"No se pudo restaurar el archivo; recupera el respaldo privado en storage.\n");
     }
-    fwrite(STDERR, "No se completó la configuración. ".($e instanceof PDOException ? 'Revisa conexión y permisos de MySQL.' : ($e instanceof RuntimeException ? $e->getMessage() : 'Revisa permisos y formato de los archivos .env.'))."\n");
+    if ($e instanceof PDOException) {
+        $sqlState = preg_replace('/[^A-Z0-9]/', '', (string)($e->errorInfo[0] ?? $e->getCode()));
+        $mysqlCode = (int)($e->errorInfo[1] ?? 0);
+        $hint = match ($mysqlCode) {
+            1045, 1698 => 'MySQL rechazó la autenticación de la cuenta configurada en Login.',
+            1044 => 'La cuenta de Login no tiene acceso a la base configurada.',
+            1142, 1143 => 'Faltan permisos para la operación o columna indicada por la etapa.',
+            1049 => 'La base configurada no existe en ese servidor MySQL.',
+            1146 => 'Falta la tabla aplicaciones en la base seleccionada.',
+            1054 => 'Falta una columna requerida en aplicaciones.',
+            2002, 2003, 2005 => 'No se pudo conectar al host, puerto o socket configurado.',
+            default => 'Revisa el código MySQL y la etapa; no se muestran datos privados.',
+        };
+        fwrite(STDERR,"No se completó la configuración. Etapa=$stage SQLSTATE=$sqlState MySQL=$mysqlCode. $hint\n");
+    } else {
+        fwrite(STDERR, "No se completó la configuración. ".($e instanceof RuntimeException ? $e->getMessage() : 'Revisa permisos y formato de los archivos .env.')."\n");
+    }
     exit(1);
 } finally {
     if (is_resource($handle)) { flock($handle,LOCK_UN); fclose($handle); }
