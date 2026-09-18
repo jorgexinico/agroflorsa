@@ -87,7 +87,11 @@ namespace {
         if ($case==='signature') $GLOBALS['response']=json_encode(['access_token'=>'not-accepted']);
         if ($case==='http') $_ENV['SSO_BACKCHANNEL_URL']='http://login.example';
         $rejected=false;
-        try { \Classes\SsoClient::consume(); } catch (\Throwable $e) { $rejected=true; }
+        try { \Classes\SsoClient::consume(); } catch (\Throwable $e) {
+            $rejected=true;
+            $expectedCode=match ($case) { 'signature'=>1004, 'http'=>1003, default=>1001 };
+            check($e->getCode()===$expectedCode,'Diagnóstico incorrecto para '.$case);
+        }
         check($rejected && !isset($_SESSION['portal_state']),'Debe rechazar '.$case);
     }
     session_start();

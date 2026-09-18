@@ -37,7 +37,18 @@ final class PortalController
             error_log('SSO Agroflorsa etapa='.$stage.' tipo='.get_class($e).' codigo='.$e->getCode()
                 .' archivo='.$e->getFile().' linea='.$e->getLine());
             http_response_code(403);
-            echo 'No se pudo autorizar el acceso. Vuelve al portal y selecciona Agroflorsa. Si persiste, revisa la asignación de tu usuario.';
+            $reason=$stage==='canje_identidad' ? match ($e->getCode()) {
+                1001 => 'La sesión de ingreso falta, venció o el enlace ya se utilizó.',
+                1002 => 'No se pudo completar el canje con Login. Revisa el registro del servidor.',
+                1003 => 'La conexión con Login requiere HTTPS.',
+                1004 => 'Login devuelve un formato incompatible. Falta desplegar el soporte response_format=identity en Login.',
+                1005 => 'La identidad recibida no coincide con la configuración esperada.',
+                default => 'Ocurrió un error al validar el ingreso con Login.',
+            } : ($stage==='vinculo_usuario'
+                ? 'No se pudo resolver el usuario local activo. Revisa su vínculo y el registro del servidor.'
+                : 'No se pudo recuperar el turno local. Revisa el registro del servidor.');
+            echo 'No se pudo autorizar el acceso. '.$reason.' <a href="'
+                .htmlspecialchars(url('/sso/start'),ENT_QUOTES,'UTF-8').'">Volver a iniciar sesión</a>';
         }
     }
 }

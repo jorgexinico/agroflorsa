@@ -1,6 +1,16 @@
 Agroflorsa: SSO de ingreso y sesión local
 ======================================
 
+AVISO: el contrato JWT descrito abajo es histórico. El código actual usa
+response_format=identity; consultar SSO-SIN-JWT.md. Debe desplegarse primero
+el soporte de ese formato en Login. Un HTTP 200 con access_token pero sin
+identity no es compatible y se registra como codigo=1004.
+Diagnóstico del callback en el log PHP: 1001 sesión/state/código inválido;
+1002 canje fallido (ver canje_http y curl); 1003 HTTPS; 1004 contrato antiguo;
+1005 emisor/audiencia/sujeto. Las etapas vinculo_usuario y turno_local indican
+fallos posteriores al canje. No volver a usar el code de una URL anterior:
+iniciar un intento nuevo desde /sso/start.
+
 GET /sso/start crea state; Login devuelve code y state a GET /sso. Agroflorsa
 consume state, hace POST /token y valida JWT RS256, firma, emisor, audiencia,
 sujeto y tiempos. Acepta access_token sin refresh_token. Solo valida el JWT

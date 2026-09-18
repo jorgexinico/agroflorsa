@@ -15,7 +15,7 @@ final class SsoClient {
   unset($_SESSION['portal_state'],$_SESSION['portal_state_time']);
   if (!is_string($expected) || $expected==='' || !is_string($_GET['state'] ?? null) ||
       !hash_equals($expected,$_GET['state']) || !is_int($created) || $created>time() || time()-$created>600 ||
-      !is_string($_GET['code'] ?? null) || !preg_match('/^[a-f0-9]{64}$/',$_GET['code'])) throw new RuntimeException('Acceso SSO inválido.');
+      !is_string($_GET['code'] ?? null) || !preg_match('/^[a-f0-9]{64}$/',$_GET['code'])) throw new RuntimeException('Acceso SSO inválido.',1001);
   $endpoint=rtrim($_ENV['SSO_BACKCHANNEL_URL'] ?? $_ENV['SSO_PORTAL_URL'],'/');
   $parts=parse_url($endpoint);
   $portalHost=parse_url($_ENV['SSO_PORTAL_URL'],PHP_URL_HOST);
@@ -33,11 +33,14 @@ final class SsoClient {
   $data=json_decode((string)$body,true);
   if ($status!==200 || !is_array($data) || !is_array($data['identity'] ?? null)) {
    error_log('SSO Agroflorsa canje_http='.(int)$status.' curl='.(int)$transportError);
+   if ($status===200 && is_array($data) && isset($data['access_token']) && !isset($data['identity'])) {
+    throw new RuntimeException('Login devolvió JWT en lugar de identity.',1004);
+   }
    throw new RuntimeException('No fue posible validar el acceso.', 1002);
   }
   $c=(object)$data['identity'];
   if (($c->iss ?? null)!==$_ENV['SSO_ISSUER'] || ($c->aud ?? null)!==$_ENV['SSO_CLIENT_ID'] ||
-      !is_string($c->sub ?? null) || !preg_match('/^[1-9][0-9]{0,63}$/D',$c->sub)) throw new RuntimeException('Identidad de Login inválida.');
+      !is_string($c->sub ?? null) || !preg_match('/^[1-9][0-9]{0,63}$/D',$c->sub)) throw new RuntimeException('Identidad de Login inválida.',1005);
   return $c;
  }
 }
