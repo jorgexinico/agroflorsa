@@ -10,7 +10,7 @@ final class PortalController
         global $db;
         header('Cache-Control: no-store');
         header('Referrer-Policy: no-referrer');
-        $stage='canje_y_jwt';
+        $stage='canje_identidad';
         try {
             $claims=SsoClient::consume();
             $stage='vinculo_usuario';
@@ -34,7 +34,8 @@ final class PortalController
         } catch (\Throwable $e) {
             session_regenerate_id(true);
             $_SESSION=[];
-            error_log('SSO Agroflorsa etapa='.$stage.' tipo='.get_class($e).' codigo='.$e->getCode());
+            error_log('SSO Agroflorsa etapa='.$stage.' tipo='.get_class($e).' codigo='.$e->getCode()
+                .' archivo='.$e->getFile().' linea='.$e->getLine());
             http_response_code(403);
             echo 'No se pudo autorizar el acceso. Vuelve al portal y selecciona Agroflorsa. Si persiste, revisa la asignación de tu usuario.';
         }

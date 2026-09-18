@@ -60,47 +60,38 @@ namespace {
         require dirname(__DIR__).'/includes/sso-session.php';
         exit;
     }
-    // Nunca se leen ni se sustituyen claves/configuración de la aplicación.
-    $options=['private_key_bits'=>2048,'private_key_type'=>OPENSSL_KEYTYPE_RSA];
-    if (is_file('C:/php/extras/ssl/openssl.cnf')) $options['config']='C:/php/extras/ssl/openssl.cnf';
-    $key=openssl_pkey_new($options);
-    check($key!==false,'No se pudo crear clave efímera de prueba');
-    openssl_pkey_export($key,$private,null,$options);
-    $_ENV['SSO_PUBLIC_KEY']='data://text/plain;base64,'.base64_encode(openssl_pkey_get_details($key)['key']);
-    $now=time();
-    $claims=['iss'=>'https://login.example','aud'=>'agroflorsa','sub'=>'3','iat'=>$now,'nbf'=>$now,'exp'=>$now+300,'jti'=>'test'];
+    $private=null;
+    $claims=['iss'=>'https://login.example','aud'=>'agroflorsa','sub'=>'3'];
     function prepareToken($claims,$private) {
         $_SESSION=['portal_state'=>str_repeat('a',64),'portal_state_time'=>time(),'usuario_id'=>999,'turno_id'=>999];
         $_GET=['state'=>str_repeat('a',64),'code'=>str_repeat('b',64)];
-        $GLOBALS['response']=json_encode(['access_token'=>\Firebase\JWT\JWT::encode($claims,$private,'RS256'),'token_type'=>'Bearer','expires_in'=>300]);
+        $GLOBALS['response']=json_encode(['identity'=>$claims]);
     }
     prepareToken($claims,$private);
     $decoded=\Classes\SsoClient::consume();
-    check($decoded->sub==='3' && !isset($_SESSION['portal_state']),'Debe aceptar JWT sin refresh y consumir state');
+    check($decoded->sub==='3' && !isset($_SESSION['portal_state']),'Debe aceptar identidad sin JWT y consumir state');
     parse_str($GLOBALS['requestOptions'][CURLOPT_POSTFIELDS],$sent);
-    check($sent===['client_id'=>'agroflorsa','client_secret'=>'test-only','code'=>str_repeat('b',64)],'Contrato POST incorrecto');
-    $bad=[['iss'=>'wrong'],['aud'=>'wrong'],['sub'=>3],['sub'=>'name'],['exp'=>$now-1],['exp'=>$now+301],['jti'=>null],['iat'=>null],['nbf'=>null],['iat'=>$now+10]];
+    check($sent===['client_id'=>'agroflorsa','client_secret'=>'test-only','code'=>str_repeat('b',64),'response_format'=>'identity'],'Contrato POST incorrecto');
+    $bad=[['iss'=>'wrong'],['aud'=>'wrong'],['sub'=>3],['sub'=>'name'],['sub'=>'0'],['sub'=>null]];
     foreach ($bad as $change) {
         prepareToken(array_replace($claims,$change),$private);
         $rejected=false;
         try { \Classes\SsoClient::consume(); } catch (\Throwable $e) { $rejected=true; }
-        check($rejected,'JWT inválido aceptado: '.json_encode($change));
+        check($rejected,'Identidad inválida aceptada: '.json_encode($change));
     }
-    foreach (['state','expired-state','code','signature'] as $case) {
+    foreach (['state','expired-state','code','signature','http'] as $case) {
         prepareToken($claims,$private);
         if ($case==='state') $_GET['state']='wrong';
         if ($case==='expired-state') $_SESSION['portal_state_time']=time()-601;
         if ($case==='code') $_GET['code']='wrong';
-        if ($case==='signature') {
-            $response=json_decode($GLOBALS['response'],true);
-            $parts=explode('.',$response['access_token']); $parts[2]=str_repeat('A',strlen($parts[2]));
-            $response['access_token']=implode('.',$parts); $GLOBALS['response']=json_encode($response);
-        }
+        if ($case==='signature') $GLOBALS['response']=json_encode(['access_token'=>'not-accepted']);
+        if ($case==='http') $_ENV['SSO_BACKCHANNEL_URL']='http://login.example';
         $rejected=false;
         try { \Classes\SsoClient::consume(); } catch (\Throwable $e) { $rejected=true; }
         check($rejected && !isset($_SESSION['portal_state']),'Debe rechazar '.$case);
     }
     session_start();
+    $_ENV['SSO_BACKCHANNEL_URL']='https://login.example';
     prepareToken($claims,$private);
     $previous=session_id();
     \Controllers\PortalController::callback();
@@ -115,5 +106,5 @@ namespace {
     }
     session_destroy();
     check(count(array_filter($GLOBALS['requests'],fn($url)=>!str_ends_with($url,'/token')))===0,'Endpoint inesperado');
-    echo "OK JWT, state, contrato token, callback, sesión, turno y denegaciones\n";
+    echo "OK identidad sin JWT, state, contrato token, callback, sesión, turno y denegaciones\n";
 }

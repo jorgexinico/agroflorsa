@@ -1,9 +1,7 @@
 <?php
 namespace Classes;
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 use RuntimeException;
-/** Copiar a cada aplicación; requiere firebase/php-jwt y ext-curl. */
+/** Identidad obtenida directamente de Login por canje autenticado del código. */
 final class SsoClient {
  public static function start(): void {
   $state=bin2hex(random_bytes(32));
@@ -18,24 +16,28 @@ final class SsoClient {
   if (!is_string($expected) || $expected==='' || !is_string($_GET['state'] ?? null) ||
       !hash_equals($expected,$_GET['state']) || !is_int($created) || $created>time() || time()-$created>600 ||
       !is_string($_GET['code'] ?? null) || !preg_match('/^[a-f0-9]{64}$/',$_GET['code'])) throw new RuntimeException('Acceso SSO inválido.');
-  $curl=curl_init(rtrim($_ENV['SSO_BACKCHANNEL_URL'] ?? $_ENV['SSO_PORTAL_URL'],'/').'/token');
+  $endpoint=rtrim($_ENV['SSO_BACKCHANNEL_URL'] ?? $_ENV['SSO_PORTAL_URL'],'/');
+  $parts=parse_url($endpoint);
+  $portalHost=parse_url($_ENV['SSO_PORTAL_URL'],PHP_URL_HOST);
+  $local=static fn($host)=>is_string($host) && ($host==='localhost' || $host==='127.0.0.1' || str_ends_with($host,'.localhost'));
+  if (($parts['scheme'] ?? '')!=='https' && !(($parts['scheme'] ?? '')==='http' && $local($parts['host'] ?? '') && $local($portalHost))) {
+   throw new RuntimeException('El canje de identidad requiere HTTPS.',1003);
+  }
+  $curl=curl_init($endpoint.'/token');
   curl_setopt_array($curl,[CURLOPT_POST=>true,CURLOPT_RETURNTRANSFER=>true,CURLOPT_TIMEOUT=>15,
    CURLOPT_HTTPHEADER=>['Host: '.parse_url($_ENV['SSO_PORTAL_URL'],PHP_URL_HOST)],
    CURLOPT_FOLLOWLOCATION=>false,CURLOPT_POSTFIELDS=>http_build_query([
-    'client_id'=>$_ENV['SSO_CLIENT_ID'],'client_secret'=>$_ENV['SSO_CLIENT_SECRET'],'code'=>$_GET['code']])]);
+    'client_id'=>$_ENV['SSO_CLIENT_ID'],'client_secret'=>$_ENV['SSO_CLIENT_SECRET'],'code'=>$_GET['code'],
+    'response_format'=>'identity'])]);
   $body=curl_exec($curl); $status=curl_getinfo($curl,CURLINFO_HTTP_CODE); $transportError=curl_errno($curl); curl_close($curl);
   $data=json_decode((string)$body,true);
-  if ($status!==200 || !is_array($data) || !is_string($data['access_token'] ?? null) || $data['access_token']==='') {
+  if ($status!==200 || !is_array($data) || !is_array($data['identity'] ?? null)) {
    error_log('SSO Agroflorsa canje_http='.(int)$status.' curl='.(int)$transportError);
    throw new RuntimeException('No fue posible validar el acceso.', 1002);
   }
-  $key=file_get_contents($_ENV['SSO_PUBLIC_KEY']);
-  $c=JWT::decode($data['access_token'],new Key($key,'RS256'));
+  $c=(object)$data['identity'];
   if (($c->iss ?? null)!==$_ENV['SSO_ISSUER'] || ($c->aud ?? null)!==$_ENV['SSO_CLIENT_ID'] ||
-      !is_string($c->sub ?? null) || !ctype_digit($c->sub) ||
-      !isset($c->exp,$c->iat,$c->nbf,$c->jti) ||
-      !is_int($c->exp) || !is_int($c->iat) || !is_int($c->nbf) || !is_string($c->jti) || $c->jti==='' ||
-      $c->iat>time() || $c->nbf>time() || $c->exp<=time() || $c->exp<=$c->iat || $c->exp-$c->iat>300) throw new RuntimeException('JWT inválido.');
+      !is_string($c->sub ?? null) || !preg_match('/^[1-9][0-9]{0,63}$/D',$c->sub)) throw new RuntimeException('Identidad de Login inválida.');
   return $c;
  }
 }
