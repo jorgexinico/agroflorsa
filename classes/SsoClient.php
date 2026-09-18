@@ -24,8 +24,11 @@ final class SsoClient {
    throw new RuntimeException('El canje de identidad requiere HTTPS.',1003);
   }
   $curl=curl_init($endpoint.'/token');
+  $portalPort=parse_url($_ENV['SSO_PORTAL_URL'],PHP_URL_PORT);
+  $authority=$portalHost.($portalPort!==null ? ':'.$portalPort : '');
   curl_setopt_array($curl,[CURLOPT_POST=>true,CURLOPT_RETURNTRANSFER=>true,CURLOPT_TIMEOUT=>15,
-   CURLOPT_HTTPHEADER=>['Host: '.parse_url($_ENV['SSO_PORTAL_URL'],PHP_URL_HOST)],
+   CURLOPT_HTTPHEADER=>['Host: '.$authority,'Accept: application/json'],
+   CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,
    CURLOPT_FOLLOWLOCATION=>false,CURLOPT_POSTFIELDS=>http_build_query([
     'client_id'=>$_ENV['SSO_CLIENT_ID'],'client_secret'=>$_ENV['SSO_CLIENT_SECRET'],'code'=>$_GET['code'],
     'response_format'=>'identity'])]);
@@ -33,6 +36,9 @@ final class SsoClient {
   $data=json_decode((string)$body,true);
   if ($status!==200 || !is_array($data) || !is_array($data['identity'] ?? null)) {
    error_log('SSO Agroflorsa canje_http='.(int)$status.' curl='.(int)$transportError);
+   if ($transportError!==0) throw new RuntimeException('No se pudo conectar con Login.',1006);
+   if ($status===401 && ($data['error'] ?? null)==='invalid_client') throw new RuntimeException('Login rechazo las credenciales de la aplicacion.',1007);
+   if ($status===400 && ($data['error'] ?? null)==='invalid_grant') throw new RuntimeException('Login rechazo el codigo temporal.',1008);
    if ($status===200 && is_array($data) && isset($data['access_token']) && !isset($data['identity'])) {
     throw new RuntimeException('Login devolvió JWT en lugar de identity.',1004);
    }

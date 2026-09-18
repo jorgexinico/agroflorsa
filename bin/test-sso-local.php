@@ -4,8 +4,8 @@ namespace Classes {
     function curl_init($url) { $GLOBALS['requests'][]=$url; return new \stdClass(); }
     function curl_setopt_array($curl,$options) { $GLOBALS['requestOptions']=$options; return true; }
     function curl_exec($curl) { return $GLOBALS['response']; }
-    function curl_getinfo($curl,$option) { return 200; }
-    function curl_errno($curl) { return 0; }
+    function curl_getinfo($curl,$option) { return $GLOBALS['httpStatus'] ?? 200; }
+    function curl_errno($curl) { return $GLOBALS['curlError'] ?? 0; }
     function curl_close($curl) {}
     function header($value) { $GLOBALS['redirect']=$value; }
 }
@@ -72,6 +72,21 @@ namespace {
     check($decoded->sub==='3' && !isset($_SESSION['portal_state']),'Debe aceptar identidad sin JWT y consumir state');
     parse_str($GLOBALS['requestOptions'][CURLOPT_POSTFIELDS],$sent);
     check($sent===['client_id'=>'agroflorsa','client_secret'=>'test-only','code'=>str_repeat('b',64),'response_format'=>'identity'],'Contrato POST incorrecto');
+    check($GLOBALS['requestOptions'][CURLOPT_SSL_VERIFYPEER]===true && $GLOBALS['requestOptions'][CURLOPT_SSL_VERIFYHOST]===2,'TLS debe validar certificado y host');
+    $_ENV['SSO_PORTAL_URL']='https://login.example:9443';
+    prepareToken($claims,$private);
+    \Classes\SsoClient::consume();
+    check(in_array('Host: login.example:9443',$GLOBALS['requestOptions'][CURLOPT_HTTPHEADER],true),'Debe conservar el puerto del portal para el virtual host');
+    $_ENV['SSO_PORTAL_URL']='https://login.example';
+    foreach ([[0,6,null,1006],[401,0,'invalid_client',1007],[400,0,'invalid_grant',1008],[502,0,null,1002]] as [$status,$curlError,$error,$expected]) {
+        prepareToken($claims,$private);
+        $GLOBALS['httpStatus']=$status; $GLOBALS['curlError']=$curlError;
+        $GLOBALS['response']=json_encode(['error'=>$error]);
+        $code=0;
+        try { \Classes\SsoClient::consume(); } catch (\RuntimeException $e) { $code=$e->getCode(); }
+        check($code===$expected,'Debe distinguir la causa del canje HTTP '.$status);
+    }
+    unset($GLOBALS['httpStatus'],$GLOBALS['curlError']);
     $bad=[['iss'=>'wrong'],['aud'=>'wrong'],['sub'=>3],['sub'=>'name'],['sub'=>'0'],['sub'=>null]];
     foreach ($bad as $change) {
         prepareToken(array_replace($claims,$change),$private);

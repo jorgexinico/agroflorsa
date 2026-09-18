@@ -43,6 +43,9 @@ final class PortalController
                 1003 => 'La conexión con Login requiere HTTPS.',
                 1004 => 'Login devuelve un formato incompatible. Falta desplegar el soporte response_format=identity en Login.',
                 1005 => 'La identidad recibida no coincide con la configuración esperada.',
+                1006 => 'No se pudo conectar con Login. El administrador debe revisar la conexión y el certificado del servidor.',
+                1007 => 'Login rechazó la configuración de acceso de Agroflorsa. El administrador debe revisar la aplicación y su secreto compartido.',
+                1008 => 'El código de ingreso venció, ya se utilizó o el acceso fue revocado. Inicia sesión de nuevo.',
                 default => 'Ocurrió un error al validar el ingreso con Login.',
             } : ($stage==='vinculo_usuario'
                 ? 'No se pudo resolver el usuario local activo. Revisa su vínculo y el registro del servidor.'

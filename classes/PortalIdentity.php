@@ -11,7 +11,9 @@ final class PortalIdentity
     {
         $q=$this->db->prepare('SELECT id,nombre,rol FROM usuarios WHERE portal_issuer=? AND portal_subject=? AND activo=1');
         $q->execute([$issuer,$subject]);
-        return $q->fetch(PDO::FETCH_ASSOC) ?: null;
+        $user=$q->fetch(PDO::FETCH_ASSOC);
+        if ($q->fetch(PDO::FETCH_ASSOC)) throw new RuntimeException('Identidad central duplicada.');
+        return $user ?: null;
     }
 
     public function link(string $issuer, string $subject, int $localId): void
